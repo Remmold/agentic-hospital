@@ -7,6 +7,7 @@ requires-python = ">=3.11"
 dependencies = [
     "pandas>=2.3.3",
     "pymupdf>=1.26.5",
+    "regex>=2025.9.18",
 ]
 
 [tool.setuptools.packages.find]
