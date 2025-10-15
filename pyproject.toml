@@ -1,0 +1,16 @@
+[project]
+name = "hospital-simulation-pipeline"
+version = "0.1.0"
+description = "from pdf->simulation pipeline"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pandas>=2.3.3",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
