@@ -1,5 +1,5 @@
 [project]
-name = "hospital-simulation-pipeline"
+name = "hs_pipeline"
 version = "0.1.0"
 description = "from pdf->simulation pipeline"
 readme = "README.md"
