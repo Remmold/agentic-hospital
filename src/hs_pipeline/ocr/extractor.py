@@ -6,6 +6,9 @@ from hs_pipeline.utils.constants import DATA_PATH
 from pathlib import Path
 from PIL import Image, ImageEnhance
 from docx import Document
+from odf import text, teletype
+from odf.opendocument import load as odf_load
+from striprtf.striprtf import rtf_to_text
 import pytesseract
 import pymupdf
 import io
@@ -19,10 +22,12 @@ pytesseract.pytesseract.tesseract_cmd = TESSERACT_PATH
 def preprocess_image_for_ocr(image: Image.Image) -> Image.Image:
     image = image.convert('L')
     width, height = image.size
+    # Upscales image if its too small to read
     if width < 1000:
         scale = 1500 / width
         newsize = (int(width * scale), int(height * scale))
         image = image.resize(newsize, Image.Resampling.LANCZOS)
+
     enhancer = ImageEnhance.Contrast(image)
     image = enhancer.enhance(1.5)
     enhancer = ImageEnhance.Sharpness(image)
@@ -33,6 +38,7 @@ def preprocess_image_for_ocr(image: Image.Image) -> Image.Image:
 def extract_text_from_image(image: Image.Image, preprocess: bool = True) -> str:
     if preprocess:
         image = preprocess_image_for_ocr(image)
+    # Config explains what kind of format the text in the image has ie 'block of text' 'single column' etc
     custom_config = r'--oem 3 --psm 6'
     text = pytesseract.image_to_string(image, config=custom_config)
     return text
@@ -54,18 +60,48 @@ def extract_text_from_docx(docx_path: Path) -> str:
     except Exception as e:
         print(f"Error processing {docx_path.name}: {e}")
         return ""
+    
 
-
-def extract_text_from_xlsx(xlsx_path: Path) -> str:
+def extract_text_from_odt(odt_path: Path) -> str:
+    """Extracts text from an ODT file."""
     try:
-        xls = pd.ExcelFile(xlsx_path)
+        textdoc = odf_load(odt_path)
+        all_paras = textdoc.getElementsByType(text.P)
+        full_text = [teletype.extractText(para) for para in all_paras]
+        return "\n".join(full_text)
+    except Exception as e:
+        print(f"Error processing {odt_path.name}: {e}")
+        return ""
+
+
+def extract_text_from_rtf(rtf_path: Path) -> str:
+    """Extracts text from an RTF file using the striprtf library."""
+    try:
+        # Read the file and pass the content directly to the function
+        rtf_content = rtf_path.read_text(encoding='latin-1')
+        return rtf_to_text(rtf_content)
+    except Exception as e:
+        print(f"Error processing {rtf_path.name}: {e}")
+        return ""
+
+
+def extract_text_from_spreadsheet(file_path: Path) -> str:
+    """Extracts text from various spreadsheet files (xls, xlsx, xlsm, ods)."""
+    try:
+        # For CSV files
+        if file_path.suffix.lower() == '.csv':
+            df = pd.read_csv(file_path, header=None)
+            return df.to_string(index=False, header=False)
+
+        # For Excel and ODS files, read all sheets
+        xls = pd.ExcelFile(file_path)
         full_text = []
         for sheet_name in xls.sheet_names:
             df = pd.read_excel(xls, sheet_name=sheet_name, header=None)
             full_text.append(df.to_string(index=False, header=False))
         return "\n\n--- New Sheet ---\n\n".join(full_text)
     except Exception as e:
-        print(f"Error processing {xlsx_path.name}: {e}")
+        print(f"Error processing {file_path.name}: {e}")
         return ""
 
 
@@ -115,17 +151,20 @@ def extract_text_from_file(file_path: Path) -> str:
     extension = file_path.suffix.lower()
     
     print(f"-> Processing '{file_path.name}'...")
-
-    if extension == ".pdf":
+    if extension in ['.xlsx', '.xls', '.xlsm', '.ods', '.csv']:
+        return extract_text_from_spreadsheet(file_path)
+    elif extension == ".pdf":
         return extract_ordered_content_from_pdf(file_path)
-    elif extension in ['.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif']:
+    elif extension in ['.png', '.jpg', '.jpeg', '.tiff','.tif', '.bmp', '.gif']:
         return extract_text_from_image_path(file_path, preprocess=True)
     elif extension == ".docx":
         return extract_text_from_docx(file_path)
-    elif extension == ".xlsx":
-        return extract_text_from_xlsx(file_path)
     elif extension == ".txt":
         return extract_text_from_txt(file_path)
+    elif extension == ".odt":
+        return extract_text_from_odt(file_path)
+    elif extension == ".rtf":
+        return extract_text_from_rtf(file_path)
     else:
         print(f"   Unsupported file type: {file_path.name}")
         return ""
@@ -161,7 +200,7 @@ def process_directory(directory_path: Path) -> list[dict[str, str]]:
 if __name__ == "__main__":
    
     # Just change to whatever directory should be tested using extraction
-    test_directory = DATA_PATH  / "docs"
+    test_directory = DATA_PATH  / "spreadsheets"
 
     print(f"--- Starting extraction from directory: {test_directory} ---")
     results = process_directory(test_directory)
