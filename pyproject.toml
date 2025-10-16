@@ -7,11 +7,14 @@ requires-python = ">=3.11"
 dependencies = [
     "dotenv>=0.9.9",
     "google-genai>=1.45.0",
+    "odfpy>=1.4.1",
+    "openpyxl>=3.1.5",
     "pandas>=2.3.3",
     "pymupdf>=1.26.5",
     "pytesseract>=0.3.13",
     "python-docx>=1.2.0",
     "regex>=2025.9.18",
+    "xlrd>=2.0.2",
 ]
 
 [tool.setuptools.packages.find]
