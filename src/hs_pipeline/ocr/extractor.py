@@ -5,6 +5,8 @@ from pathlib import Path
 from PIL import Image,ImageEnhance
 import pytesseract
 import pymupdf
+import io
+
 
 # Temporary Tesseract Path (Actual exe download required to run image->text)
 TESSERACT_PATH = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
@@ -82,7 +84,7 @@ def extract_text_from_directory(directory:Path = DATA_PATH)-> list[dict[str,str]
     except Exception as err:
         print(f"error processing directory: {err}")
 
-def preprocess_image_for_ocr(image: Image.Image) -> Image.Image:
+def     preprocess_image_for_ocr(image: Image.Image) -> Image.Image:
     """
     Preprocess image to improve OCR accuracy.
     
@@ -95,18 +97,25 @@ def preprocess_image_for_ocr(image: Image.Image) -> Image.Image:
     # Convert to grayscale
     image = image.convert('L')
     
+    # Upscale image
+    width, height = image.size
+    if width < 1000:
+        scale =1500/width
+        newsize = (int(width*scale),int(height*scale))
+        image = image.resize(newsize, Image.Resampling.LANCZOS)
+
     # Increase contrast
     enhancer = ImageEnhance.Contrast(image)
-    image = enhancer.enhance(2.0)
+    image = enhancer.enhance(1.5)
     
     # Increase sharpness
     enhancer = ImageEnhance.Sharpness(image)
-    image = enhancer.enhance(2.0)
+    image = enhancer.enhance(1.3)
 
     return image
 
 
-def extract_text_from_image(image_path: Path, preprocess: bool = True) -> str:
+def extract_text_from_image_path(image_path: Path, preprocess: bool = False) -> str:
     """
     Extract text from a single image file using OCR.
     
@@ -131,14 +140,7 @@ def extract_text_from_image(image_path: Path, preprocess: bool = True) -> str:
         # Open the image file
         image = Image.open(image_path)
         
-        # Preprocess if requested
-        if preprocess:
-            image = preprocess_image_for_ocr(image)
-        
-        # Apply OCR to extract text
-        # Using PSM 6 (assume uniform block of text)
-        custom_config = r'--psm 3 --psm 6'
-        text = pytesseract.image_to_string(image, config=custom_config)
+        text = extract_text_from_image(image=image,preprocess=preprocess)
         
         # Check if we got anything
         if not text.strip():
@@ -150,7 +152,76 @@ def extract_text_from_image(image_path: Path, preprocess: bool = True) -> str:
         print(f"Error processing {image_path.name}: {err}")
         return ""
 
+def extract_text_from_image(image: Image.Image, preprocess: bool = True) -> str:
+    """
+    Performs OCR on a PIL Image object.
+    
+    Args:
+        image: The PIL Image object to process.
+        preprocess: Whether to preprocess the image.
+        
+    Returns:
+        The extracted text as a string.
+    """
+    if preprocess:
+        image = preprocess_image_for_ocr(image)
+    
+    custom_config = r'--oem 3 --psm 6'
+    text = pytesseract.image_to_string(image, config=custom_config)
+    return text
 
+def extract_ordered_content_from_pdf(pdf_path: Path) -> str:
+    """
+    Extracts text and OCR'd image text from a PDF in content order.
+    """
+    doc = pymupdf.open(pdf_path)
+    full_text = ""
+
+    for page_num, page in enumerate(doc):
+        print(f"Processing page {page_num + 1}...")
+        blocks = page.get_text("dict")["blocks"]
+        blocks.sort(key = lambda b:(b["bbox"][1],b["bbox"][0]))
+        for block in blocks:
+            # If its a text block
+            if block["type"] == 0:
+                blocktext = ""
+                for line in block["lines"]:
+                    linetext = ""
+                    for span in line["spans"]:
+                        linetext += span["text"] 
+                    blocktext += linetext + "\n"
+                full_text += blocktext + "\n"
+            elif block["type"] == 1:  # This is an image block
+                try:
+                    bbox = block["bbox"]
+                    width = bbox[2] - bbox[0]
+                    height = bbox[3] - bbox[1]
+                    #if width < 200 and height < 200:
+                        #print("Skipping small image")
+                        #continue
+                    pix = page.get_pixmap(clip = bbox)
+                    image_data = pix.tobytes("png")
+                    # Open the image from the in-memory bytes
+                    image = Image.open(io.BytesIO(image_data))
+                    
+                    # Use your refactored function to get the text from the PIL image
+                    image_text = extract_text_from_image(image)
+                    
+                    if image_text.strip():
+                        full_text += f"\n Image content: {image_text} \n"
+
+                except Exception as e:
+                    print(f"Warning: Could not process an image on page {page_num + 1}. Error: {e}")
+
+    doc.close()
+    return full_text
 if __name__ == "__main__":
-   text = extract_text_from_image(DATA_PATH / "image.png")
-   print(text)
+    pdf_path = DATA_PATH / "scanned"
+    text = extract_ordered_content_from_pdf(pdf_path)
+    import hs_pipeline.ocr.llm_parser as parser
+    import json
+    print(text)
+    json_text = parser.parse_document_with_llm(text, pdf_path)
+
+    print(type(json_text))
+    print(json.dumps(json_text, indent=2, ensure_ascii=False))
