@@ -126,6 +126,19 @@ def extract_text_from_txt(txt_path: Path) -> str:
     except Exception as e:
         print(f"Error processing {txt_path.name}: {e}")
         return ""
+    
+
+def extract_text_from_docx(docx_path: Path) -> str:
+    """Extracts text from a .docx file."""
+    try:
+        doc = Document(docx_path)
+        # Extract text from all paragraphs
+        full_text = [para.text for para in doc.paragraphs]
+        return "\n".join(full_text)
+    except Exception as e:
+        print(f"Error processing {docx_path.name}: {e}")
+        return ""
+    
 
 def extract_text_from_image_path(image_path: Path, preprocess: bool = False) -> str:
     """
