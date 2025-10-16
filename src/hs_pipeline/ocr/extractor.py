@@ -2,7 +2,13 @@
 
 from hs_pipeline.utils.constants import DATA_PATH
 from pathlib import Path
+from PIL import Image,ImageEnhance
+import pytesseract
 import pymupdf
+
+# Temporary Tesseract Path (Actual exe download required to run image->text)
+TESSERACT_PATH = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+pytesseract.pytesseract.tesseract_cmd = TESSERACT_PATH
 
 
 # function to extract text from pdf
@@ -76,6 +82,75 @@ def extract_text_from_directory(directory:Path = DATA_PATH)-> list[dict[str,str]
     except Exception as err:
         print(f"error processing directory: {err}")
 
-#TODO Function to convert image to text
+def preprocess_image_for_ocr(image: Image.Image) -> Image.Image:
+    """
+    Preprocess image to improve OCR accuracy.
+    
+    Args:
+        image: PIL Image object
+        
+    Returns:
+        Preprocessed PIL Image object
+    """
+    # Convert to grayscale
+    image = image.convert('L')
+    
+    # Increase contrast
+    enhancer = ImageEnhance.Contrast(image)
+    image = enhancer.enhance(2.0)
+    
+    # Increase sharpness
+    enhancer = ImageEnhance.Sharpness(image)
+    image = enhancer.enhance(2.0)
+
+    return image
 
 
+def extract_text_from_image(image_path: Path, preprocess: bool = True) -> str:
+    """
+    Extract text from a single image file using OCR.
+    
+    Args:
+        image_path: Path to image file (png, jpg, jpeg, tiff, bmp, gif)
+        preprocess: Whether to preprocess image for better OCR (default True)
+        
+    Returns:
+        Extracted text as string, or empty string if extraction fails
+    """
+    try:
+        # Validation
+        if not image_path.exists():
+            print(f"File not found: {image_path}")
+            return ""
+        
+        valid_extensions = ['.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif']
+        if image_path.suffix.lower() not in valid_extensions:
+            print(f"File is not a supported image: {image_path}")
+            return ""
+        
+        # Open the image file
+        image = Image.open(image_path)
+        
+        # Preprocess if requested
+        if preprocess:
+            image = preprocess_image_for_ocr(image)
+        
+        # Apply OCR to extract text
+        # Using PSM 6 (assume uniform block of text)
+        custom_config = r'--psm 3 --psm 6'
+        text = pytesseract.image_to_string(image, config=custom_config)
+        
+        # Check if we got anything
+        if not text.strip():
+            print(f"No text extracted from: {image_path.name}")
+        
+        return text
+    
+    except Exception as err:
+        print(f"Error processing {image_path.name}: {err}")
+        return ""
+
+
+if __name__ == "__main__":
+   text = extract_text_from_image(DATA_PATH / "image.png")
+   print(text)
