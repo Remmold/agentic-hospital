@@ -5,6 +5,8 @@ description = "from pdf->simulation pipeline"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "dotenv>=0.9.9",
+    "google-genai>=1.45.0",
     "pandas>=2.3.3",
     "pymupdf>=1.26.5",
     "regex>=2025.9.18",
