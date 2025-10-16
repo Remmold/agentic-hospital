@@ -1,8 +1,12 @@
-"""Step 1: PDF/IMAGE Extraction"""
+""" Step 1: File->text Extraction
+    Current filetypes supported:
 
+
+"""
 from hs_pipeline.utils.constants import DATA_PATH
 from pathlib import Path
 from PIL import Image,ImageEnhance
+from docx import Document
 import pytesseract
 import pymupdf
 import io
@@ -115,6 +119,14 @@ def     preprocess_image_for_ocr(image: Image.Image) -> Image.Image:
     return image
 
 
+def extract_text_from_txt(txt_path: Path) -> str:
+    """Reads text from a .txt file."""
+    try:
+        return txt_path.read_text(encoding='utf-8')
+    except Exception as e:
+        print(f"Error processing {txt_path.name}: {e}")
+        return ""
+
 def extract_text_from_image_path(image_path: Path, preprocess: bool = False) -> str:
     """
     Extract text from a single image file using OCR.
@@ -158,7 +170,7 @@ def extract_text_from_image(image: Image.Image, preprocess: bool = True) -> str:
     
     Args:
         image: The PIL Image object to process.
-        preprocess: Whether to preprocess the image.
+        preprocess: (bool) Whether to preprocess the image.
         
     Returns:
         The extracted text as a string.
