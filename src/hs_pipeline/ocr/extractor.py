@@ -10,6 +10,7 @@ from docx import Document
 import pytesseract
 import pymupdf
 import io
+import pandas as pd
 
 
 # Temporary Tesseract Path (Actual exe download required to run image->text)
@@ -137,6 +138,22 @@ def extract_text_from_docx(docx_path: Path) -> str:
         return "\n".join(full_text)
     except Exception as e:
         print(f"Error processing {docx_path.name}: {e}")
+        return ""
+    
+
+def extract_text_from_xlsx(xlsx_path: Path) -> str:
+    """Extracts text from a .xlsx file, converting all sheets to a string."""
+    try:
+        # Read all sheets from the excel file
+        xls = pd.ExcelFile(xlsx_path)
+        full_text = []
+        for sheet_name in xls.sheet_names:
+            df = pd.read_excel(xls, sheet_name=sheet_name, header=None)
+            # Convert dataframe to a string
+            full_text.append(df.to_string(index=False, header=False))
+        return "\n\n--- New Sheet ---\n\n".join(full_text)
+    except Exception as e:
+        print(f"Error processing {xlsx_path.name}: {e}")
         return ""
     
 
