@@ -1,269 +1,177 @@
 """ Step 1: File->text Extraction
-    Current filetypes supported:
-
-
+    Processes a directory of mixed filetypes (PDF, DOCX, TXT, XLSX, Images)
+    and extracts text from each file.
 """
 from hs_pipeline.utils.constants import DATA_PATH
 from pathlib import Path
-from PIL import Image,ImageEnhance
+from PIL import Image, ImageEnhance
 from docx import Document
 import pytesseract
 import pymupdf
 import io
 import pandas as pd
 
-
 # Temporary Tesseract Path (Actual exe download required to run image->text)
 TESSERACT_PATH = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 pytesseract.pytesseract.tesseract_cmd = TESSERACT_PATH
 
 
-# function to extract text from pdf
-def extract_text_from_pdf(pdf_path: Path)-> str:
-    """
-    Transform 1 pdf into text.
-    
-    Args:
-        pdf_path: Path to PDF file
-        
-    Returns:
-        Extracted text as string, or empty string if extraction fails
-    """
-
-    try:
-        if not pdf_path.exists():
-            print(f"File not found: {pdf_path}")
-            return ""
-        
-        if pdf_path.suffix.lower() != ".pdf":
-            print(f"File is not a pdf: {pdf_path}")
-            return ""
-        
-        doc = pymupdf.open(pdf_path)
-        text = ""
-
-        for page in doc:
-            text += page.get_text()
-
-        doc.close()
-        if not text.strip():
-            print(f"no text extracted from: {pdf_path.name}")
-
-        return text
-    
-    except Exception as err:
-        print(f"Error processing {pdf_path.name}: {err}")
-        return ""
-
-
-def extract_text_from_directory(directory:Path = DATA_PATH)-> list[dict[str,str]]:
-    """
-    Extract text from all PDFs in a folder.
-    
-    Args:
-        directory: Path to folder containing PDFs
-        
-    Returns:
-        List of dicts with keys: 'filename', 'text'
-    """
-
-    try:
-        if not directory.exists():
-            print(f"directory not found: {directory}")
-            return []
-        
-        pdf_path_list = directory.glob("*.pdf")
-        pdf_text_list = []
-
-        for pdf_path in pdf_path_list:
-            
-            extracted_text = extract_text_from_pdf(pdf_path)
-
-            pdf_text_dict = {}
-            pdf_text_dict["filename"] = pdf_path.name
-            pdf_text_dict["text"] = extracted_text
-            pdf_text_list.append(pdf_text_dict)
-            
-        return pdf_text_list
-    
-    except Exception as err:
-        print(f"error processing directory: {err}")
-
-def     preprocess_image_for_ocr(image: Image.Image) -> Image.Image:
-    """
-    Preprocess image to improve OCR accuracy.
-    
-    Args:
-        image: PIL Image object
-        
-    Returns:
-        Preprocessed PIL Image object
-    """
-    # Convert to grayscale
+def preprocess_image_for_ocr(image: Image.Image) -> Image.Image:
     image = image.convert('L')
-    
-    # Upscale image
     width, height = image.size
     if width < 1000:
-        scale =1500/width
-        newsize = (int(width*scale),int(height*scale))
+        scale = 1500 / width
+        newsize = (int(width * scale), int(height * scale))
         image = image.resize(newsize, Image.Resampling.LANCZOS)
-
-    # Increase contrast
     enhancer = ImageEnhance.Contrast(image)
     image = enhancer.enhance(1.5)
-    
-    # Increase sharpness
     enhancer = ImageEnhance.Sharpness(image)
     image = enhancer.enhance(1.3)
-
     return image
 
 
+def extract_text_from_image(image: Image.Image, preprocess: bool = True) -> str:
+    if preprocess:
+        image = preprocess_image_for_ocr(image)
+    custom_config = r'--oem 3 --psm 6'
+    text = pytesseract.image_to_string(image, config=custom_config)
+    return text
+
+
 def extract_text_from_txt(txt_path: Path) -> str:
-    """Reads text from a .txt file."""
     try:
         return txt_path.read_text(encoding='utf-8')
     except Exception as e:
         print(f"Error processing {txt_path.name}: {e}")
         return ""
-    
+
 
 def extract_text_from_docx(docx_path: Path) -> str:
-    """Extracts text from a .docx file."""
     try:
         doc = Document(docx_path)
-        # Extract text from all paragraphs
         full_text = [para.text for para in doc.paragraphs]
         return "\n".join(full_text)
     except Exception as e:
         print(f"Error processing {docx_path.name}: {e}")
         return ""
-    
+
 
 def extract_text_from_xlsx(xlsx_path: Path) -> str:
-    """Extracts text from a .xlsx file, converting all sheets to a string."""
     try:
-        # Read all sheets from the excel file
         xls = pd.ExcelFile(xlsx_path)
         full_text = []
         for sheet_name in xls.sheet_names:
             df = pd.read_excel(xls, sheet_name=sheet_name, header=None)
-            # Convert dataframe to a string
             full_text.append(df.to_string(index=False, header=False))
         return "\n\n--- New Sheet ---\n\n".join(full_text)
     except Exception as e:
         print(f"Error processing {xlsx_path.name}: {e}")
         return ""
-    
 
-def extract_text_from_image_path(image_path: Path, preprocess: bool = False) -> str:
-    """
-    Extract text from a single image file using OCR.
-    
-    Args:
-        image_path: Path to image file (png, jpg, jpeg, tiff, bmp, gif)
-        preprocess: Whether to preprocess image for better OCR (default True)
-        
-    Returns:
-        Extracted text as string, or empty string if extraction fails
-    """
+
+def extract_text_from_image_path(image_path: Path, preprocess: bool = True) -> str:
     try:
-        # Validation
-        if not image_path.exists():
-            print(f"File not found: {image_path}")
-            return ""
-        
-        valid_extensions = ['.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif']
-        if image_path.suffix.lower() not in valid_extensions:
-            print(f"File is not a supported image: {image_path}")
-            return ""
-        
-        # Open the image file
         image = Image.open(image_path)
-        
-        text = extract_text_from_image(image=image,preprocess=preprocess)
-        
-        # Check if we got anything
+        text = extract_text_from_image(image=image, preprocess=preprocess)
         if not text.strip():
             print(f"No text extracted from: {image_path.name}")
-        
         return text
-    
     except Exception as err:
         print(f"Error processing {image_path.name}: {err}")
         return ""
 
-def extract_text_from_image(image: Image.Image, preprocess: bool = True) -> str:
-    """
-    Performs OCR on a PIL Image object.
-    
-    Args:
-        image: The PIL Image object to process.
-        preprocess: (bool) Whether to preprocess the image.
-        
-    Returns:
-        The extracted text as a string.
-    """
-    if preprocess:
-        image = preprocess_image_for_ocr(image)
-    
-    custom_config = r'--oem 3 --psm 6'
-    text = pytesseract.image_to_string(image, config=custom_config)
-    return text
-
 def extract_ordered_content_from_pdf(pdf_path: Path) -> str:
-    """
-    Extracts text and OCR'd image text from a PDF in content order.
-    """
     doc = pymupdf.open(pdf_path)
     full_text = ""
-
     for page_num, page in enumerate(doc):
-        print(f"Processing page {page_num + 1}...")
+        # print(f"Processing page {page_num + 1} of {pdf_path.name}...") # Uncomment for verbose output
         blocks = page.get_text("dict")["blocks"]
-        blocks.sort(key = lambda b:(b["bbox"][1],b["bbox"][0]))
+        blocks.sort(key=lambda b: (b["bbox"][1], b["bbox"][0]))
         for block in blocks:
-            # If its a text block
-            if block["type"] == 0:
-                blocktext = ""
+            if block["type"] == 0:  # Text block
                 for line in block["lines"]:
-                    linetext = ""
                     for span in line["spans"]:
-                        linetext += span["text"] 
-                    blocktext += linetext + "\n"
-                full_text += blocktext + "\n"
-            elif block["type"] == 1:  # This is an image block
+                        full_text += span["text"]
+                    full_text += "\n"
+            elif block["type"] == 1:  # Image block
                 try:
-                    bbox = block["bbox"]
-                    width = bbox[2] - bbox[0]
-                    height = bbox[3] - bbox[1]
-                    #if width < 200 and height < 200:
-                        #print("Skipping small image")
-                        #continue
-                    pix = page.get_pixmap(clip = bbox)
+                    pix = page.get_pixmap(clip=block["bbox"])
                     image_data = pix.tobytes("png")
-                    # Open the image from the in-memory bytes
                     image = Image.open(io.BytesIO(image_data))
-                    
-                    # Use your refactored function to get the text from the PIL image
                     image_text = extract_text_from_image(image)
-                    
                     if image_text.strip():
-                        full_text += f"\n Image content: {image_text} \n"
-
+                        full_text += f"\n--- OCR Image Content ---\n{image_text}\n--- End Image Content ---\n"
                 except Exception as e:
-                    print(f"Warning: Could not process an image on page {page_num + 1}. Error: {e}")
-
+                    print(f"Warning: Could not process an image on page {page_num + 1} of {pdf_path.name}. Error: {e}")
     doc.close()
     return full_text
-if __name__ == "__main__":
-    pdf_path = DATA_PATH / "scanned"
-    text = extract_ordered_content_from_pdf(pdf_path)
-    import hs_pipeline.ocr.llm_parser as parser
-    import json
-    print(text)
-    json_text = parser.parse_document_with_llm(text, pdf_path)
 
-    print(type(json_text))
-    print(json.dumps(json_text, indent=2, ensure_ascii=False))
+
+def extract_text_from_file(file_path: Path) -> str:
+    """
+    Extracts text from a file by dispatching to the correct function
+    based on the file extension.
+    """
+    extension = file_path.suffix.lower()
+    
+    print(f"-> Processing '{file_path.name}'...")
+
+    if extension == ".pdf":
+        return extract_ordered_content_from_pdf(file_path)
+    elif extension in ['.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif']:
+        return extract_text_from_image_path(file_path, preprocess=True)
+    elif extension == ".docx":
+        return extract_text_from_docx(file_path)
+    elif extension == ".xlsx":
+        return extract_text_from_xlsx(file_path)
+    elif extension == ".txt":
+        return extract_text_from_txt(file_path)
+    else:
+        print(f"   Unsupported file type: {file_path.name}")
+        return ""
+
+
+def process_directory(directory_path: Path) -> list[dict[str, str]]:
+    """
+    Extracts text from all supported files in a given directory.
+    
+    Args:
+        directory_path: The path to the directory to process.
+        
+    Returns:
+        A list of dictionaries, where each dictionary contains the
+        'filename' and extracted 'text'.
+    """
+    if not directory_path.is_dir():
+        print(f"Error: Provided path '{directory_path}' is not a directory.")
+        return []
+
+    extracted_data = []
+    for file_path in directory_path.iterdir():
+        if file_path.is_file():
+            text = extract_text_from_file(file_path)
+            if text:
+                extracted_data.append({
+                    "filename": file_path.name,
+                    "text": text
+                })
+    return extracted_data
+
+
+if __name__ == "__main__":
+   
+    # Just change to whatever directory should be tested using extraction
+    test_directory = DATA_PATH  / "docs"
+
+    print(f"--- Starting extraction from directory: {test_directory} ---")
+    results = process_directory(test_directory)
+    print(f"\n--- Extraction complete. Found text in {len(results)} files. ---\n")
+
+    # Print a summary of the results
+    for result in results:
+        print("="*50)
+        print(f"FILE: {result['filename']}")
+        print("="*50)
+        # Print the first 200 characters of the extracted text as a preview
+        print(result['text'][:200].strip())
+        print("\n")
