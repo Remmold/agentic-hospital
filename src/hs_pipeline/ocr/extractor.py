@@ -105,7 +105,7 @@ def extract_text_from_spreadsheet(file_path: Path) -> str:
         return ""
 
 
-def extract_text_from_image_path(image_path: Path, preprocess: bool = True) -> str:
+def extract_text_from_image_file(image_path: Path, preprocess: bool = True) -> str:
     try:
         image = Image.open(image_path)
         text = extract_text_from_image(image=image, preprocess=preprocess)
@@ -156,7 +156,7 @@ def extract_text_from_file(file_path: Path) -> str:
     elif extension == ".pdf":
         return extract_ordered_content_from_pdf(file_path)
     elif extension in ['.png', '.jpg', '.jpeg', '.tiff','.tif', '.bmp', '.gif']:
-        return extract_text_from_image_path(file_path, preprocess=True)
+        return extract_text_from_image_file(file_path, preprocess=True)
     elif extension == ".docx":
         return extract_text_from_docx(file_path)
     elif extension == ".txt":
@@ -196,21 +196,3 @@ def process_directory(directory_path: Path) -> list[dict[str, str]]:
                 })
     return extracted_data
 
-
-if __name__ == "__main__":
-   
-    # Just change to whatever directory should be tested using extraction
-    test_directory = DATA_PATH  / "spreadsheets"
-
-    print(f"--- Starting extraction from directory: {test_directory} ---")
-    results = process_directory(test_directory)
-    print(f"\n--- Extraction complete. Found text in {len(results)} files. ---\n")
-
-    # Print a summary of the results
-    for result in results:
-        print("="*50)
-        print(f"FILE: {result['filename']}")
-        print("="*50)
-        # Print the first 200 characters of the extracted text as a preview
-        print(result['text'][:200].strip())
-        print("\n")
