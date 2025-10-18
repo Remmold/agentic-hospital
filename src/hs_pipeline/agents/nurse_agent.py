@@ -17,6 +17,7 @@ class PatientData:
     symptoms: list[str]
 
 class NurseAssessment(BaseModel):
+    """Outputformat of a nurse"""
     urgency: str
     notes: str
 
@@ -33,12 +34,3 @@ nurse_agent = Agent(
 def get_patient_symptoms(ctx: RunContext[PatientData]) -> list[str]:
     """Get the patient's current symptoms."""
     return ctx.deps.symptoms
-# Create actual patient instance
-patient = PatientData(name="John", age=45, symptoms=["fever", "cough"])
-
-result = nurse_agent.run_sync(
-    f"Assess patient: {patient.name}, age {patient.age}",
-    deps=patient
-)
-print(dir(result))
-print(result.all_messages())
