@@ -58,6 +58,7 @@ while api_calls < 20:
     current_agent = agents[current_agent_name]
     result = run_agent_with_retry(current_agent, context, current_deps)
     api_calls += 1
+    time.sleep(7)
     
     timeline.append({
         "agent": current_agent_name,
@@ -88,6 +89,7 @@ while api_calls < 20:
         
         lab_result = run_agent_with_retry(agents["Lab"], "Run the requested test", lab_deps)
         api_calls += 1
+        time.sleep(7)
         
         timeline.append({
             "agent": current_agent_name,
