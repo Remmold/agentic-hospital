@@ -1,0 +1,110 @@
+{
+  "patient": {
+    "name": "John Doe",
+    "age": 45,
+    "symptoms": [
+      "cough",
+      "fever",
+      "shortness of breath",
+      "chest pain",
+      "fatigue"
+    ]
+  },
+  "actual_disease": "pneumonia",
+  "timeline": [
+    {
+      "agent": "Nurse",
+      "decision": {
+        "urgency": "high",
+        "notes": "Patient is experiencing cough, fever, shortness of breath, chest pain, and fatigue.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "The patient is experiencing severe symptoms including shortness of breath and chest pain, which require immediate medical evaluation."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "final_result"
+      ]
+    },
+    {
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": null,
+        "recommended_treatment": null,
+        "follow_up_needed": null,
+        "next_step": "order_test",
+        "context_for_next": "Patient has high urgency with symptoms of cough, fever, shortness of breath, chest pain, and fatigue. No tests have been run yet. Ordering a blood test as the first step.",
+        "ordered_test": "blood test"
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "agent": "Lab",
+      "decision": {
+        "tests_ran": "Blood test",
+        "test_outcome": "White Blood Cell (WBC) count: 15.0 x 10^9/L, C-reactive protein (CRP): 80 mg/L, Erythrocyte Sedimentation Rate (ESR): 60 mm/hr"
+      },
+      "tools_used": [
+        "get_test_type",
+        "get_disease",
+        "get_patient_data",
+        "final_result"
+      ]
+    },
+    {
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": null,
+        "recommended_treatment": null,
+        "follow_up_needed": null,
+        "next_step": "order_test",
+        "context_for_next": "Patient has high urgency with symptoms of cough, fever, shortness of breath, chest pain, and fatigue. Initial blood test shows elevated inflammatory markers. Need to investigate respiratory and cardiac systems. Ordering a chest X-ray as the second test.",
+        "ordered_test": "Chest X-ray"
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "agent": "Lab",
+      "decision": {
+        "tests_ran": "Chest X-ray",
+        "test_outcome": "Diffuse alveolar and interstitial opacities noted in the right lower lobe. Small bilateral pleural effusions present."
+      },
+      "tools_used": [
+        "get_test_type",
+        "get_disease",
+        "final_result"
+      ]
+    },
+    {
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": "Pneumonia",
+        "recommended_treatment": "Start broad-spectrum antibiotics, provide oxygen support, and manage symptoms. Monitor patient closely for response to treatment.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "The patient has severe symptoms and high urgency. Blood tests show elevated inflammatory markers. Chest X-ray shows diffuse alveolar and interstitial opacities in the right lower lobe and small bilateral pleural effusions. This evidence strongly suggests pneumonia.",
+        "ordered_test": null
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "final_result"
+      ]
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "Pneumonia",
+    "recommended_treatment": "Start broad-spectrum antibiotics, provide oxygen support, and manage symptoms. Monitor patient closely for response to treatment.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "The patient has severe symptoms and high urgency. Blood tests show elevated inflammatory markers. Chest X-ray shows diffuse alveolar and interstitial opacities in the right lower lobe and small bilateral pleural effusions. This evidence strongly suggests pneumonia.",
+    "ordered_test": null
+  }
+}

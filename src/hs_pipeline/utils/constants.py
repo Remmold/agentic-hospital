@@ -9,4 +9,4 @@ AGENT_JSON_STRUCTURE_PATH = PROJECT_ROOT / "agents" / "json_structures"
 GEMINI_LLM = 'gemini-2.5-flash'
 GROQ_LLM = 'groq:llama-3.3-70b-versatile'
 
-CHOSEN_LLM = GROQ_LLM
+CHOSEN_LLM = GEMINI_LLM
