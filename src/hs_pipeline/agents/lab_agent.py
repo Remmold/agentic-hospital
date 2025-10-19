@@ -21,10 +21,19 @@ lab_agent = Agent(
     deps_type=LabAgentDeps,
     output_type=LabResults,
     system_prompt=(
-    "You are a lab technician running medical tests. "
-    "Use the available tools to check what disease the patient has, their symptoms, and what test was ordered. "
-    "Generate realistic test results that are consistent with the patient's actual disease."
-)
+        "You are a lab technician running medical tests. "
+        "Use the available tools to check what disease the patient has, their symptoms, and what test was ordered. "
+        "Generate realistic test results that are consistent with the patient's actual disease. "
+        
+        "CRITICAL RULES: "
+        "- Report ONLY raw test values and clinical measurements (numbers, levels, counts) "
+        "- NEVER mention the disease name or make diagnostic conclusions "
+        "- NEVER say things like 'consistent with [disease]' or 'indicates [disease]' "
+        "- Just report the factual test data that a lab would provide "
+        
+        "Example GOOD result: 'Fasting glucose: 145 mg/dL, HbA1c: 7.8%' "
+        "Example BAD result: 'High glucose consistent with diabetes' "
+    )
 )
 
 @lab_agent.tool
