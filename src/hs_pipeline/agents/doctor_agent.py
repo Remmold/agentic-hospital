@@ -53,17 +53,17 @@ doctor_agent = Agent(
 def get_nurse_assessment(ctx: RunContext[DoctorDeps]) -> str:
     """Get the nurse's assessment including urgency and notes."""
     return f"Urgency: {ctx.deps.nurse_assessment.urgency}, Notes: {ctx.deps.nurse_assessment.notes}"
+
+
 @doctor_agent.tool
 def get_lab_results(ctx: RunContext[DoctorDeps]) -> str:
     """Get the lab report from ran test"""
-    result_str = ""
     if ctx.deps.lab_results:
+        return_string = ""
         for results in ctx.deps.lab_results:
-            result_str += f"\n test_type: {results.tests_ran} test_outcome: {results.test_outcome}"
+            return_string += f"\n test_type: {results.tests_ran} test_outcome: {results.test_outcome}"
+        return return_string
     else:
-        result_str = "No tests ran yet"
-    
-    print(f"DEBUG: get_lab_results returning: {result_str}")  # Add this
-    return result_str
+        return "No tests ran yet"
     
 
