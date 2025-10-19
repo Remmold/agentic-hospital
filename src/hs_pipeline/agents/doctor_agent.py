@@ -45,6 +45,7 @@ doctor_agent = Agent(
         "- For MEDIUM/LOW urgency: at least 1 test required "
         "- If a test comes back inconclusive or normal but symptoms suggest otherwise, order a different test type "
         "- List your reasoning: what tests have been done, what's still unknown, why you're confident enough to diagnose "
+        "CRITICAL: When calling final_result, return a SINGLE object, NOT an array."
     )
 )
 
@@ -55,13 +56,14 @@ def get_nurse_assessment(ctx: RunContext[DoctorDeps]) -> str:
 @doctor_agent.tool
 def get_lab_results(ctx: RunContext[DoctorDeps]) -> str:
     """Get the lab report from ran test"""
-    
+    result_str = ""
     if ctx.deps.lab_results:
-        return_string = ""
         for results in ctx.deps.lab_results:
-            return_string += f"\n test_type: {results.tests_ran} test_outcome: {results.test_outcome}"
-        return return_string
+            result_str += f"\n test_type: {results.tests_ran} test_outcome: {results.test_outcome}"
     else:
-        return "No tests ran yet"
+        result_str = "No tests ran yet"
+    
+    print(f"DEBUG: get_lab_results returning: {result_str}")  # Add this
+    return result_str
     
 
