@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Literal
 from hs_pipeline.agents.nurse_agent import PatientData,NurseAssessment
 from pydantic import BaseModel
 from pydantic_ai import Agent,RunContext
@@ -15,10 +16,12 @@ class DoctorDiagnosis(BaseModel):
     diagnosis: str
     recommended_treatment: str
     follow_up_needed: bool
+    next_step: Literal["finish_chain"] # Add more steps for more advanced agent looping for mvp this is enough i think
+    context_for_next: str
     
 
 doctor_agent = Agent(
-    CHOSEN_LLM,
+   CHOSEN_LLM,
     deps_type=DoctorDeps,
     output_type=DoctorDiagnosis,
     system_prompt="You are a doctor reviewing patient cases and nurse assessments."

@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Literal
 from pydantic import BaseModel
 from pydantic_ai import Agent,RunContext
 from dotenv import load_dotenv
@@ -17,9 +18,10 @@ class PatientData:
     symptoms: list[str]
 
 class NurseAssessment(BaseModel):
-    """Outputformat of a nurse"""
     urgency: str
     notes: str
+    next_step: Literal["send_to_doctor", "discharge"]
+    context_for_next: str
 
 nurse_agent = Agent(
     CHOSEN_LLM,

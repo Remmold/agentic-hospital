@@ -1,5 +1,6 @@
 from hs_pipeline.agents.nurse_agent import nurse_agent,PatientData
 from hs_pipeline.agents.doctor_agent import doctor_agent,DoctorDeps
+from hs_pipeline.agents.patient_generator import generate_disease,generate_patient_data
 import logfire
 #logfire.configure()
 #logfire.instrument_pydantic_ai()
@@ -13,28 +14,28 @@ def show_tool_calls(result):
                     if hasattr(part, 'args'):
                         print(f"   Args: {part.args}")
 
+disease = generate_disease()
+patient_to_test = generate_patient_data(disease)
 
-# Test case 1: Mild symptoms
-patient1 = PatientData(name="John", age=45, symptoms=["fever", "cough"])
+current_agent = nurse_agent
+current_deps = patient_to_test
+context = "Asses this patient"
+result = None
 
-# Test case 2: More severe
-patient2 = PatientData(name="Sarah", age=67, symptoms=["chest pain", "shortness of breath"])
+while True:
+    result = current_agent.run_sync(context, deps=current_deps)
+    show_tool_calls(result)
+    print(result.output)
 
-# Test case 3: Minor issue
-patient3 = PatientData(name="Tim", age=25, symptoms=["headache"])
-
-patient_to_test = patient2
-
-nurse_result = nurse_agent.run_sync("Assess this patient", deps=patient_to_test)
-show_tool_calls(nurse_result)
-print(nurse_result.output)
-
-doctor_deps = DoctorDeps(
-    patient_data=patient_to_test,
-    nurse_assessment=nurse_result.output  
-)
-
-doctor_result = doctor_agent.run_sync("Diagnose this patient", deps=doctor_deps)
-show_tool_calls(doctor_result)
-print(doctor_result.output)
+    
+    if result.output.next_step == "finish_chain" or result.output.next_step == "discharge":
+        break
+    elif result.output.next_step == "send_to_doctor":
+        context = result.output.context_for_next
+        current_agent = doctor_agent
+        current_patient = current_deps
+        current_deps = DoctorDeps(
+            patient_data=current_patient,
+            nurse_assessment=result.output
+            )
 
