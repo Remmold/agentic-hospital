@@ -9,7 +9,7 @@ load_dotenv()
 patient_generator = Agent(
     CHOSEN_LLM,
     output_type=PatientData,  # Returns PatientData
-    system_prompt="You generate realistic patient data for medical simulations."
+    system_prompt="You generate realistic patient data for medical simulations - without making it overly obvious what the disease is."
 )
 def generate_disease():
     diseases = ["appendicitis", "type_2_diabetes", "pneumonia", "migraine", "gastroenteritis"]
@@ -17,7 +17,7 @@ def generate_disease():
 
 def generate_patient_data(disease: str) -> PatientData:
     result = patient_generator.run_sync(
-        f"Generate realistic patient data for someone with {disease}"
+        f"Generate realistic patient data for someone with {disease}."
     )
     return result.output
 
