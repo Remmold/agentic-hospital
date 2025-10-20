@@ -1,0 +1,127 @@
+{
+  "patient": {
+    "name": "Sarah Johnson",
+    "age": 45,
+    "symptoms": [
+      "fatigue",
+      "weight gain",
+      "cold intolerance",
+      "dry skin",
+      "hair loss",
+      "constipation",
+      "muscle weakness"
+    ]
+  },
+  "actual_disease": "hypothyroidism",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "decision": {
+        "urgency": "semi_urgent",
+        "triage_reasoning": "The patient presents multiple symptoms indicative of potential thyroid dysfunction (fatigue, weight gain, cold intolerance, dry skin, hair loss, constipation, muscle weakness), which suggests a chronic condition that requires timely evaluation. Although these symptoms are concerning, they are not immediately life-threatening, warranting a SEMI-URGENT classification for further assessment.",
+        "vital_signs_concern": false,
+        "notes": "No immediate danger; symptoms suggest possible hypothyroidism or related disorder.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "Patient needs to be evaluated for possible thyroid dysfunction and management of related symptoms."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": null,
+        "recommended_treatment": null,
+        "follow_up_needed": null,
+        "next_step": "order_test",
+        "context_for_next": "The patient needs to be evaluated for possible thyroid dysfunction, and a thyroid panel will be ordered.",
+        "ordered_test": "Thyroid panel (TSH, T3, T4)",
+        "tests_completed_count": 0
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "Lab",
+      "decision": {
+        "tests_ran": "Thyroid panel (TSH, T3, T4)",
+        "test_outcome": "TSH: 12.5 mIU/L, Free T4: 0.5 ng/dL, Total T3: 75 ng/dL"
+      },
+      "tools_used": [
+        "get_patient_data",
+        "get_test_type",
+        "get_disease",
+        "final_result"
+      ]
+    },
+    {
+      "step": 4,
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": null,
+        "recommended_treatment": null,
+        "follow_up_needed": null,
+        "next_step": "order_test",
+        "context_for_next": "Need to order another test related to thyroid dysfunction due to only having one test completed thus far.",
+        "ordered_test": "CBC (Complete Blood Count)",
+        "tests_completed_count": 1
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 5,
+      "agent": "Lab",
+      "decision": {
+        "tests_ran": "CBC (Complete Blood Count)",
+        "test_outcome": "Hemoglobin: 12.4 g/dL, Hematocrit: 38.5%, WBC: 5.2 x10^3/uL, Platelets: 250 x10^3/uL, MCV: 88 fL, MCH: 30.5 pg, MCHC: 34.5 g/dL, RDW: 12.5%"
+      },
+      "tools_used": [
+        "get_patient_data",
+        "get_test_type",
+        "get_disease",
+        "final_result"
+      ]
+    },
+    {
+      "step": 6,
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": "Hypothyroidism",
+        "recommended_treatment": "Levothyroxine therapy to normalize thyroid hormone levels.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "Diagnosis made based on thyroid panel results indicating hypothyroidism. Follow-up to monitor treatment effectiveness and adjust dosage if necessary.",
+        "ordered_test": null,
+        "tests_completed_count": 2
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "final_result"
+      ]
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "Hypothyroidism",
+    "recommended_treatment": "Levothyroxine therapy to normalize thyroid hormone levels.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "Diagnosis made based on thyroid panel results indicating hypothyroidism. Follow-up to monitor treatment effectiveness and adjust dosage if necessary.",
+    "ordered_test": null,
+    "tests_completed_count": 2
+  },
+  "total_steps": 6
+}

@@ -1,0 +1,157 @@
+{
+  "patient": {
+    "name": "John Doe",
+    "age": 34,
+    "symptoms": [
+      "fever",
+      "muscle aches",
+      "fatigue",
+      "headache",
+      "rash",
+      "joint pain"
+    ]
+  },
+  "actual_disease": "Lyme disease",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "decision": {
+        "urgency": "semi_urgent",
+        "triage_reasoning": "The patient presents with multiple symptoms including fever, muscle aches, fatigue, headache, rash, and joint pain. These symptoms indicate a possible viral or systemic infection, which may require evaluation and treatment within 30-60 minutes to prevent deterioration.",
+        "vital_signs_concern": false,
+        "notes": "Patient appears stable but has concerning systemic symptoms that warrant further investigation.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "Consider infectious disease work-up."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": null,
+        "recommended_treatment": null,
+        "follow_up_needed": null,
+        "next_step": "order_test",
+        "context_for_next": "Order initial tests for infectious disease work-up.",
+        "ordered_test": "Complete Blood Count (CBC)",
+        "tests_completed_count": 0
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "Lab",
+      "decision": {
+        "tests_ran": "Complete Blood Count (CBC)",
+        "test_outcome": "Hemoglobin: 14.5 g/dL, Hematocrit: 43.2%, White Blood Cell Count: 8,500 cells/mcL, Platelets: 250,000 cells/mcL, Absolute Neutrophils: 6,000 cells/mcL, Absolute Lymphocytes: 1,800 cells/mcL, Absolute Monocytes: 500 cells/mcL, Absolute Eosinophils: 200 cells/mcL, Absolute Basophils: 100 cells/mcL"
+      },
+      "tools_used": [
+        "get_patient_data",
+        "get_test_type",
+        "get_disease",
+        "final_result"
+      ]
+    },
+    {
+      "step": 4,
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": null,
+        "recommended_treatment": null,
+        "follow_up_needed": false,
+        "next_step": "order_test",
+        "context_for_next": "Need additional tests for infectious disease work-up due to symptoms and current lab results.",
+        "ordered_test": "Blood cultures",
+        "tests_completed_count": 1
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 5,
+      "agent": "Lab",
+      "decision": {
+        "tests_ran": "Blood cultures",
+        "test_outcome": "Positive 1:100 dilution, White blood cell count: 12,000 cells/\u03bcL, Erythrocyte sedimentation rate: 35 mm/hr"
+      },
+      "tools_used": [
+        "get_patient_data",
+        "get_test_type",
+        "get_disease",
+        "final_result"
+      ]
+    },
+    {
+      "step": 6,
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": null,
+        "recommended_treatment": null,
+        "follow_up_needed": false,
+        "next_step": "order_test",
+        "context_for_next": "We have 2 tests completed so far, which is not sufficient to reach a diagnosis for the patient's symptoms. Given the semi-urgent nature of the case, further evaluation is necessary.",
+        "ordered_test": "Rapid Antigen Test for viral infections",
+        "tests_completed_count": 2
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 7,
+      "agent": "Lab",
+      "decision": {
+        "tests_ran": "Rapid Antigen Test for viral infections",
+        "test_outcome": "IgM: 4.5 index, IgG: 2.1 index, ELISA-Positive, PCR: Positive"
+      },
+      "tools_used": [
+        "get_disease",
+        "get_patient_data",
+        "get_test_type",
+        "final_result"
+      ]
+    },
+    {
+      "step": 8,
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": "Viral infection possibly leading to secondary bacterial infection",
+        "recommended_treatment": "Antiviral medication and possibly antibiotics depending on further discussion with an infectious disease specialist.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "All necessary tests completed and results are consistent with a viral infection accompanied by a secondary bacterial infection.",
+        "ordered_test": null,
+        "tests_completed_count": 3
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "final_result"
+      ]
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "Viral infection possibly leading to secondary bacterial infection",
+    "recommended_treatment": "Antiviral medication and possibly antibiotics depending on further discussion with an infectious disease specialist.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "All necessary tests completed and results are consistent with a viral infection accompanied by a secondary bacterial infection.",
+    "ordered_test": null,
+    "tests_completed_count": 3
+  },
+  "total_steps": 8
+}
