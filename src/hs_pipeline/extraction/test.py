@@ -1,8 +1,8 @@
 import json
 
-import hs_pipeline.ocr.extractor as extr
-import hs_pipeline.ocr.parser as pars
-import hs_pipeline.ocr.llm_parser as llm_pars
+import hs_pipeline.extraction.extractor as extr
+import hs_pipeline.extraction.parser as pars
+import hs_pipeline.extraction.llm_parser as llm_pars
 from hs_pipeline.utils.constants import DATA_PATH
 
 

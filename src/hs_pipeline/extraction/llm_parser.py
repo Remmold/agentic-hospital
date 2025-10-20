@@ -3,7 +3,7 @@ import google.genai as genai
 import json
 from dotenv import load_dotenv
 
-from hs_pipeline.ocr.llm_config import config
+from hs_pipeline.extraction.llm_config import config
 
 load_dotenv()
 
@@ -18,7 +18,7 @@ def parse_document_with_llm(text: str) -> dict:
     {text}
 
     Identify:
-    - Document date (when was this created?)
+    - Document date (when was this created?), keep in YYYY-MM-DD format
     - Document type (e.g., "Doctor Visit", "Lab Result", "Injury Report")
     - Provider name (doctor, therapist, or healthcare professional who created this document)
     - Clinical content:
@@ -53,10 +53,10 @@ def call_llm(prompt, config):
 
 # For testing purposes
 if __name__ == "__main__":
-    import hs_pipeline.ocr.extractor as extr
+    import hs_pipeline.extraction.extractor as extr
 
     filename = extr.DATA_PATH / "test.pdf"
-    text = extr.extract_text_from_pdf(filename)
+    text = extr.extract_ordered_content_from_pdf(filename)
     json_text = parse_document_with_llm(text, filename)
 
     print(type(json_text))
