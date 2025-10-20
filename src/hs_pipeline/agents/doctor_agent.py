@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Literal
 from hs_pipeline.agents.nurse_agent import PatientData,NurseAssessment
 from hs_pipeline.agents.lab_agent import LabResults
-from pydantic import BaseModel,Field
+from pydantic import BaseModel, Field, model_validator
 from pydantic_ai import Agent,RunContext
 from dotenv import load_dotenv
 from hs_pipeline.utils.constants import CHOSEN_LLM
@@ -20,49 +20,74 @@ class DoctorDiagnosis(BaseModel):
     follow_up_needed: bool| None = None
     next_step: Literal["finish_chain","order_test"] # Add more steps for more advanced agent looping for mvp this is enough i think
     context_for_next: str
-    ordered_test: str | None = Field(default=None, description="When next_step = order_test you can order diffrent tests they should have short test description 'bloodtest' or similar. this is passed to lab agent")
+    ordered_test: str | None = None
+    tests_completed_count: int = Field(description="How many tests have been run")
+
+    @model_validator(mode='after')
+    def validate_testing(self):
+        """Enforce minimum testing before diagnosis."""
+        if self.next_step == "finish_chain":
+            if self.diagnosis and self.tests_completed_count == 0:
+                raise ValueError("Cannot diagnose without any tests")
+        return self
 
 doctor_agent = Agent(
-   CHOSEN_LLM,
+    CHOSEN_LLM,
     deps_type=DoctorDeps,
     output_type=DoctorDiagnosis,
-    system_prompt=(
-        "You are a doctor reviewing patient cases and nurse assessments. "
-        "When calling tools, use ONLY the exact tool names: get_nurse_assessment, get_lab_results "
-        
-        "WORKFLOW: "
-        "1. ALWAYS start by calling get_nurse_assessment and get_lab_results to see what information you have "
-        "2. Check the nurse's urgency assessment - if HIGH urgency, you need multiple tests before diagnosing "
-        "3. Order tests one at a time and wait for results "
-        "4. After EACH test result, call get_lab_results to review ALL tests done so far "
-        "5. You need AT LEAST 2 DIFFERENT types of tests for urgent cases before making a diagnosis "
-        "6. Only set next_step='finish_chain' when you have sufficient test evidence "
-        
-        "IMPORTANT RULES: "
-        "- Check get_lab_results after EVERY test to see what's already been done "
-        "- DO NOT order a test that already appears in get_lab_results output "
-        "- For HIGH urgency cases: require at least 2 different test types before diagnosing "
-        "- For MEDIUM/LOW urgency: at least 1 test required "
-        "- If a test comes back inconclusive or normal but symptoms suggest otherwise, order a different test type "
-        "- List your reasoning: what tests have been done, what's still unknown, why you're confident enough to diagnose "
-        "CRITICAL: When calling final_result, return a SINGLE object, NOT an array."
-    )
+    system_prompt="""
+        You are a doctor. Patient safety is paramount.
+
+        MANDATORY WORKFLOW:
+        1. Call get_nurse_assessment and get_lab_results FIRST
+        2. Check urgency and existing tests
+
+        TESTING REQUIREMENTS (STRICTLY ENFORCED):
+        - CRITICAL: Need 3+ different tests before diagnosis
+        - URGENT: Need 2+ different tests before diagnosis
+        - SEMI_URGENT: Need 1+ test before diagnosis
+        - NON_URGENT: Need 1+ test before diagnosis
+
+        YOU CANNOT DIAGNOSE WITHOUT TESTS. Period.
+
+        If you have 0 tests → Order a test, set next_step='order_test'
+        If you have some tests but not enough → Order another test
+        Only when you meet minimum tests → Diagnose (with an actual disease, "None" is not sufficient) and set next_step='finish_chain'
+
+        After EACH test:
+        1. Call get_lab_results to see all tests done
+        2. Count how many different test types you have
+        3. If below minimum → order another test
+        4. If at/above minimum AND results are conclusive → diagnose
+
+        EXPLAIN YOUR REASONING:
+        - Tests completed: X/Y required
+        - What tests show
+        - Why you're confident (or why you need more tests)
+
+        Never skip tests to save time. Patient safety > speed.
+    """
 )
 
 @doctor_agent.tool
 def get_nurse_assessment(ctx: RunContext[DoctorDeps]) -> str:
-    """Get the nurse's assessment including urgency and notes."""
-    return f"Urgency: {ctx.deps.nurse_assessment.urgency}, Notes: {ctx.deps.nurse_assessment.notes}"
+    """Get the nurse's triage assessment including urgency level and reasoning."""
+    return f"""
+        Triage Level: {ctx.deps.nurse_assessment.urgency}
+        Triage Reasoning: {ctx.deps.nurse_assessment.triage_reasoning}
+        Vital Signs Concern: {ctx.deps.nurse_assessment.vital_signs_concern}
+        Notes: {ctx.deps.nurse_assessment.notes}
+    """
 
 
 @doctor_agent.tool
 def get_lab_results(ctx: RunContext[DoctorDeps]) -> str:
-    """Get the lab report from ran test"""
+    """Get all lab test results and count them."""
     if ctx.deps.lab_results:
-        return_string = ""
-        for results in ctx.deps.lab_results:
-            return_string += f"\n test_type: {results.tests_ran} test_outcome: {results.test_outcome}"
-        return return_string
+        result_str = f"Total tests completed: {len(ctx.deps.lab_results)}\n\n"
+        for i, result in enumerate(ctx.deps.lab_results, 1):
+            result_str += f"Test {i}: {result.tests_ran}\nResults: {result.test_outcome}\n\n"
+        return result_str
     else:
-        return "No tests ran yet"
+        return "Total tests completed: 0\nNo tests have been run yet."
     
