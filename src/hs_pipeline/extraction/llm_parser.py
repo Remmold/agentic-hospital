@@ -1,11 +1,27 @@
-"""(alternative) Step 2: Raw text parsing utilizing LLM"""
+"""Step 2: Raw text parsing utilizing LLM"""
 import google.genai as genai
 import json
+from google.genai.types import GenerateContentConfig, Schema
 from dotenv import load_dotenv
 
-from hs_pipeline.extraction.llm_config import config
-
 load_dotenv()
+
+from hs_pipeline.extraction.llm_config import config as full_doc_config
+
+
+def get_patient_schema() -> Schema:
+    """Schema for extracting patient data for simulation.
+    This matches the PatientData class."""
+    return Schema(
+        type="object",
+        properties={
+            "name": Schema(type="string"),
+            "age": Schema(type="integer"),
+            "symptoms": Schema(type="array", items=Schema(type="string"))
+        },
+        required=["name", "age", "symptoms"]
+    )
+
 
 def parse_document_with_llm(text: str) -> dict:
     """
@@ -17,37 +33,49 @@ def parse_document_with_llm(text: str) -> dict:
 
     {text}
 
-    Identify:
-    - Document date (when was this created?), keep in YYYY-MM-DD format
-    - Document type (e.g., "Doctor Visit", "Lab Result", "Injury Report")
-    - Provider name (doctor, therapist, or healthcare professional who created this document)
-    - Clinical content:
-    * Chief complaint or reason for visit
-    * Symptoms reported by patient
-    * Examination findings
-    * Diagnosis
-    * Treatment plan and recommendations
-    * Medications prescribed
-    * Follow-up instructions
-
-    If information is not present, use null for strings or empty array for lists.
+    Identify document date, type, provider, clinical content, etc.
     """
     
-    # Call LLM (Gemini)
-    parsed_response = call_llm(prompt, config)
-    
-    return parsed_response
-
-# Get the response from the Gemini model
-def call_llm(prompt, config):
     client = genai.Client()
+    response = client.models.generate_content(
+        model="gemini-2.0-flash-exp",
+        contents=prompt,
+        config=full_doc_config
+    )
 
+    return json.loads(response.text)
+
+
+def extract_patient_for_simulation(text: str) -> dict:
+    """
+    Extract just patient data for simulation.
+    Returns: {name, age, symptoms}
+    """
+    prompt = f"""
+    Extract patient information for simulation:
+
+    {text}
+
+    Extract:
+    - Patient name (or "Anonymous" if not found)
+    - Age (estimate if needed, default 45)
+    - All symptoms mentioned
+
+    Focus on current symptoms only.
+    """
+    
+    config = GenerateContentConfig(
+        response_mime_type="application/json",
+        response_schema=get_patient_schema()
+    )
+    
+    client = genai.Client()
     response = client.models.generate_content(
         model="gemini-2.0-flash-exp",
         contents=prompt,
         config=config
     )
-
+    
     return json.loads(response.text)
 
 
