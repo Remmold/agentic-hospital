@@ -49,7 +49,7 @@ agents = {
 
 current_agent_name = "Nurse"
 current_deps = patient_to_test
-context = "Asses this patient"
+context = "Assess this patient"
 result = None
 api_calls = 0
 timeline = []

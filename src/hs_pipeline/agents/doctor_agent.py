@@ -66,4 +66,3 @@ def get_lab_results(ctx: RunContext[DoctorDeps]) -> str:
     else:
         return "No tests ran yet"
     
-

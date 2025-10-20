@@ -28,3 +28,4 @@ if __name__ == "__main__":
     
     patient = generate_patient_data(disease)
     print(f"Generated patient: {patient}")
+    
