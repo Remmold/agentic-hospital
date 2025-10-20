@@ -24,10 +24,10 @@ class SimulationRunner:
 
     def patient_from_document(self, pdf_path: Path) -> PatientData:
         """Create PatientData from uploaded PDF."""
-        print(f"📄 Extracting: {pdf_path.name}")
+        print(f"Extracting: {pdf_path.name}")
         text = extractor.extract_text_from_file(pdf_path)
         
-        print("🧠 Parsing...")
+        print("Parsing...")
         parsed = llm_parser.extract_patient_for_simulation(text)
         
         return PatientData(
