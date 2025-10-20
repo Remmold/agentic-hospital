@@ -156,31 +156,33 @@ if __name__ == "__main__":
     print(f"Diagnosis: {result['final_diagnosis']['diagnosis']}")
     print(f"Saved to output_random.json")
     
-    # # Test 2: Custom text input
-    # print("\nTEST 2: Custom Input")
-    # patient2 = runner.patient_from_text(
-    #     symptoms="fever, cough, fatigue",
-    #     age=35,
-    #     name="Test Patient"
-    # )
-    # result2 = runner.run_simulation(patient2, actual_disease="pneumonia")
+    # Test 2: Custom text input
+    print("\nTEST 2: Custom Input")
+    patient2 = runner.patient_from_text(
+        symptoms="fever, cough, fatigue",
+        age=35,
+        name="Test Patient"
+    )
+    result2 = runner.run_simulation(patient2, actual_disease="pneumonia")
     
-    # with open("output_custom.json", "w") as f:
-    #     json.dump(result2, f, indent=2)
-    # print(f"Saved to output_custom.json")
+    with open("output_custom.json", "w") as f:
+        json.dump(result2, f, indent=2)
+    print(f"Saved to output_custom.json")
     
-    # # Test 3: From document (if available)
-    # print("\nTEST 3: From Document")
-    # pdf_path = DATA_PATH / "pdf" / "test.pdf"
+    # Test 3: From document (if available)
+    print("\nTEST 3: From Document")
+    folder_name = "pdfs" # docs, images, pdfs, spreadsheets
+    file_name = "lakartest.pdf"
+    file_path = DATA_PATH / folder_name / file_name
     
-    # if pdf_path.exists():
-    #     patient3 = runner.patient_from_document(pdf_path)
-    #     result3 = runner.run_simulation(patient3)  # No disease for real docs
+    if file_path.exists():
+        patient3 = runner.patient_from_document(file_path)
+        result3 = runner.run_simulation(patient3)  # No disease for real docs
         
-    #     with open("output_document.json", "w") as f:
-    #         json.dump(result3, f, indent=2)
-    #     print(f"Saved to output_document.json")
-    # else:
-    #     print(f"Skipped (no test.pdf)")
+        with open("output_document.json", "w") as f:
+            json.dump(result3, f, indent=2)
+        print(f"Saved to output_document.json")
+    else:
+        print(f"Skipped (no {file_name})")
     
-    # print("\nAll tests complete!")
+    print("\nAll tests complete!")

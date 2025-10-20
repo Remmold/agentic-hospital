@@ -7,7 +7,7 @@ load_dotenv()
 
 """Paths"""
 PROJECT_ROOT = Path(__file__).parents[1]
-DATA_PATH = PROJECT_ROOT / "ocr" / "data"
+DATA_PATH = PROJECT_ROOT / "extraction" / "data"
 AGENT_JSON_STRUCTURE_PATH = PROJECT_ROOT / "agents" / "json_structures"
 
 """LLM constants"""
