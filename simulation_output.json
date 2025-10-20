@@ -1,0 +1,109 @@
+{
+  "patient": {
+    "name": "John Doe",
+    "age": 28,
+    "symptoms": [
+      "abdominal pain localized in the lower right quadrant",
+      "nausea",
+      "vomiting",
+      "loss of appetite",
+      "mild fever"
+    ]
+  },
+  "actual_disease": "appendicitis",
+  "timeline": [
+    {
+      "agent": "Nurse",
+      "decision": {
+        "urgency": "high",
+        "notes": "Patient presents with abdominal pain localized in the lower right quadrant, nausea, vomiting, loss of appetite, and a mild fever. These symptoms are highly suggestive of appendicitis.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "The patient needs to be seen by a doctor immediately for further evaluation and management due to the strong suspicion of appendicitis, which is a medical emergency."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "final_result"
+      ]
+    },
+    {
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": null,
+        "recommended_treatment": null,
+        "follow_up_needed": null,
+        "next_step": "order_test",
+        "context_for_next": "Patient has high urgency with symptoms highly suggestive of appendicitis. No tests have been run yet. Ordering a blood test to check for signs of infection and inflammation.",
+        "ordered_test": "blood test"
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "agent": "Lab",
+      "decision": {
+        "tests_ran": "Blood test",
+        "test_outcome": "White Blood Cell count: 15.2 x 10^9/L, Neutrophils: 80%, C-reactive protein: 45 mg/L"
+      },
+      "tools_used": [
+        "get_test_type",
+        "get_disease",
+        "final_result"
+      ]
+    },
+    {
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": null,
+        "recommended_treatment": null,
+        "follow_up_needed": null,
+        "next_step": "order_test",
+        "context_for_next": "Patient has high urgency symptoms suggestive of appendicitis and elevated inflammatory markers from blood work. Ordering an abdominal ultrasound to visualize the appendix and rule out other causes of abdominal pain.",
+        "ordered_test": "ultrasound"
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "agent": "Lab",
+      "decision": {
+        "tests_ran": "Ultrasound",
+        "test_outcome": "Appendix diameter: 9.2 mm, Wall thickness: 3.8 mm, Presence of pericecal fluid: Yes, Compressibility: No"
+      },
+      "tools_used": [
+        "get_test_type",
+        "get_disease",
+        "final_result"
+      ]
+    },
+    {
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": "Acute Appendicitis",
+        "recommended_treatment": "Surgical consultation for appendectomy",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "The nurse assessment indicated high urgency and symptoms highly suggestive of appendicitis. Blood tests show elevated white blood cell count and C-reactive protein, indicating inflammation. Ultrasound results confirm an enlarged and inflamed appendix with pericecal fluid, consistent with acute appendicitis. Given these two different types of tests with congruent results, a diagnosis can be made.",
+        "ordered_test": null
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "final_result"
+      ]
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "Acute Appendicitis",
+    "recommended_treatment": "Surgical consultation for appendectomy",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "The nurse assessment indicated high urgency and symptoms highly suggestive of appendicitis. Blood tests show elevated white blood cell count and C-reactive protein, indicating inflammation. Ultrasound results confirm an enlarged and inflamed appendix with pericecal fluid, consistent with acute appendicitis. Given these two different types of tests with congruent results, a diagnosis can be made.",
+    "ordered_test": null
+  }
+}
