@@ -12,7 +12,7 @@ patient_generator = Agent(
     system_prompt="You generate realistic patient data for medical simulations - without making it overly obvious what the disease is."
 )
 def generate_disease():
-    diseases = ["appendicitis", "type_2_diabetes", "pneumonia", "migraine", "gastroenteritis"]
+    diseases = ["appendicitis", "diabetes_mellitus", "pneumonia", "migraine", "gastroenteritis", "rheumatoid_arthritis"]
     return random.choice(diseases)
 
 def generate_patient_data(disease: str) -> PatientData:
