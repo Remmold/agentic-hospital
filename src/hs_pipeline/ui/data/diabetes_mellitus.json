@@ -1,0 +1,159 @@
+{
+  "patient": {
+    "name": "John Smith",
+    "age": 54,
+    "symptoms": [
+      "increased thirst",
+      "frequent urination",
+      "fatigue",
+      "blurred vision",
+      "slow healing of wounds"
+    ]
+  },
+  "actual_disease": "Diabetes Mellitus",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "decision": {
+        "urgency": "semi_urgent",
+        "triage_reasoning": "The patient is showing symptoms consistent with poorly controlled diabetes, which requires attention due to the potential for complications if left unchecked. The symptoms of increased thirst, frequent urination, fatigue, blurred vision, and slow healing of wounds indicate a significant risk of deteriorating health if not addressed promptly.",
+        "vital_signs_concern": false,
+        "notes": "The patient displays chronic disease-related symptoms that require monitoring and potential treatment adjustments.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "The patient should be evaluated for diabetes management and potential complications."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": null,
+        "recommended_treatment": null,
+        "follow_up_needed": null,
+        "next_step": "order_test",
+        "context_for_next": "The patient is exhibiting symptoms consistent with poorly controlled diabetes, and no tests have been run yet.",
+        "ordered_test": "Blood Glucose Test",
+        "tests_completed_count": 0
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "Lab",
+      "decision": {
+        "tests_ran": "Blood Glucose Test",
+        "test_outcome": "Fasting glucose: 145 mg/dL, HbA1c: 7.8%"
+      },
+      "tools_used": [
+        "get_patient_data",
+        "get_test_type",
+        "get_disease",
+        "final_result",
+        "final_result"
+      ]
+    },
+    {
+      "step": 4,
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": null,
+        "recommended_treatment": null,
+        "follow_up_needed": true,
+        "next_step": "order_test",
+        "context_for_next": "Insufficient tests completed for diabetes evaluation.",
+        "ordered_test": "Comprehensive Metabolic Panel (CMP)",
+        "tests_completed_count": 1
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 5,
+      "agent": "Lab",
+      "decision": {
+        "tests_ran": "Comprehensive Metabolic Panel (CMP)",
+        "test_outcome": "Fasting glucose: 145 mg/dL, HbA1c: 7.8%, BUN: 18 mg/dL, Creatinine: 1.1 mg/dL, Sodium: 140 mmol/L, Potassium: 4.1 mmol/L, Chloride: 100 mmol/L, CO2: 25 mmol/L, Glucose: 150 mg/dL, Calcium: 9.0 mg/dL, Total protein: 7.5 g/dL, Albumin: 4.0 g/dL, Bilirubin: 0.8 mg/dL, ALP: 80 U/L, AST: 25 U/L, ALT: 30 U/L"
+      },
+      "tools_used": [
+        "get_patient_data",
+        "get_test_type",
+        "get_disease",
+        "final_result",
+        "get_disease"
+      ]
+    },
+    {
+      "step": 6,
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": null,
+        "recommended_treatment": null,
+        "follow_up_needed": null,
+        "next_step": "order_test",
+        "context_for_next": "Need additional tests to diagnose diabetes-related complications.",
+        "ordered_test": "Lipid Panel",
+        "tests_completed_count": 2
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 7,
+      "agent": "Lab",
+      "decision": {
+        "tests_ran": "Lipid Panel",
+        "test_outcome": "Total Cholesterol: 245 mg/dL, HDL: 38 mg/dL, LDL: 160 mg/dL, Triglycerides: 195 mg/dL"
+      },
+      "tools_used": [
+        "get_patient_data",
+        "get_test_type",
+        "get_disease",
+        "final_result"
+      ]
+    },
+    {
+      "step": 8,
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": "Type 2 Diabetes Mellitus with complications",
+        "recommended_treatment": "Diabetes education, dietary modification, blood glucose monitoring, and potential pharmacotherapy.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "The patient has been diagnosed with Type 2 Diabetes Mellitus with complications based on the completed tests.",
+        "ordered_test": null,
+        "tests_completed_count": 3
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "final_result"
+      ]
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "Type 2 Diabetes Mellitus with complications",
+    "recommended_treatment": "Diabetes education, dietary modification, blood glucose monitoring, and potential pharmacotherapy.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "The patient has been diagnosed with Type 2 Diabetes Mellitus with complications based on the completed tests.",
+    "ordered_test": null,
+    "tests_completed_count": 3
+  },
+  "total_steps": 8
+}
