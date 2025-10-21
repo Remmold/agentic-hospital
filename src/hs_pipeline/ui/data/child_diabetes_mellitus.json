@@ -1,0 +1,127 @@
+{
+  "patient": {
+    "name": "Emily Johnson",
+    "age": 8,
+    "symptoms": [
+      "increased thirst",
+      "frequent urination",
+      "fatigue",
+      "unexplained weight loss",
+      "blurred vision"
+    ]
+  },
+  "actual_disease": "early onset type 1 diabetes in a child",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "decision": {
+        "urgency": "semi_urgent",
+        "triage_reasoning": "The patient shows symptoms consistent with potential uncontrolled diabetes (increased thirst, frequent urination, fatigue, unexplained weight loss, and blurred vision), which require attention but are stable enough for the time being.",
+        "vital_signs_concern": false,
+        "notes": "Patient exhibits symptoms suggestive of a possible diabetic episode. Chronic disease symptoms warrant at least semi-urgent attention.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "Possible uncontrolled diabetes requiring assessment and management."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": null,
+        "recommended_treatment": null,
+        "follow_up_needed": null,
+        "next_step": "order_test",
+        "context_for_next": "Tests are needed to assess patient's blood glucose levels and other metabolic parameters related to diabetes.",
+        "ordered_test": "Blood glucose test (Fasting/Random)",
+        "tests_completed_count": 0
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "Lab",
+      "decision": {
+        "tests_ran": "Blood glucose test (Fasting/Random)",
+        "test_outcome": "Fasting glucose: 180 mg/dL, Random glucose: 250 mg/dL, HbA1c: 9.5%"
+      },
+      "tools_used": [
+        "get_disease",
+        "get_patient_data",
+        "get_test_type",
+        "final_result"
+      ]
+    },
+    {
+      "step": 4,
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": "Uncontrolled Diabetes Mellitus",
+        "recommended_treatment": "Initiate insulin therapy and dietary management; consider metformin.",
+        "follow_up_needed": true,
+        "next_step": "order_test",
+        "context_for_next": "Need additional tests to confirm diagnosis and evaluate overall metabolic control (e.g., lipid panel, kidney function tests).",
+        "ordered_test": "Lipid panel and Kidney function tests",
+        "tests_completed_count": 1
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 5,
+      "agent": "Lab",
+      "decision": {
+        "tests_ran": "Lipid panel and Kidney function tests",
+        "test_outcome": "Cholesterol Total: 190 mg/dL, LDL: 110 mg/dL, HDL: 45 mg/dL, Triglycerides: 80 mg/dL, Creatinine: 0.6 mg/dL, BUN: 12 mg/dL, eGFR: 90 mL/min/1.73m\u00b2"
+      },
+      "tools_used": [
+        "get_patient_data",
+        "get_test_type",
+        "get_disease",
+        "final_result",
+        "final_result"
+      ]
+    },
+    {
+      "step": 6,
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": "Uncontrolled Diabetes Mellitus",
+        "recommended_treatment": "Initiate lifestyle modifications, monitor blood glucose levels, and consider starting metformin based on detailed evaluation by an endocrinologist.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "The patient requires ongoing management and follow-up due to uncontrolled diabetes. A dietician consult and endocrinologist evaluation is recommended.",
+        "ordered_test": null,
+        "tests_completed_count": 2
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "final_result"
+      ]
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "Uncontrolled Diabetes Mellitus",
+    "recommended_treatment": "Initiate lifestyle modifications, monitor blood glucose levels, and consider starting metformin based on detailed evaluation by an endocrinologist.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "The patient requires ongoing management and follow-up due to uncontrolled diabetes. A dietician consult and endocrinologist evaluation is recommended.",
+    "ordered_test": null,
+    "tests_completed_count": 2
+  },
+  "total_steps": 6
+}

@@ -1,0 +1,131 @@
+{
+  "patient": {
+    "name": "Thomas Green",
+    "age": 45,
+    "symptoms": [
+      "joint pain",
+      "stiffness",
+      "swelling",
+      "fatigue",
+      "reduced range of motion"
+    ]
+  },
+  "actual_disease": "Reumatism",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "decision": {
+        "urgency": "semi_urgent",
+        "triage_reasoning": "The patient presents with multiple symptoms related to joint pain and stiffness, which indicate a need for attention within 30-60 minutes. Although these symptoms are not life-threatening, they suggest a chronic condition that requires evaluation.",
+        "vital_signs_concern": false,
+        "notes": "Symptoms of joint pain, stiffness, swelling, and fatigue could be indicative of conditions like arthritis. These should be evaluated by a physician.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "Patient requires examination for potential musculoskeletal disorder."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": null,
+        "recommended_treatment": null,
+        "follow_up_needed": null,
+        "next_step": "order_test",
+        "context_for_next": "No tests have been run yet; need to order one.",
+        "ordered_test": "Musculoskeletal ultrasound",
+        "tests_completed_count": 0
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "Lab",
+      "decision": {
+        "tests_ran": "Musculoskeletal ultrasound",
+        "test_outcome": "Joint effusion: 5.0 mm, Synovial thickness: 2.5 mm, Bursitis present: Yes, Tendon sheath fluid: Moderate"
+      },
+      "tools_used": [
+        "get_patient_data",
+        "get_test_type",
+        "get_disease",
+        "final_result"
+      ]
+    },
+    {
+      "step": 4,
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": null,
+        "recommended_treatment": null,
+        "follow_up_needed": null,
+        "next_step": "order_test",
+        "context_for_next": "Additional testing needed to reach a diagnosis.",
+        "ordered_test": "MRI of joints",
+        "tests_completed_count": 1
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 5,
+      "agent": "Lab",
+      "decision": {
+        "tests_ran": "MRI of joints",
+        "test_outcome": "Findings significant for joint inflammation and soft tissue swelling."
+      },
+      "tools_used": [
+        "get_patient_data",
+        "get_test_type",
+        "get_disease",
+        "final_result"
+      ]
+    },
+    {
+      "step": 6,
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": "Rheumatoid arthritis",
+        "recommended_treatment": "Refer to rheumatology for management and consider NSAIDs for pain relief.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "Patient has been evaluated for musculoskeletal disorder and diagnosed with rheumatoid arthritis.",
+        "ordered_test": null,
+        "tests_completed_count": 2
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "final_result"
+      ]
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "Rheumatoid arthritis",
+    "recommended_treatment": "Refer to rheumatology for management and consider NSAIDs for pain relief.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "Patient has been evaluated for musculoskeletal disorder and diagnosed with rheumatoid arthritis.",
+    "ordered_test": null,
+    "tests_completed_count": 2
+  },
+  "total_steps": 6
+}
