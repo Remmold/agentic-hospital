@@ -147,7 +147,7 @@ if __name__ == "__main__":
     
     # Test 1: Random disease
     print("\nTEST 1: Random Disease")
-    disease = "Lyme disease" # generate_disease()
+    disease = generate_disease()
     patient = generate_patient_data(disease)
     result = runner.run_simulation(patient, actual_disease=disease)
     
