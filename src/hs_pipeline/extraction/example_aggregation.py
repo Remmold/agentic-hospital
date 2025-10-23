@@ -3,11 +3,11 @@ from pathlib import Path
 from hs_pipeline.extraction.aggregator import DocumentAggregator
 from hs_pipeline.utils.constants import DATA_PATH
 
-# Process 150 PDFs from patient folder
-patient_folder = Path(DATA_PATH / "2006")
+# Process X number of PDFs from patient folder
+patient_folder = Path(DATA_PATH / "PatientX")
 
 # Create aggregator with 80K char batches
-aggregator = DocumentAggregator(batch_char_limit=80000)
+aggregator = DocumentAggregator(batch_char_limit=35000)
 
 # Process folder - automatically batches and rate limits
 timeline = aggregator.process_patient_folder(patient_folder)
