@@ -6,7 +6,7 @@ from hs_pipeline.utils.constants import DATA_PATH
 # Process X number of PDFs from patient folder
 patient_folder = Path(DATA_PATH / "PatientX")
 
-# Create aggregator with 80K char batches
+# Create aggregator with 35K char batches
 aggregator = DocumentAggregator(batch_char_limit=35000)
 
 # Process folder - automatically batches and rate limits
