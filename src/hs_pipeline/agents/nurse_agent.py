@@ -1,7 +1,7 @@
 from dataclasses import dataclass
-from typing import Literal
+from typing import Literal, Optional
 from pydantic import BaseModel, Field
-from pydantic_ai import Agent,RunContext
+from pydantic_ai import Agent, RunContext
 from dotenv import load_dotenv
 from hs_pipeline.utils.constants import CHOSEN_LLM
 load_dotenv()
@@ -9,13 +9,18 @@ load_dotenv()
 
 @dataclass
 class PatientData:
-    """PatientData contains all the information that a nurse would need to assess the situation and plan course of action
-    can easily be updated and work seemlesly with our program
-    IMPORTANT: we also must update tools for the nurse to access the information we add
+    """
+    PatientData contains all the information that a nurse would need to assess 
+    the situation and plan course of action.
+    
+    Updated to support real timeline data with medical history.
     """
     name: str
     age: int
     symptoms: list[str]
+    medical_history: Optional[str] = None  # Past diagnoses, treatments, conditions
+    current_medications: Optional[list[str]] = None  # Ongoing medications
+
 
 class NurseAssessment(BaseModel):
     urgency: Literal["critical", "urgent", "semi_urgent", "non_urgent"]  # Standard triage
@@ -24,6 +29,7 @@ class NurseAssessment(BaseModel):
     notes: str
     next_step: Literal["send_to_doctor", "discharge"]
     context_for_next: str
+
 
 nurse_agent = Agent(
     CHOSEN_LLM,
@@ -49,10 +55,37 @@ nurse_agent = Agent(
         - Multiple symptoms = higher triage
         - Chronic disease symptoms (diabetes, thyroid) = at least SEMI_URGENT
         - Any cardiac/respiratory symptoms = URGENT minimum
+        - IMPORTANT: Check medical history if available - past conditions affect triage
+        
+        Use get_medical_history tool to review past diagnoses and treatments.
+        Use get_current_medications to see what patient is already taking.
     """
 )
+
 
 @nurse_agent.tool
 def get_patient_symptoms(ctx: RunContext[PatientData]) -> list[str]:
     """Get the patient's current symptoms."""
     return ctx.deps.symptoms
+
+
+@nurse_agent.tool
+def get_medical_history(ctx: RunContext[PatientData]) -> str:
+    """
+    Get patient's medical history including past diagnoses and treatments.
+    Returns 'No medical history available' if none on file.
+    """
+    if ctx.deps.medical_history:
+        return f"Medical History:\n{ctx.deps.medical_history}"
+    return "No medical history available in system."
+
+
+@nurse_agent.tool
+def get_current_medications(ctx: RunContext[PatientData]) -> str:
+    """
+    Get list of medications patient is currently taking.
+    Important for checking drug interactions and understanding ongoing conditions.
+    """
+    if ctx.deps.current_medications:
+        return f"Current medications: {', '.join(ctx.deps.current_medications)}"
+    return "Patient not currently on any medications."
