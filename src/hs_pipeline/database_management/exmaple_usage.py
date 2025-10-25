@@ -1,7 +1,7 @@
 """
 Example: Agent Hospital workflow matching the flowchart
 """
-from db_manager import get_db
+from hs_pipeline.database_management.db_manager import get_db
 import uuid
 
 
