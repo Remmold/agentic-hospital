@@ -5,7 +5,9 @@ description = "from pdf->simulation pipeline"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "chromadb>=1.2.1",
     "dotenv>=0.9.9",
+    "duckdb>=1.4.1",
     "google-genai>=1.45.0",
     "odfpy>=1.4.1",
     "openpyxl>=3.1.5",
