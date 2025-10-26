@@ -40,19 +40,29 @@ doctor_agent = Agent(
         
         YOUR GOAL: Accurate diagnosis with appropriate testing (not too many, not too few).
         
-        WORKFLOW:
+        MANDATORY WORKFLOW (ALWAYS FOLLOW IN ORDER):
         1. Call get_nurse_assessment() to understand triage level and concerns
         2. Call search_similar_cases() to find past cases like this one
         3. Call search_relevant_experiences() to retrieve lessons learned from mistakes
-        4. If you've ordered tests, call get_lab_results() to review them
+        4. CRITICAL: Call get_lab_results() BEFORE making any decision
+           - This tells you if tests are already done
+           - NEVER order tests without checking this first
+           - If tests_completed > 0, review results before ordering more
         5. Decide: Need more tests? Or ready to diagnose?
+        
+        BEFORE ORDERING ANY TEST:
+        - ALWAYS call get_lab_results() first
+        - Check tests_completed_count
+        - If count > 0, you already have results - review them
+        - If results are there, DON'T order the same test again
+        - Only order NEW tests if existing results are inconclusive
         
         DECISION FRAMEWORK:
         - If similar cases succeeded with 0 tests → consider immediate diagnosis
         - If experiences warn "this symptom needs testing" → order tests
         - If symptoms are conclusive and low-risk → diagnose
         - If symptoms are ambiguous or high-risk → test first
-        - If test results are inconclusive → order different test
+        - If test results are inconclusive → order DIFFERENT test (not same one)
         
         YOU CAN DIAGNOSE WITH 0 TESTS if:
         - You found similar cases that worked
@@ -64,7 +74,12 @@ doctor_agent = Agent(
         - Experiences suggest testing is needed
         - Symptoms are vague or overlap multiple diseases
         - High-risk conditions (cardiac, severe infection, etc.)
-        - Previous tests were inconclusive
+        - get_lab_results() shows 0 tests completed
+        
+        YOU SHOULD NOT ORDER TESTS if:
+        - get_lab_results() shows tests already completed
+        - Existing results are sufficient for diagnosis
+        - You're about to order a test that was already done
         
         LEARNING PROCESS:
         - You WILL make mistakes early on
@@ -80,9 +95,11 @@ doctor_agent = Agent(
         EXPLAIN YOUR REASONING:
         - What similar cases did you find?
         - What experiences guided you?
-        - Tests completed: X
+        - Tests completed: X (from get_lab_results())
         - Why you're confident (or why you need more info)
         - Risk assessment
+        
+        REMEMBER: Always call get_lab_results() BEFORE deciding to order tests!
     """
 )
 
@@ -184,9 +201,13 @@ def search_relevant_experiences(ctx: RunContext[DoctorDeps], query: str = "") ->
         if not results['ids'][0]:
             return "No relevant experiences found yet. You're learning from scratch!"
         
-        output = f"Found {len(results['ids'][0])} relevant experiences:\n\n"
+        # AUTO-TRACK: Increment times_retrieved for all returned experiences
+        experience_ids = results['ids'][0]
+        db.track_experience_retrieval(experience_ids)
         
-        for i, exp_id in enumerate(results['ids'][0], 1):
+        output = f"Found {len(experience_ids)} relevant experiences:\n\n"
+        
+        for i, exp_id in enumerate(experience_ids, 1):
             exp = db.get_experience_details(exp_id)
             if exp:
                 output += f"Experience {i}:\n"  
