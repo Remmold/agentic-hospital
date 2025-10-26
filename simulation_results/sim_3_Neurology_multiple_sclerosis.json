@@ -1,0 +1,190 @@
+{
+  "patient": {
+    "name": "Clara Evans",
+    "age": 40,
+    "gender": "Female",
+    "symptoms": [
+      "intermittent tingling in fingers",
+      "occasional blurred vision",
+      "fatigue that worsens throughout the day",
+      "mild coordination issues while typing",
+      "recent episodes of dizziness"
+    ],
+    "medical_history": "family history of autoimmune diseases",
+    "current_medications": [
+      "Vitamin D supplements",
+      "Occasional ibuprofen for headaches"
+    ]
+  },
+  "actual_disease": "multiple_sclerosis",
+  "department": "Neurology",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "decision": {
+        "urgency": "semi_urgent",
+        "triage_reasoning": "The patient is experiencing multiple symptoms including intermittent tingling in fingers, occasional blurred vision, fatigue, coordination issues, and episodes of dizziness, which indicate a potential underlying neurological or systemic condition, especially given the family history of autoimmune diseases. While symptoms are not acute, the combination warrants evaluation within 30-60 minutes.",
+        "vital_signs_concern": false,
+        "notes": "The patient's medical history does not indicate immediate life-threatening conditions but raised concerns due to coherent symptoms that could indicate an underlying issue. No current medications correlate with immediate risks.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "Evaluate for neurological conditions, potential autoimmune issues, and rule out any serious causes for the symptoms."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": null,
+        "recommended_treatment": null,
+        "follow_up_needed": true,
+        "next_step": "order_test",
+        "context_for_next": "Proceeding with MRI and EEG is crucial to evaluate potential neurological and autoimmune conditions.",
+        "ordered_test": "MRI and EEG",
+        "reasoning": "The patient presents with concerning neurological symptoms such as intermittent tingling, blurred vision, fatigue, coordination issues, and dizziness. Similar cases have indicated that patients with neurological symptoms under 50 years old should have an MRI to rule out conditions like multiple sclerosis. There is also a principle stating the need for an EEG to assess for seizure activity due to dizziness and confusion. As no tests have been performed so far, it is essential to proceed with MRI and EEG for accurate assessment.",
+        "tests_completed_count": 0
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "final_result",
+        "final_result"
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "Lab",
+      "decision": {
+        "tests_ran": "MRI and EEG",
+        "test_outcome": "MRI: multiple hyperintense lesions in white matter; EEG: abnormal slow wave activity."
+      },
+      "tools_used": [
+        "get_patient_data",
+        "get_test_type",
+        "get_disease",
+        "final_result"
+      ]
+    },
+    {
+      "step": 4,
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": "Multiple Sclerosis",
+        "recommended_treatment": "Begin disease-modifying therapy and consider referral to a neurologist for comprehensive management.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "Evaluate patient's response to treatment and monitor for progression of symptoms.",
+        "ordered_test": null,
+        "reasoning": "The patient's symptoms including intermittent tingling, blurred vision, coordination issues, and the MRI findings of multiple hyperintense lesions in white matter, along with the abnormal EEG activity, strongly suggest Multiple Sclerosis. Similar cases treated successfully had either no or very targeted tests that confirmed the diagnosis. The experiences emphasize the need for testing in such presentations, which aligns with the results obtained.",
+        "tests_completed_count": 1
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "final_result",
+        "final_result"
+      ]
+    },
+    {
+      "step": "validation",
+      "is_correct": true,
+      "reason": "Exact match: 'multiple sclerosis'"
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "Multiple Sclerosis",
+    "recommended_treatment": "Begin disease-modifying therapy and consider referral to a neurologist for comprehensive management.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "Evaluate patient's response to treatment and monitor for progression of symptoms.",
+    "ordered_test": null,
+    "reasoning": "The patient's symptoms including intermittent tingling, blurred vision, coordination issues, and the MRI findings of multiple hyperintense lesions in white matter, along with the abnormal EEG activity, strongly suggest Multiple Sclerosis. Similar cases treated successfully had either no or very targeted tests that confirmed the diagnosis. The experiences emphasize the need for testing in such presentations, which aligns with the results obtained.",
+    "tests_completed_count": 1
+  },
+  "total_steps": 4,
+  "is_correct": true,
+  "validation_reason": "Exact match: 'multiple sclerosis'"
+}
