@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Literal
-from hs_pipeline.agents.nurse_agent import PatientData, NurseAssessment
+from hs_pipeline.agents.patient_generator import PatientData
+from hs_pipeline.agents.nurse_agent import NurseAssessment
 from hs_pipeline.agents.lab_agent import LabResults
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent, RunContext

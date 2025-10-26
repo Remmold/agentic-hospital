@@ -4,22 +4,8 @@ from pydantic import BaseModel, Field
 from pydantic_ai import Agent, RunContext
 from dotenv import load_dotenv
 from hs_pipeline.utils.constants import CHOSEN_LLM
+from hs_pipeline.agents.patient_generator import PatientData
 load_dotenv()
-
-
-@dataclass
-class PatientData:
-    """
-    PatientData contains all the information that a nurse would need to assess 
-    the situation and plan course of action.
-    
-    Updated to support real timeline data with medical history.
-    """
-    name: str
-    age: int
-    symptoms: list[str]
-    medical_history: Optional[str] = None  # Past diagnoses, treatments, conditions
-    current_medications: Optional[list[str]] = None  # Ongoing medications
 
 
 class NurseAssessment(BaseModel):
