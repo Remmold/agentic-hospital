@@ -1,7 +1,9 @@
+"""
+Updated Runner - Uses department-based patient generation
+"""
 from pathlib import Path
 from dataclasses import asdict
 import json
-import time
 import uuid
 
 from hs_pipeline.extraction import extractor, llm_parser
@@ -9,8 +11,15 @@ from hs_pipeline.agents.nurse_agent import nurse_agent, PatientData
 from hs_pipeline.agents.doctor_agent import doctor_agent, DoctorDeps
 from hs_pipeline.agents.lab_agent import lab_agent, LabAgentDeps
 from hs_pipeline.agents.agent_loop import run_agent_with_retry, extract_tool_calls
-from hs_pipeline.agents.patient_generator import generate_disease, generate_patient_data
+from hs_pipeline.agents.patient_generator import (  # UPDATED IMPORT
+    generate_disease,
+    generate_patient_data,
+    generate_random_patient,
+    generate_patient_for_department,
+)
 from hs_pipeline.utils.constants import DATA_PATH
+
+# Learning imports
 from hs_pipeline.agents.disease_validation import validate_diagnosis
 from hs_pipeline.database_management.db_manager import get_db
 
@@ -40,14 +49,16 @@ class SimulationRunner:
         return PatientData(
             name=parsed["name"],
             age=parsed["age"],
+            gender=parsed.get("gender", "Unknown"),  # NEW
             symptoms=parsed["symptoms"]
         )
     
-    def patient_from_text(self, symptoms: str, age: int = 45, name: str = "Custom") -> PatientData:
+    def patient_from_text(self, symptoms: str, age: int = 45, name: str = "Custom", gender: str = "Unknown") -> PatientData:
         """Create PatientData from text input."""
         return PatientData(
             name=name,
             age=age,
+            gender=gender,  # NEW
             symptoms=[s.strip() for s in symptoms.split(",")]
         )
     
@@ -64,7 +75,7 @@ class SimulationRunner:
         Args:
             patient: Patient data
             actual_disease: Hidden disease for realistic lab results and validation
-            department: Medical department (for case organization)
+            department: Medical department (for case organization and RAG)
             max_steps: Max agent interactions
         """
         current_agent_name = "Nurse"
@@ -75,7 +86,8 @@ class SimulationRunner:
         timeline = []
         
         print(f"\n{'='*60}")
-        print(f"Patient: {patient.name}, {patient.age}y")
+        print(f"Department: {department}")
+        print(f"Patient: {patient.name}, {patient.age}y {patient.gender}")
         print(f"Symptoms: {', '.join(patient.symptoms)}")
         if actual_disease:
             print(f"Hidden Disease: {actual_disease}")
@@ -140,9 +152,10 @@ class SimulationRunner:
                     patient_data=patient,
                     nurse_assessment=current_deps.nurse_assessment,
                     lab_results=lab_results,
-                    department=department 
+                    department=department
                 )
         
+        # === VALIDATION AND LEARNING ===
         is_correct = None
         validation_reason = "No diagnosis to validate"
         
@@ -181,11 +194,12 @@ class SimulationRunner:
         return {
             "patient": asdict(patient),
             "actual_disease": actual_disease,
+            "department": department,  # NEW
             "timeline": timeline,
             "final_diagnosis": result.output.model_dump() if result else None,
             "total_steps": api_calls,
-            "is_correct": is_correct,  # NEW
-            "validation_reason": validation_reason  # NEW
+            "is_correct": is_correct,
+            "validation_reason": validation_reason
         }
     
     def _store_successful_case(
@@ -218,7 +232,7 @@ class SimulationRunner:
                 case_id=case_id,
                 department=department,
                 patient_age=patient.age,
-                patient_gender="Unknown",  # TODO: Add gender to PatientData
+                patient_gender=patient.gender,  # UPDATED: uses actual gender
                 medical_history=patient.medical_history or "None reported",
                 symptoms=", ".join(patient.symptoms),
                 examination_ordered=examination_ordered,
@@ -227,47 +241,48 @@ class SimulationRunner:
                 treatment_plan=treatment or "Not specified",
                 outcome="success"
             )
-            print(f"💾 Case {case_id} saved to Medical Case Base")
+            print(f"💾 Case {case_id} saved to Medical Case Base ({department})")
         except Exception as e:
             print(f"❌ Error saving case: {e}")
 
 
-# Test
+# ============================================================================
+# TESTING
+# ============================================================================
+
 if __name__ == "__main__":    
     runner = SimulationRunner()
     
-    # Test 1: Random disease with learning
-    print("\nTEST 1: Random Disease with Learning")
-    disease = generate_disease()
-    patient = generate_patient_data(disease)
-    result = runner.run_simulation(
-        patient, 
-        actual_disease=disease,
-        department="General"  # TODO: Map diseases to departments
-    )
+    # Test 1: Random department, random disease
+    print("\n=== TEST 1: Random Patient ===")
+    patient, disease, department = generate_random_patient()
+    result = runner.run_simulation(patient, actual_disease=disease, department=department)
     
     # Save results
-    with open(f"{disease}.json", "w") as f:
+    filename = f"{department}_{disease}.json"
+    with open(filename, "w") as f:
         json.dump(result, f, indent=2)
     
-    print(f"\nDiagnosis: {result['final_diagnosis']['diagnosis']}")
+    print(f"\nDepartment: {department}")
+    print(f"Disease: {disease}")
+    print(f"Diagnosis: {result['final_diagnosis']['diagnosis']}")
     print(f"Validation: {result['validation_reason']}")
-    print(f"Saved to {disease}.json")
+    print(f"Saved to {filename}")
+    
+    # Test 2: Specific department
+    # print("\n=== TEST 2: Cardiology Patient ===")
+    # patient2, disease2 = generate_patient_for_department("Cardiology")
+    # result2 = runner.run_simulation(patient2, actual_disease=disease2, department="Cardiology")
+    
+    # filename2 = f"Cardiology_{disease2}.json"
+    # with open(filename2, "w") as f:
+    #     json.dump(result2, f, indent=2)
+    
+    # print(f"\nDiagnosis: {result2['final_diagnosis']['diagnosis']}")
+    # print(f"Validation: {result2['validation_reason']}")
+    # print(f"Saved to {filename2}")
     
     # Check database
     print("\n" + "="*60)
     print("Check database with: python inspect_db.py")
     print("="*60)
-
-    # # Test 2: Custom text input
-    # print("\nTEST 2: Custom Input")
-    # patient2 = runner.patient_from_text(
-    #     symptoms="fever, cough, fatigue",
-    #     age=35,
-    #     name="Test Patient"
-    # )
-    # result2 = runner.run_simulation(patient2, actual_disease="pneumonia", department="Respiratory")
-    
-    # with open("output_custom.json", "w") as f:
-    #     json.dump(result2, f, indent=2)
-    # print(f"Saved to output_custom.json")
