@@ -5,7 +5,7 @@ Matches the flowchart: Medical Records Retrieval + Experience Base
 import duckdb
 import chromadb
 from pathlib import Path
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 from datetime import datetime
 
 
@@ -25,6 +25,9 @@ class AgentHospitalDB:
         
         self._duckdb_conn = None
         self._chroma_client = None
+        
+        # Session tracking for current simulation run
+        self._current_session_experiences = []
     
     @property
     def duckdb(self) -> duckdb.DuckDBPyConnection:
@@ -257,13 +260,72 @@ Treatment: {treatment_plan}"""
             return dict(zip(columns, result))
         return None
     
-    # Experience tracking and management
+    # ========================================================================
+    # EXPERIENCE TRACKING - Enhanced methods
+    # ========================================================================
+    
+    def track_experience_retrieval(self, experience_ids: List[str]):
+        """
+        Track that these experiences were retrieved by doctor.
+        Increments times_retrieved counter and stores in current session.
+        
+        Args:
+            experience_ids: List of experience IDs that were retrieved
+        """
+        if not experience_ids:
+            return
+        
+        # Add to current session
+        self._current_session_experiences.extend(experience_ids)
+            
+        for exp_id in experience_ids:
+            try:
+                self.duckdb.execute("""
+                    UPDATE experiences
+                    SET times_retrieved = times_retrieved + 1,
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE experience_id = ?
+                """, [exp_id])
+            except Exception as e:
+                print(f"⚠️  Error tracking retrieval for {exp_id}: {e}")
+        
+        self.duckdb.commit()
+    
+    def track_experience_outcome(self, experience_ids: List[str], was_correct: bool):
+        """
+        Track whether retrieved experiences led to correct or incorrect diagnosis.
+        
+        Args:
+            experience_ids: List of experience IDs that were retrieved
+            was_correct: True if diagnosis was correct, False if wrong
+        """
+        if not experience_ids:
+            return
+        
+        column = "times_led_to_correct" if was_correct else "times_led_to_incorrect"
+        
+        for exp_id in experience_ids:
+            try:
+                self.duckdb.execute(f"""
+                    UPDATE experiences
+                    SET {column} = {column} + 1,
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE experience_id = ?
+                """, [exp_id])
+            except Exception as e:
+                print(f"⚠️  Error tracking outcome for {exp_id}: {e}")
+        
+        self.duckdb.commit()
+    
     def track_experience_usage(
         self, 
         experience_id: str, 
         led_to_correct: bool
     ):
-        """Track when an experience is used and whether it helped."""
+        """
+        Track when a single experience is used and whether it helped.
+        (Legacy method - kept for compatibility)
+        """
         self.duckdb.execute("""
             UPDATE experiences 
             SET times_retrieved = times_retrieved + 1,
@@ -311,6 +373,50 @@ Treatment: {treatment_plan}"""
             }
         return None
     
+    def get_all_experience_stats(self) -> List[Dict[str, Any]]:
+        """
+        Get statistics for all experiences, sorted by usage.
+        Useful for viewing overall system performance.
+        
+        Returns:
+            List of experiences with their stats
+        """
+        results = self.duckdb.execute("""
+            SELECT 
+                experience_id,
+                department,
+                principle_text,
+                times_retrieved,
+                times_led_to_correct,
+                times_led_to_incorrect,
+                CASE 
+                    WHEN times_retrieved > 0 
+                    THEN CAST(times_led_to_correct AS FLOAT) / times_retrieved 
+                    ELSE validation_accuracy 
+                END as success_rate,
+                validation_accuracy,
+                is_active,
+                created_at
+            FROM experiences
+            ORDER BY times_retrieved DESC, success_rate DESC
+        """).fetchall()
+        
+        return [
+            {
+                'experience_id': r[0],
+                'department': r[1],
+                'principle_text': r[2],
+                'times_retrieved': r[3],
+                'times_led_to_correct': r[4],
+                'times_led_to_incorrect': r[5],
+                'success_rate': r[6],
+                'validation_accuracy': r[7],
+                'is_active': r[8],
+                'created_at': r[9]
+            }
+            for r in results
+        ]
+    
     def deprecate_experience(self, experience_id: str):
         """Mark an experience as inactive (don't delete, keep for analysis)."""
         self.duckdb.execute("""
@@ -321,33 +427,88 @@ Treatment: {treatment_plan}"""
         """, [experience_id])
         self.duckdb.commit()
     
+    def remove_experience(self, experience_id: str):
+        """
+        Permanently remove an experience from both DuckDB and ChromaDB.
+        Use this for low-performing principles.
+        
+        Args:
+            experience_id: ID of experience to remove
+        """
+        try:
+            # Get department before deleting
+            exp = self.get_experience_details(experience_id)
+            department = exp['department'] if exp else "general"
+            
+            # Remove from DuckDB
+            self.duckdb.execute("""
+                DELETE FROM experiences
+                WHERE experience_id = ?
+            """, [experience_id])
+            self.duckdb.commit()
+            
+            # Remove from ChromaDB
+            try:
+                collection = self.get_experiences_collection(department)
+                collection.delete(ids=[experience_id])
+            except Exception as e:
+                print(f"⚠️  ChromaDB delete warning: {e}")
+            
+            print(f"✓ Removed experience: {experience_id}")
+        except Exception as e:
+            print(f"❌ Error removing experience {experience_id}: {e}")
+    
     def get_low_performing_experiences(
         self, 
-        department: str, 
-        accuracy_threshold: float = 0.6,
-        min_usage: int = 5
-    ):
-        """Find experiences that are performing poorly."""
-        results = self.duckdb.execute("""
+        department: Optional[str] = None,
+        accuracy_threshold: float = 0.3,
+        min_usage: int = 3
+    ) -> List[Dict[str, Any]]:
+        """
+        Find experiences that are performing poorly.
+        
+        Args:
+            department: Filter by department (None for all departments)
+            accuracy_threshold: Maximum success rate to be flagged (default 0.3 = 30%)
+            min_usage: Minimum times retrieved to be considered (default 3)
+        
+        Returns:
+            List of low-performing experiences
+        """
+        query = """
             SELECT 
                 experience_id,
+                department,
                 principle_text,
                 times_retrieved,
+                times_led_to_correct,
+                times_led_to_incorrect,
                 CAST(times_led_to_correct AS FLOAT) / times_retrieved as actual_accuracy
             FROM experiences
-            WHERE department = ?
-                AND is_active = TRUE
+            WHERE is_active = TRUE
                 AND times_retrieved >= ?
-                AND CAST(times_led_to_correct AS FLOAT) / times_retrieved < ?
-            ORDER BY actual_accuracy ASC
-        """, [department, min_usage, accuracy_threshold]).fetchall()
+                AND CAST(times_led_to_correct AS FLOAT) / times_retrieved <= ?
+        """
+        
+        params = [min_usage, accuracy_threshold]
+        
+        if department:
+            query += " AND department = ?"
+            params.append(department)
+        
+        query += " ORDER BY actual_accuracy ASC, times_retrieved DESC"
+        
+        results = self.duckdb.execute(query, params).fetchall()
         
         return [
             {
                 "experience_id": r[0],
-                "principle_text": r[1],
-                "times_retrieved": r[2],
-                "actual_accuracy": r[3]
+                "department": r[1],
+                "principle_text": r[2],
+                "times_retrieved": r[3],
+                "times_led_to_correct": r[4],
+                "times_led_to_incorrect": r[5],
+                "actual_accuracy": r[6]
             }
             for r in results
         ]
@@ -356,6 +517,32 @@ Treatment: {treatment_plan}"""
         if self._duckdb_conn:
             self._duckdb_conn.close()
             self._duckdb_conn = None
+    
+    # ========================================================================
+    # SESSION MANAGEMENT - Track experiences used in current simulation
+    # ========================================================================
+    
+    def start_new_session(self):
+        """Start a new simulation session - clears experience tracking."""
+        self._current_session_experiences = []
+    
+    def get_session_experiences(self) -> List[str]:
+        """Get all experience IDs retrieved in current session."""
+        return list(set(self._current_session_experiences))  # Remove duplicates
+    
+    def track_session_outcome(self, was_correct: bool):
+        """
+        Track outcome for all experiences used in current session.
+        Automatically clears session after tracking.
+        
+        Args:
+            was_correct: True if diagnosis was correct, False if wrong
+        """
+        experience_ids = self.get_session_experiences()
+        if experience_ids:
+            self.track_experience_outcome(experience_ids, was_correct)
+            print(f"📊 Tracked outcome for {len(experience_ids)} experience(s): {'correct' if was_correct else 'incorrect'}")
+        self.start_new_session()  # Clear for next simulation
 
 
 # Singleton
