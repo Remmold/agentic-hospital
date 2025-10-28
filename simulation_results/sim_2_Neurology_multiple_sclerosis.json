@@ -1,19 +1,18 @@
 {
   "patient": {
-    "name": "Rachel Thompson",
-    "age": 29,
+    "name": "Eleanor Vance",
+    "age": 38,
     "gender": "Female",
     "symptoms": [
-      "occasional tingling in hands",
-      "slight but persistent fatigue",
-      "difficulty in finding words",
-      "mood swings",
-      "unexplained dizziness"
+      "Persistent, unexplainable fatigue",
+      "occasional blurred vision in one eye, usually resolving within a few days",
+      "intermittent tingling sensations in her extremities, sometimes affecting one side more than the other",
+      "mild balance issues, especially when tired"
     ],
-    "medical_history": "History of anxiety; previously treated for mild depression.",
+    "medical_history": "History of optic neuritis in her left eye five years ago, diagnosed as idiopathic and fully recovered. Recurrent migraines since adolescence. Recently started feeling more clumsy.",
     "current_medications": [
-      "Sertraline",
-      "Vitamin D supplements"
+      "Sumatriptan for migraines",
+      "over-the-counter allergy medication as needed"
     ]
   },
   "actual_disease": "multiple_sclerosis",
@@ -23,19 +22,17 @@
       "step": 1,
       "agent": "Nurse",
       "decision": {
-        "urgency": "semi_urgent",
-        "triage_reasoning": "The patient exhibits occasional tingling in the hands and difficulty in finding words, which could indicate neurological issues. The presence of dizziness and mood swings adds to the concern, especially in the context of their medical history of anxiety and depression. This warrants a thorough evaluation, but they are currently stable, so they do not fall into the critical or urgent categories. Immediate medical attention is recommended within 30-60 minutes.",
+        "urgency": "urgent",
+        "triage_reasoning": "The patient presents with a constellation of new and worsening neurological symptoms, including occasional blurred vision, intermittent tingling in extremities, persistent fatigue, and mild balance issues/clumsiness. This is highly concerning, especially given a history of optic neuritis five years ago. These symptoms combined raise suspicion for an underlying neurological condition that requires urgent assessment to prevent potential progression or further neurological deficit.",
         "vital_signs_concern": false,
-        "notes": "The current medications (Sertraline and Vitamin D) are relevant but not indicative of acute issues that would escalate urgency. However, neurological symptoms need to be assessed further to prevent potential deterioration.",
+        "notes": "Patient reports persistent fatigue, occasional blurred vision, intermittent tingling, and mild balance issues. History of optic neuritis and recurrent migraines. Taking Sumatriptan and OTC allergy meds.",
         "next_step": "send_to_doctor",
-        "context_for_next": "Patient requires evaluation for neurological symptoms, mental health assessment, and possible treatment adjustments."
+        "context_for_next": "Patient requires urgent neurological assessment by a doctor to investigate the new and worsening neurological symptoms in the context of their medical history."
       },
       "tools_used": [
         "get_patient_symptoms",
         "get_medical_history",
         "get_current_medications",
-        "get_current_medications",
-        "get_medical_history",
         "final_result"
       ]
     },
@@ -43,13 +40,13 @@
       "step": 2,
       "agent": "Doctor",
       "decision": {
-        "diagnosis": "Tingling neuropathy with possible underlying anxiety disorder",
-        "recommended_treatment": "Consider MRI to evaluate for demyelinating disorders, and a psychiatric evaluation for mental health support.",
-        "follow_up_needed": true,
+        "diagnosis": null,
+        "recommended_treatment": null,
+        "follow_up_needed": null,
         "next_step": "order_test",
-        "context_for_next": "Proceeding with MRI and EEG to evaluate neurological symptoms for a better understanding of the patient's condition.",
-        "ordered_test": "MRI and EEG as needed",
-        "reasoning": "The patient exhibits neurological symptoms such as tingling in hands and word-finding difficulties alongside mental health concerns (mood swings and anxiety). Similar cases have had successful outcomes with appropriate tests. No tests have been completed yet, and experiences indicate the need for an MRI in patients with neurological symptoms to rule out conditions like multiple sclerosis. Given the urgency of neurological evaluations, I recommend proceeding with MRI and EEG.",
+        "context_for_next": "Patient requires an MRI of the brain and spinal cord to assess for demyelinating lesions consistent with Multiple Sclerosis. This will help confirm the diagnosis and guide treatment.",
+        "ordered_test": "MRI of brain and spinal cord",
+        "reasoning": "The patient presents with new and worsening neurological symptoms including blurred vision, tingling in extremities, persistent fatigue, and balance issues, coupled with a history of optic neuritis. Similar cases with these symptoms were diagnosed with Multiple Sclerosis. Experience principles advise obtaining an MRI for such symptoms to consider MS. Given the urgency and the high suspicion for Multiple Sclerosis, an MRI is crucial to confirm the diagnosis and assess disease activity. No tests have been completed yet, as confirmed by get_lab_results().",
         "tests_completed_count": 0
       },
       "tools_used": [
@@ -57,11 +54,6 @@
         "search_similar_cases",
         "search_relevant_experiences",
         "get_lab_results",
-        "get_lab_results",
-        "search_relevant_experiences",
-        "get_lab_results",
-        "search_similar_cases",
-        "final_result",
         "final_result"
       ]
     },
@@ -69,12 +61,11 @@
       "step": 3,
       "agent": "Lab",
       "decision": {
-        "tests_ran": "MRI and EEG as needed",
-        "test_outcome": "MRI: Multiple hyperintense lesions in white matter, EEG: Normal frequency theta activity with occasional sharp waves."
+        "tests_ran": "MRI of brain and spinal cord",
+        "test_outcome": "MRI Brain: Multiple T2 hyperintense lesions noted in the periventricular, juxtacortical, and infratentorial regions. Several lesions demonstrate enhancement following gadolinium administration. Diffuse cerebral atrophy noted. MRI Spinal Cord: Several T2 hyperintense lesions identified in the cervical and thoracic spinal cord. No significant cord compression."
       },
       "tools_used": [
         "get_disease",
-        "get_patient_data",
         "get_test_type",
         "final_result"
       ]
@@ -84,12 +75,12 @@
       "agent": "Doctor",
       "decision": {
         "diagnosis": "Multiple Sclerosis",
-        "recommended_treatment": "Begin disease-modifying therapy for Multiple Sclerosis and consider referral to a neurologist for comprehensive management.",
+        "recommended_treatment": "Initiate disease-modifying therapy (DMT) for Multiple Sclerosis. Urgent referral to a neurologist for comprehensive management, including selection of specific DMT, symptom management, and long-term care planning. Consider corticosteroids for acute exacerbations if present.",
         "follow_up_needed": true,
         "next_step": "finish_chain",
-        "context_for_next": "Patient presents neurological symptoms; MRI shows multiple hyperintense lesions, suggestive of Multiple Sclerosis. Further management recommended with a neurologist.",
+        "context_for_next": "The patient has been diagnosed with Multiple Sclerosis.",
         "ordered_test": null,
-        "reasoning": "The patient exhibits neurological symptoms such as tingling and dizziness, which aligns with documented similar cases of suspected Multiple Sclerosis. The nurse's assessment highlighted concerns in the context of their mental health history. The MRI has shown multiple hyperintense lesions, which is indicative of Multiple Sclerosis. The EEG results are normal, which corroborates the need to focus on the neurological findings. Given the symptoms and MRI results, the appropriate course of action is to initiate disease-modifying therapy for Multiple Sclerosis and refer to a neurologist for further management. The decision is supported by both historical similar cases and relevant experiences that suggest testing for neurological conditions in these presentations.",
+        "reasoning": "The patient presents with new and worsening neurological symptoms including blurred vision, intermittent tingling, persistent fatigue, and balance issues, along with a history of optic neuritis. Similar past cases with these symptoms were diagnosed with Multiple Sclerosis. Relevant experience suggests considering MS and ordering an MRI for such symptoms. Crucially, a recent MRI of the brain and spinal cord shows multiple T2 hyperintense lesions with enhancement, which are highly characteristic findings for Multiple Sclerosis. Based on the strong clinical correlation, history, and definitive imaging findings, the diagnosis is clear.",
         "tests_completed_count": 1
       },
       "tools_used": [
@@ -97,7 +88,6 @@
         "search_similar_cases",
         "search_relevant_experiences",
         "get_lab_results",
-        "final_result",
         "final_result"
       ]
     },
@@ -109,12 +99,12 @@
   ],
   "final_diagnosis": {
     "diagnosis": "Multiple Sclerosis",
-    "recommended_treatment": "Begin disease-modifying therapy for Multiple Sclerosis and consider referral to a neurologist for comprehensive management.",
+    "recommended_treatment": "Initiate disease-modifying therapy (DMT) for Multiple Sclerosis. Urgent referral to a neurologist for comprehensive management, including selection of specific DMT, symptom management, and long-term care planning. Consider corticosteroids for acute exacerbations if present.",
     "follow_up_needed": true,
     "next_step": "finish_chain",
-    "context_for_next": "Patient presents neurological symptoms; MRI shows multiple hyperintense lesions, suggestive of Multiple Sclerosis. Further management recommended with a neurologist.",
+    "context_for_next": "The patient has been diagnosed with Multiple Sclerosis.",
     "ordered_test": null,
-    "reasoning": "The patient exhibits neurological symptoms such as tingling and dizziness, which aligns with documented similar cases of suspected Multiple Sclerosis. The nurse's assessment highlighted concerns in the context of their mental health history. The MRI has shown multiple hyperintense lesions, which is indicative of Multiple Sclerosis. The EEG results are normal, which corroborates the need to focus on the neurological findings. Given the symptoms and MRI results, the appropriate course of action is to initiate disease-modifying therapy for Multiple Sclerosis and refer to a neurologist for further management. The decision is supported by both historical similar cases and relevant experiences that suggest testing for neurological conditions in these presentations.",
+    "reasoning": "The patient presents with new and worsening neurological symptoms including blurred vision, intermittent tingling, persistent fatigue, and balance issues, along with a history of optic neuritis. Similar past cases with these symptoms were diagnosed with Multiple Sclerosis. Relevant experience suggests considering MS and ordering an MRI for such symptoms. Crucially, a recent MRI of the brain and spinal cord shows multiple T2 hyperintense lesions with enhancement, which are highly characteristic findings for Multiple Sclerosis. Based on the strong clinical correlation, history, and definitive imaging findings, the diagnosis is clear.",
     "tests_completed_count": 1
   },
   "total_steps": 4,

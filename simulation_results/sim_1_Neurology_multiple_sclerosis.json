@@ -1,0 +1,113 @@
+{
+  "patient": {
+    "name": "Sarah Chen",
+    "age": 32,
+    "gender": "Female",
+    "symptoms": [
+      "Intermittent tingling sensation in her left arm and leg",
+      "Occasional episodes of blurry vision that seem to resolve on their own",
+      "Persistent fatigue despite adequate sleep",
+      "Difficulty concentrating at work sometimes",
+      "Feels a bit off balance if she turns too quickly"
+    ],
+    "medical_history": "History of optic neuritis in her right eye about 5 years ago, which fully resolved. Otherwise healthy.",
+    "current_medications": [
+      "Multivitamin"
+    ]
+  },
+  "actual_disease": "multiple_sclerosis",
+  "department": "Neurology",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "decision": {
+        "urgency": "urgent",
+        "triage_reasoning": "Patient presents with new neurological symptoms including intermittent tingling in left arm and leg, occasional blurry vision, persistent fatigue, difficulty concentrating, and feeling off balance. Her medical history includes a resolved episode of optic neuritis. These symptoms, especially in the context of her history, are concerning for a potential neurological condition requiring prompt evaluation to prevent deterioration.",
+        "vital_signs_concern": true,
+        "notes": "Patient exhibiting neurological symptoms potentially indicative of a new or recurring neurological event. Optic neuritis history is relevant. Further neurological assessment is crucial.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "The patient requires immediate neurological assessment and workup due to new and concerning neurological symptoms, especially given her history of optic neuritis. This could be indicative of a demyelinating disease or other neurological condition that needs urgent diagnosis and management."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": null,
+        "recommended_treatment": null,
+        "follow_up_needed": null,
+        "next_step": "order_test",
+        "context_for_next": "Patient has new neurological symptoms, history of optic neuritis, similar cases suggest Multiple Sclerosis, and experience recommends MRI. No tests have been done yet.",
+        "ordered_test": "MRI and EEG",
+        "reasoning": "The patient's symptoms (intermittent tingling, blurry vision, fatigue, difficulty concentrating, imbalance) coupled with a history of optic neuritis strongly point towards a demyelinating disease like Multiple Sclerosis, as supported by similar cases. Experience 1 explicitly recommends obtaining an MRI for such neurological symptoms in patients under 50. Since no tests have been completed yet, ordering an MRI and EEG is crucial for accurate diagnosis and to rule out other neurological conditions.",
+        "tests_completed_count": 0
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "Lab",
+      "decision": {
+        "tests_ran": "MRI and EEG",
+        "test_outcome": "MRI Brain: Multiple T2 hyperintense lesions, ovoid morphology, predominantly periventricular and juxtacortical. Total lesion volume 15.3 cm\u00b3. One lesion demonstrating rim enhancement post-gadolinium. MRI Spinal Cord: T2 hyperintense lesion at C3-C4 level, 1.2 cm in length. EEG: Background alpha rhythm 9-10 Hz, good reactivity. Intermittent theta slowing 5-7 Hz over bilateral frontal regions. No epileptiform discharges."
+      },
+      "tools_used": [
+        "get_test_type",
+        "get_disease",
+        "final_result"
+      ]
+    },
+    {
+      "step": 4,
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": "Multiple Sclerosis",
+        "recommended_treatment": "Initiate disease-modifying therapy (DMT) for Multiple Sclerosis, such as interferon beta, glatiramer acetate, or other appropriate DMT, as per neurologist's recommendation. Urgent referral to a neurologist for comprehensive management, including selection of specific DMT, symptom management, and long-term care planning. Consider corticosteroids for acute exacerbations if present.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "Patient diagnosed with Multiple Sclerosis based on clinical presentation, history of optic neuritis, and MRI findings. Recommended treatment involves initiating disease-modifying therapy and neurologist referral.",
+        "ordered_test": null,
+        "reasoning": "The patient's new neurological symptoms, including intermittent tingling, blurry vision, fatigue, and balance issues, combined with a history of optic neuritis, are highly suggestive of Multiple Sclerosis. Similar cases in the medical records consistently led to a diagnosis of Multiple Sclerosis. Experience Principle 1 emphasizes obtaining an MRI for such symptoms in patients under 50 to consider Multiple Sclerosis. The completed MRI and EEG results showed multiple T2 hyperintense lesions in the brain (periventricular and juxtacortical with one enhancing lesion) and a spinal cord lesion, which are classic diagnostic criteria for Multiple Sclerosis. The EEG showed non-specific slowing but no epileptiform activity, which does not contradict the MS diagnosis. Therefore, the diagnosis of Multiple Sclerosis is strongly supported by all available evidence.",
+        "tests_completed_count": 1
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": "validation",
+      "is_correct": true,
+      "reason": "Exact match: 'multiple sclerosis'"
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "Multiple Sclerosis",
+    "recommended_treatment": "Initiate disease-modifying therapy (DMT) for Multiple Sclerosis, such as interferon beta, glatiramer acetate, or other appropriate DMT, as per neurologist's recommendation. Urgent referral to a neurologist for comprehensive management, including selection of specific DMT, symptom management, and long-term care planning. Consider corticosteroids for acute exacerbations if present.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "Patient diagnosed with Multiple Sclerosis based on clinical presentation, history of optic neuritis, and MRI findings. Recommended treatment involves initiating disease-modifying therapy and neurologist referral.",
+    "ordered_test": null,
+    "reasoning": "The patient's new neurological symptoms, including intermittent tingling, blurry vision, fatigue, and balance issues, combined with a history of optic neuritis, are highly suggestive of Multiple Sclerosis. Similar cases in the medical records consistently led to a diagnosis of Multiple Sclerosis. Experience Principle 1 emphasizes obtaining an MRI for such symptoms in patients under 50 to consider Multiple Sclerosis. The completed MRI and EEG results showed multiple T2 hyperintense lesions in the brain (periventricular and juxtacortical with one enhancing lesion) and a spinal cord lesion, which are classic diagnostic criteria for Multiple Sclerosis. The EEG showed non-specific slowing but no epileptiform activity, which does not contradict the MS diagnosis. Therefore, the diagnosis of Multiple Sclerosis is strongly supported by all available evidence.",
+    "tests_completed_count": 1
+  },
+  "total_steps": 4,
+  "is_correct": true,
+  "validation_reason": "Exact match: 'multiple sclerosis'"
+}

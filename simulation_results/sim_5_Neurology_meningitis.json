@@ -1,18 +1,19 @@
 {
   "patient": {
-    "name": "James Thompson",
-    "age": 24,
-    "gender": "Male",
+    "name": "Sarah Chen",
+    "age": 28,
+    "gender": "Female",
     "symptoms": [
-      "mild headache",
-      "increased sensitivity to light",
-      "intermittent nausea",
-      "slight fever",
-      "feeling unusually tired"
+      "Generalized headache, feels like pressure",
+      "Feeling feverish and achy",
+      "Mild neck stiffness, especially when trying to touch chin to chest",
+      "Nausea, no vomiting yet",
+      "Feeling unusually tired and a bit irritable",
+      "Bothered by bright lights more than usual"
     ],
-    "medical_history": "No significant past medical history, occasional migrains",
+    "medical_history": "Recently recovered from a mild upper respiratory infection a week ago.",
     "current_medications": [
-      "Ibuprofen"
+      "Acetaminophen (Tylenol) as needed for body aches"
     ]
   },
   "actual_disease": "meningitis",
@@ -22,12 +23,12 @@
       "step": 1,
       "agent": "Nurse",
       "decision": {
-        "urgency": "semi_urgent",
-        "triage_reasoning": "The patient presents with mild headache, increased sensitivity to light, intermittent nausea, slight fever, and fatigue. The combination of symptoms including fever and headache suggests a possible infection or migraine exacerbation, warranting a semi-urgent evaluation.",
-        "vital_signs_concern": false,
-        "notes": "No significant past medical history and currently taking Ibuprofen. Symptoms could indicate a migraine or similar issue.",
+        "urgency": "critical",
+        "triage_reasoning": "The patient presents with a constellation of symptoms including generalized headache, feverishness, neck stiffness, and photophobia. This combination is highly suggestive of meningeal irritation, potentially indicating meningitis, which is a life-threatening condition requiring immediate intervention. The recent recovery from an upper respiratory infection could be a predisposing factor.",
+        "vital_signs_concern": true,
+        "notes": "Patient also reports nausea, unusual tiredness, and irritability. Currently taking Acetaminophen for body aches, which has not alleviated the concerning symptoms. Immediate medical evaluation is required.",
         "next_step": "send_to_doctor",
-        "context_for_next": "Evaluate further for possible migraine treatment or rule out other causes of fever and fatigue."
+        "context_for_next": "The patient requires an immediate neurological examination, laboratory tests (including blood work), and potentially a lumbar puncture to diagnose or rule out meningitis. Urgent medical intervention is critical."
       },
       "tools_used": [
         "get_patient_symptoms",
@@ -40,13 +41,13 @@
       "step": 2,
       "agent": "Doctor",
       "decision": {
-        "diagnosis": "Migraine Exacerbation",
-        "recommended_treatment": "Acute migraine management including triptans and NSAIDs, along with antiemetics if necessary. Support with rest in a dark, quiet room. Consider referral for preventive treatment if the patient experiences frequent exacerbations.",
-        "follow_up_needed": true,
-        "next_step": "finish_chain",
-        "context_for_next": "Fever and fatigue may also need further evaluation if symptoms persist after migraine treatment.",
-        "ordered_test": null,
-        "reasoning": "The nurse assessment indicated semi-urgent symptoms suggesting either a migraine exacerbation or potential infection. Three similar cases resulted in successful migraine diagnoses without tests. Experiences highlighted that while associated symptoms like dizziness or neurological changes may require further imaging or EEG, the current symptoms do not suggest such conditions. Therefore, I am confident in diagnosing migraine and recommending appropriate treatment. Tracking further symptoms, especially febrile responses and fatigue, will be necessary for future evaluations.",
+        "diagnosis": null,
+        "recommended_treatment": null,
+        "follow_up_needed": null,
+        "next_step": "order_test",
+        "context_for_next": "Patient presents with critical symptoms highly suggestive of meningitis: generalized headache, feverishness, neck stiffness, photophobia, nausea, unusual tiredness, and irritability, following an upper respiratory infection. A lumbar puncture is critical to diagnose or rule out meningitis. Blood work is also needed to assess for infection and inflammation.",
+        "ordered_test": "lumbar puncture, complete blood count (CBC), C-reactive protein (CRP), blood cultures",
+        "reasoning": "The nurse's assessment indicates a critical triage level due to symptoms highly suggestive of meningitis. A similar past case with these symptoms was diagnosed as viral meningitis after a lumbar puncture. Furthermore, a relevant experience principle states that 'Headache with fever requires lumbar puncture to rule out meningitis before diagnosing migraine.' No tests have been completed yet. Therefore, ordering a lumbar puncture and blood work is essential for an accurate and timely diagnosis.",
         "tests_completed_count": 0
       },
       "tools_used": [
@@ -58,22 +59,56 @@
       ]
     },
     {
+      "step": 3,
+      "agent": "Lab",
+      "decision": {
+        "tests_ran": "lumbar puncture, complete blood count (CBC), C-reactive protein (CRP), blood cultures",
+        "test_outcome": "CSF White Blood Cell Count: 1200 cells/\u00b5L, CSF Glucose: 30 mg/dL, CSF Protein: 250 mg/dL, Peripheral White Blood Cell Count: 18.5 x 10^9/L, Neutrophils: 85%, C-reactive protein: 150 mg/L, Blood Culture: Positive for bacterial growth"
+      },
+      "tools_used": [
+        "get_test_type",
+        "get_disease",
+        "final_result"
+      ]
+    },
+    {
+      "step": 4,
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": "Bacterial Meningitis",
+        "recommended_treatment": "Immediate aggressive intravenous broad-spectrum antibiotics (e.g., Ceftriaxone, Vancomycin, and Ampicillin depending on age and local resistance patterns), along with corticosteroids (Dexamethasone) to reduce inflammation. Supportive care including hydration, fever control, and monitoring for complications. Urgent neurosurgical consultation may be needed if there are signs of increased intracranial pressure or complications.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "The patient has been diagnosed with bacterial meningitis based on lab results and clinical presentation. Urgent treatment is initiated.",
+        "ordered_test": null,
+        "reasoning": "The nurse's assessment indicated a critical patient with classic symptoms of meningitis (headache, fever, neck stiffness, photophobia, nausea, tiredness, irritability) following a recent URI. Similar case analysis highlighted the need for a lumbar puncture to diagnose meningitis. Relevant experience principles confirmed that headache with fever necessitates a lumbar puncture to rule out meningitis.\n\nCrucially, existing lab results from a completed lumbar puncture, CBC, CRP, and blood cultures are highly conclusive:\n- CSF analysis shows significantly elevated White Blood Cell Count (1200 cells/\u00b5L), low CSF Glucose (30 mg/dL), and high CSF Protein (250 mg/dL), which are hallmark indicators of bacterial meningitis.\n- Peripheral White Blood Cell Count (18.5 x 10^9/L) with 85% neutrophils and C-reactive protein (150 mg/L) are markedly elevated, indicating a severe systemic bacterial infection.\n- Blood cultures are positive for bacterial growth.\n\nThese combined findings provide strong evidence for a diagnosis of bacterial meningitis. No further tests are needed at this stage as the diagnosis is confirmed.",
+        "tests_completed_count": 1
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
       "step": "validation",
-      "is_correct": false,
-      "reason": "Clear mismatch: 'migraine exacerbation' != 'meningitis'"
+      "is_correct": true,
+      "reason": "LLM (high): Bacterial Meningitis is a specific type of meningitis. The core disease \"meningitis\" is the same."
     }
   ],
   "final_diagnosis": {
-    "diagnosis": "Migraine Exacerbation",
-    "recommended_treatment": "Acute migraine management including triptans and NSAIDs, along with antiemetics if necessary. Support with rest in a dark, quiet room. Consider referral for preventive treatment if the patient experiences frequent exacerbations.",
+    "diagnosis": "Bacterial Meningitis",
+    "recommended_treatment": "Immediate aggressive intravenous broad-spectrum antibiotics (e.g., Ceftriaxone, Vancomycin, and Ampicillin depending on age and local resistance patterns), along with corticosteroids (Dexamethasone) to reduce inflammation. Supportive care including hydration, fever control, and monitoring for complications. Urgent neurosurgical consultation may be needed if there are signs of increased intracranial pressure or complications.",
     "follow_up_needed": true,
     "next_step": "finish_chain",
-    "context_for_next": "Fever and fatigue may also need further evaluation if symptoms persist after migraine treatment.",
+    "context_for_next": "The patient has been diagnosed with bacterial meningitis based on lab results and clinical presentation. Urgent treatment is initiated.",
     "ordered_test": null,
-    "reasoning": "The nurse assessment indicated semi-urgent symptoms suggesting either a migraine exacerbation or potential infection. Three similar cases resulted in successful migraine diagnoses without tests. Experiences highlighted that while associated symptoms like dizziness or neurological changes may require further imaging or EEG, the current symptoms do not suggest such conditions. Therefore, I am confident in diagnosing migraine and recommending appropriate treatment. Tracking further symptoms, especially febrile responses and fatigue, will be necessary for future evaluations.",
-    "tests_completed_count": 0
+    "reasoning": "The nurse's assessment indicated a critical patient with classic symptoms of meningitis (headache, fever, neck stiffness, photophobia, nausea, tiredness, irritability) following a recent URI. Similar case analysis highlighted the need for a lumbar puncture to diagnose meningitis. Relevant experience principles confirmed that headache with fever necessitates a lumbar puncture to rule out meningitis.\n\nCrucially, existing lab results from a completed lumbar puncture, CBC, CRP, and blood cultures are highly conclusive:\n- CSF analysis shows significantly elevated White Blood Cell Count (1200 cells/\u00b5L), low CSF Glucose (30 mg/dL), and high CSF Protein (250 mg/dL), which are hallmark indicators of bacterial meningitis.\n- Peripheral White Blood Cell Count (18.5 x 10^9/L) with 85% neutrophils and C-reactive protein (150 mg/L) are markedly elevated, indicating a severe systemic bacterial infection.\n- Blood cultures are positive for bacterial growth.\n\nThese combined findings provide strong evidence for a diagnosis of bacterial meningitis. No further tests are needed at this stage as the diagnosis is confirmed.",
+    "tests_completed_count": 1
   },
-  "total_steps": 2,
-  "is_correct": false,
-  "validation_reason": "Clear mismatch: 'migraine exacerbation' != 'meningitis'"
+  "total_steps": 4,
+  "is_correct": true,
+  "validation_reason": "LLM (high): Bacterial Meningitis is a specific type of meningitis. The core disease \"meningitis\" is the same."
 }

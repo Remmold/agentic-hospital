@@ -1,0 +1,74 @@
+{
+  "patient": {
+    "name": "John Thompson",
+    "age": 52,
+    "gender": "Male",
+    "symptoms": [
+      "slight difficulty in gripping objects",
+      "occasional muscle twitching in the arms",
+      "fatigue after minimal exertion",
+      "mild speech slurring when tired"
+    ],
+    "medical_history": "No significant medical history, non-smoker, moderate alcohol consumption",
+    "current_medications": [
+      "multivitamins"
+    ]
+  },
+  "actual_disease": "motor_neurone_disease",
+  "department": "Neurology",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "decision": {
+        "urgency": "semi_urgent",
+        "triage_reasoning": "The patient exhibits symptoms such as slight difficulty in gripping objects, occasional muscle twitching, fatigue after minimal exertion, and mild speech slurring, which suggest potential neurological issues or muscle weakness. These symptoms, while concerning, do not indicate immediate life-threatening conditions but warrant evaluation within an hour.",
+        "vital_signs_concern": false,
+        "notes": "The patient has no significant past medical history and is currently taking multivitamins. The absence of serious acute symptoms suggests that they are stable, but further assessment is recommended due to the neurological nature of the symptoms.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "Refer to a neurologist for further assessment and diagnostics."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": null,
+        "recommended_treatment": "Refer to a neurologist for further assessment and diagnostics.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "The patient has neurological concerns requiring specialist evaluation.",
+        "ordered_test": null,
+        "reasoning": "The patient presents with concerning neurological symptoms, including slight difficulty in gripping objects, occasional muscle twitching, fatigue, and mild speech slurring, indicating the need for specialized evaluation. Similar past cases have successfully led to diagnosis and management of potential conditions such as Parkinson's disease without prior testing. Given these factors, it is prudent to refer to a neurologist for further assessment.",
+        "tests_completed_count": 0
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "final_result",
+        "final_result"
+      ]
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": null,
+    "recommended_treatment": "Refer to a neurologist for further assessment and diagnostics.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "The patient has neurological concerns requiring specialist evaluation.",
+    "ordered_test": null,
+    "reasoning": "The patient presents with concerning neurological symptoms, including slight difficulty in gripping objects, occasional muscle twitching, fatigue, and mild speech slurring, indicating the need for specialized evaluation. Similar past cases have successfully led to diagnosis and management of potential conditions such as Parkinson's disease without prior testing. Given these factors, it is prudent to refer to a neurologist for further assessment.",
+    "tests_completed_count": 0
+  },
+  "total_steps": 2,
+  "is_correct": null,
+  "validation_reason": "No diagnosis made"
+}

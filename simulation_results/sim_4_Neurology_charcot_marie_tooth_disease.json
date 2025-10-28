@@ -1,0 +1,82 @@
+{
+  "patient": {
+    "name": "Evelyn Park",
+    "age": 34,
+    "gender": "Female",
+    "symptoms": [
+      "slight weakness in the ankles",
+      "occasional clumsiness when walking",
+      "frequent foot cramps",
+      "numbness in the toes",
+      "difficulty with fine motor skills in hands"
+    ],
+    "medical_history": "No significant medical history; active lifestyle with occasional jogging",
+    "current_medications": null
+  },
+  "actual_disease": "charcot_marie_tooth_disease",
+  "department": "Neurology",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "decision": {
+        "urgency": "semi_urgent",
+        "triage_reasoning": "The patient reports multiple symptoms, including slight weakness in the ankles, numbness in the toes, and difficulty with fine motor skills, which suggest possible neurological or vascular issues. These symptoms warrant further evaluation and attention within 30-60 minutes, especially considering the absence of acute life-threatening symptoms.",
+        "vital_signs_concern": false,
+        "notes": "The patient has no significant medical history and is not currently on any medications, which suggests that the new symptoms may require further investigation to rule out underlying conditions that could lead to deterioration.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "The physician should evaluate the patient for potential neurological issues or vascular conditions considering the combination of symptoms."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": "Possible Multiple Sclerosis",
+        "recommended_treatment": "Begin disease-modifying therapy; refer to a neurologist for comprehensive evaluation and management.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "Patient is exhibiting neurological symptoms including weakness in the ankles, numbness in the toes, and difficulty with fine motor skills, requiring further evaluation.",
+        "ordered_test": null,
+        "reasoning": "Given the symptoms of weakness in the ankles, numbness in the toes, and difficulty with fine motor skills, along with similar past cases indicating potential diagnoses of Multiple Sclerosis, it is appropriate to consider it as a possible diagnosis. The experiences highlight the importance of imaging in patients exhibiting neurological symptoms, especially in this patient demographic. No tests have been conducted thus far, but it is essential to obtain new tests, including an MRI and possibly an EEG, for further evaluation. The triage notes emphasize urgency due to the patient's symptom profile, warranting timely follow-up to confirm this diagnosis.",
+        "tests_completed_count": 0
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "final_result",
+        "final_result"
+      ]
+    },
+    {
+      "step": "validation",
+      "is_correct": false,
+      "reason": "Clear mismatch: 'multiple sclerosis' != 'charcot marie tooth disease'"
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "Possible Multiple Sclerosis",
+    "recommended_treatment": "Begin disease-modifying therapy; refer to a neurologist for comprehensive evaluation and management.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "Patient is exhibiting neurological symptoms including weakness in the ankles, numbness in the toes, and difficulty with fine motor skills, requiring further evaluation.",
+    "ordered_test": null,
+    "reasoning": "Given the symptoms of weakness in the ankles, numbness in the toes, and difficulty with fine motor skills, along with similar past cases indicating potential diagnoses of Multiple Sclerosis, it is appropriate to consider it as a possible diagnosis. The experiences highlight the importance of imaging in patients exhibiting neurological symptoms, especially in this patient demographic. No tests have been conducted thus far, but it is essential to obtain new tests, including an MRI and possibly an EEG, for further evaluation. The triage notes emphasize urgency due to the patient's symptom profile, warranting timely follow-up to confirm this diagnosis.",
+    "tests_completed_count": 0
+  },
+  "total_steps": 2,
+  "is_correct": false,
+  "validation_reason": "Clear mismatch: 'multiple sclerosis' != 'charcot marie tooth disease'"
+}

@@ -1,0 +1,119 @@
+{
+  "patient": {
+    "name": "Jordan Adams",
+    "age": 42,
+    "gender": "Male",
+    "symptoms": [
+      "mild headache",
+      "occasional dizziness",
+      "feeling a bit off balance",
+      "slight sensitivity to light",
+      "intermittent blurred vision"
+    ],
+    "medical_history": "Previously had a concussion from a sports injury 5 years ago",
+    "current_medications": [
+      "Ibuprofen"
+    ]
+  },
+  "actual_disease": "head_injury",
+  "department": "Neurology",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "decision": {
+        "urgency": "semi_urgent",
+        "triage_reasoning": "The patient has multiple symptoms, including a mild headache, dizziness, and intermittent blurred vision, which need attention within 30-60 minutes. The history of a concussion raises concerns for potential neurological issues, requiring further assessment.",
+        "vital_signs_concern": false,
+        "notes": "Patient is currently taking Ibuprofen for pain relief. There are no concerning vital signs at this time, but the symptoms are suggestive of a possible underlying condition that needs evaluation.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "Consider further neurological evaluation due to the history of concussion and current symptoms."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": null,
+        "recommended_treatment": "Neurological evaluation including imaging such as CT or MRI of the brain; consider referral to a neurologist.",
+        "follow_up_needed": true,
+        "next_step": "order_test",
+        "context_for_next": "Further testing will clarify the neurological status and guide treatment decisions based on imaging results.",
+        "ordered_test": "CT or MRI of the brain",
+        "reasoning": "The patient's history of concussion, combined with current symptoms such as headache, dizziness, and blurred vision, suggests the need for neurological evaluation. Similar cases show that these symptomatic presentations can indicate significant neurological events, such as strokes. Given the semi-urgent triage level and the total absence of prior tests, imaging is necessary to rule out serious conditions.",
+        "tests_completed_count": 0
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "final_result",
+        "final_result"
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "Lab",
+      "decision": {
+        "tests_ran": "CT or MRI of the brain",
+        "test_outcome": "CT scan: no acute hemorrhage, subtle changes in the white matter, MRI: mild cerebral edema noted"
+      },
+      "tools_used": [
+        "get_patient_data",
+        "get_test_type",
+        "get_disease",
+        "final_result"
+      ]
+    },
+    {
+      "step": 4,
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": "Post-concussion syndrome with mild cerebral edema",
+        "recommended_treatment": "Symptomatic management and follow-up neurological evaluation",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "Patient requires further neurological evaluation due to ongoing symptoms and history of concussion.",
+        "ordered_test": null,
+        "reasoning": "The nurse assessment indicated semi-urgent symptoms likely related to neurological issues stemming from a past concussion. Similar cases identified acute ischemic stroke due to neurological symptoms, but the existing CT and MRI results show mild cerebral edema, signifying post-concussion syndrome rather than stroke. Carefully weighing these results against past experiences highlights the importance of thorough neurological assessment for concussion patients. The current symptoms warrant continued monitoring and possible escalation in medical intervention. Follow-up with a neurologist is essential for a more detailed evaluation.",
+        "tests_completed_count": 1
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "final_result",
+        "final_result"
+      ]
+    },
+    {
+      "step": "validation",
+      "is_correct": false,
+      "reason": "Clear mismatch: 'post concussion syndrome' != 'head injury'"
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "Post-concussion syndrome with mild cerebral edema",
+    "recommended_treatment": "Symptomatic management and follow-up neurological evaluation",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "Patient requires further neurological evaluation due to ongoing symptoms and history of concussion.",
+    "ordered_test": null,
+    "reasoning": "The nurse assessment indicated semi-urgent symptoms likely related to neurological issues stemming from a past concussion. Similar cases identified acute ischemic stroke due to neurological symptoms, but the existing CT and MRI results show mild cerebral edema, signifying post-concussion syndrome rather than stroke. Carefully weighing these results against past experiences highlights the importance of thorough neurological assessment for concussion patients. The current symptoms warrant continued monitoring and possible escalation in medical intervention. Follow-up with a neurologist is essential for a more detailed evaluation.",
+    "tests_completed_count": 1
+  },
+  "total_steps": 4,
+  "is_correct": false,
+  "validation_reason": "Clear mismatch: 'post concussion syndrome' != 'head injury'"
+}

@@ -1,0 +1,82 @@
+{
+  "patient": {
+    "name": "Lucas Martin",
+    "age": 42,
+    "gender": "Male",
+    "symptoms": [
+      "muscle weakness that worsens by the end of the day",
+      "difficulty swallowing occasionally",
+      "slight drooping of eyelids",
+      "frequent nasal voice",
+      "intermittent fatigue after physical activity"
+    ],
+    "medical_history": "Previously diagnosed with hypothyroidism and managed on levothyroxine",
+    "current_medications": [
+      "Levothyroxine"
+    ]
+  },
+  "actual_disease": "myasthenia_gravis",
+  "department": "Neurology",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "decision": {
+        "urgency": "urgent",
+        "triage_reasoning": "The patient is presenting with muscle weakness, difficulty swallowing, drooping eyelids, nasal voice, and fatigue after activity. These symptoms may suggest a neuromuscular disorder, such as myasthenia gravis, especially given the muscle weakness that worsens throughout the day. This situation can escalate quickly, necessitating further evaluation within 10-15 minutes due to the risk of respiratory compromise from the swallowing difficulties.",
+        "vital_signs_concern": false,
+        "notes": "The patient's past diagnosis of hypothyroidism is relevant, but no immediate concerning vital signs were reported. Close monitoring is required due to the possibility of acute deterioration.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "Patient presenting with neuromuscular symptoms, needs evaluation for potential complications."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "get_current_medications",
+        "get_medical_history",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": "Myasthenia Gravis",
+        "recommended_treatment": "Refer to a neurologist for further evaluation and potential treatment with anticholinesterase agents.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "Patient needs urgent evaluation for potential complications related to Myasthenia Gravis.",
+        "ordered_test": null,
+        "reasoning": "The patient is presenting with neurological symptoms such as muscle weakness that worsens with activity and swallowing difficulties, which align with symptoms of Myasthenia Gravis. Similar cases of suspected neuromuscular disorders were able to be diagnosed without ordering tests and also successfully referred to specialists. Therefore, it's prudent to diagnose based on the symptoms presented and make an urgent referral to a neurologist for further evaluation and treatment. Given the potential for rapid deterioration, close follow-up is necessary.",
+        "tests_completed_count": 0
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "final_result",
+        "final_result"
+      ]
+    },
+    {
+      "step": "validation",
+      "is_correct": true,
+      "reason": "Exact match: 'myasthenia gravis'"
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "Myasthenia Gravis",
+    "recommended_treatment": "Refer to a neurologist for further evaluation and potential treatment with anticholinesterase agents.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "Patient needs urgent evaluation for potential complications related to Myasthenia Gravis.",
+    "ordered_test": null,
+    "reasoning": "The patient is presenting with neurological symptoms such as muscle weakness that worsens with activity and swallowing difficulties, which align with symptoms of Myasthenia Gravis. Similar cases of suspected neuromuscular disorders were able to be diagnosed without ordering tests and also successfully referred to specialists. Therefore, it's prudent to diagnose based on the symptoms presented and make an urgent referral to a neurologist for further evaluation and treatment. Given the potential for rapid deterioration, close follow-up is necessary.",
+    "tests_completed_count": 0
+  },
+  "total_steps": 2,
+  "is_correct": true,
+  "validation_reason": "Exact match: 'myasthenia gravis'"
+}
