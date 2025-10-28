@@ -6,6 +6,7 @@ from mistralai import Optional
 from pydantic_ai import Agent
 from dotenv import load_dotenv
 from hs_pipeline.utils.constants import CHOSEN_LLM
+from hs_pipeline.utils.diseases import DISEASES_BY_DEPARTMENT
 import random
 load_dotenv()
 
@@ -24,61 +25,8 @@ class PatientData:
     medical_history: Optional[str] = None
     current_medications: Optional[list[str]] = None
 
-DISEASES_BY_DEPARTMENT = {
-    "Cardiology": [
-        "myocardial_infarction",
-        "angina",
-        "heart_failure",
-        "atrial_fibrillation",
-        "hypertension",
-        "coronary_artery_disease",
-    ],
-    "Neurology": [
-        "migraine",
-        "stroke",
-        "epilepsy",
-        "meningitis",
-        "parkinsons_disease",
-        "multiple_sclerosis",
-    ],
-    "Respiratory": [
-        "pneumonia",
-        "asthma",
-        "copd",
-        "pulmonary_embolism",
-        "tuberculosis",
-        "bronchitis",
-    ],
-    "Gastroenterology": [
-        "appendicitis",
-        "gastroenteritis",
-        "cholecystitis",
-        "pancreatitis",
-        "peptic_ulcer",
-        "inflammatory_bowel_disease",
-    ],
-    "Endocrinology": [
-        "diabetes_mellitus",
-        "hyperthyroidism",
-        "hypothyroidism",
-        "cushings_syndrome",
-        "addisons_disease",
-    ],
-    "Rheumatology": [
-        "rheumatoid_arthritis",
-        "osteoarthritis",
-        "gout",
-        "lupus",
-        "fibromyalgia",
-    ],
-    "General": [
-        "flu",
-        "urinary_tract_infection",
-        "cellulitis",
-        "dehydration",
-        "allergic_reaction",
-    ]
-}
+
+
 
 
 def get_department_for_disease(disease: str) -> str:
