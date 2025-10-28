@@ -1,33 +1,27 @@
-"""
-Updated Runner - Uses department-based patient generation
-"""
+"""Medical simulation runner with learning capabilities."""
 from pathlib import Path
 from dataclasses import asdict
 import json
 import uuid
+import time
 
 from hs_pipeline.extraction import extractor, llm_parser
 from hs_pipeline.agents.nurse_agent import nurse_agent, PatientData
 from hs_pipeline.agents.doctor_agent import doctor_agent, DoctorDeps
 from hs_pipeline.agents.lab_agent import lab_agent, LabAgentDeps
 from hs_pipeline.agents.agent_loop import run_agent_with_retry, extract_tool_calls
-import time
 from hs_pipeline.agents.patient_generator import (  
-    generate_disease,
-    generate_patient_data,
-    generate_random_patient,
     generate_patient_for_department,
+    generate_random_patient
 )
 from hs_pipeline.utils.constants import DATA_PATH, CHOSEN_LLM
-
-# Learning imports
 from hs_pipeline.agents.disease_validation import validate_diagnosis
 from hs_pipeline.database_management.db_manager import get_db
 from hs_pipeline.agents.reflection_agent import create_learning_principle
 
 
 class SimulationRunner:
-    """Runs medical simulations with learning capabilities."""
+    """Runs medical simulations with learning."""
     
     def __init__(self):
         self.agents = {
@@ -35,36 +29,12 @@ class SimulationRunner:
             "Doctor": doctor_agent,
             "Lab": lab_agent
         }
-        
-        # Initialize database
         self.db = get_db()
         self.db.init_tables()
     
-    def _extract_experience_ids_from_timeline(self, timeline: list) -> list[str]:
-        """Extract experience IDs that were retrieved during doctor's decision."""
-        experience_ids = []
-        
-        for event in timeline:
-            # Look for doctor's tool calls
-            if event.get("agent") == "Doctor":
-                tools_used = event.get("tools_used", [])
-                # Check if doctor used search_relevant_experiences
-                if "search_relevant_experiences" in tools_used:
-                    # The experience IDs were already tracked in the tool itself
-                    # But we can still extract them from the database query logs
-                    # For now, we rely on the doctor_agent.py tool tracking
-                    pass
-        
-        # Note: We now track retrieval in doctor_agent.py directly,
-        # so this method is for future expansion if needed
-        return experience_ids
-
     def patient_from_document(self, pdf_path: Path) -> PatientData:
-        """Create PatientData from uploaded PDF."""
-        print(f"Extracting: {pdf_path.name}")
+        """Create PatientData from PDF."""
         text = extractor.extract_text_from_file(pdf_path)
-        
-        print("Parsing...")
         parsed = llm_parser.extract_patient_for_simulation(text)
         
         return PatientData(
@@ -75,7 +45,7 @@ class SimulationRunner:
         )
     
     def patient_from_text(self, symptoms: str, age: int = 45, name: str = "Custom", gender: str = "Unknown") -> PatientData:
-        """Create PatientData from text input."""
+        """Create PatientData from text."""
         return PatientData(
             name=name,
             age=age,
@@ -90,16 +60,7 @@ class SimulationRunner:
         department: str = "General",
         max_steps: int = 20
     ) -> dict:
-        """
-        Run agent simulation with validation and learning.
-        
-        Args:
-            patient: Patient data
-            actual_disease: Hidden disease for realistic lab results and validation
-            department: Medical department (for case organization and RAG)
-            max_steps: Max agent interactions
-        """
-        # Start new session for experience tracking
+        """Run simulation with validation and learning."""
         self.db.start_new_session()
         
         current_agent_name = "Nurse"
@@ -108,17 +69,16 @@ class SimulationRunner:
         result = None
         api_calls = 0
         timeline = []
-        ordered_tests = set()  # Track tests already ordered (NEW)
-        test_cycles = 0  # Track number of test rounds (NEW)
-        MAX_TEST_CYCLES = 3  # Limit test rounds (NEW)
-        used_experience_ids = set()  # Track which experiences were retrieved
+        ordered_tests = set()
+        test_cycles = 0
+        MAX_TEST_CYCLES = 3
         
         print(f"\n{'='*60}")
         print(f"Department: {department}")
         print(f"Patient: {patient.name}, {patient.age}y {patient.gender}")
         print(f"Symptoms: {', '.join(patient.symptoms)}")
         if actual_disease:
-            print(f"Hidden Disease: {actual_disease}")
+            print(f"Hidden: {actual_disease}")
         print(f"{'='*60}\n")
         
         while api_calls < max_steps:
@@ -127,12 +87,9 @@ class SimulationRunner:
             
             result = run_agent_with_retry(current_agent, context, current_deps)
             if CHOSEN_LLM == "gemini-2.5-flash":
-                if current_agent_name == "Doctor":
-                    time.sleep(30)
-                else:
-                    time.sleep(12)
-            api_calls += 1
+                time.sleep(30 if current_agent_name == "Doctor" else 12)
             
+            api_calls += 1
             timeline.append({
                 "step": api_calls,
                 "agent": current_agent_name,
@@ -142,7 +99,7 @@ class SimulationRunner:
             
             # Check completion
             if result.output.next_step in ["finish_chain", "discharge"]:
-                print(f"Done!")
+                print("Done!")
                 break
             
             # Send to doctor
@@ -158,15 +115,12 @@ class SimulationRunner:
             
             # Order test
             elif result.output.next_step == "order_test":
-                # NEW: Check for duplicate tests and cycle limit
                 requested_test = result.output.ordered_test.lower()
                 
-                # Check if already ordered
+                # Check duplicate
                 if requested_test in ordered_tests:
-                    print(f"  ⚠️  Test already ordered: {result.output.ordered_test}")
-                    print(f"  Forcing diagnosis with existing results...")
-                    # Force doctor to make diagnosis with what they have
-                    context = "Make a diagnosis based on the information you have. You've already ordered all necessary tests."
+                    print(f"  ⚠️ Test already ordered: {result.output.ordered_test}")
+                    context = "Make diagnosis with existing results. No more tests."
                     current_agent_name = "Doctor"
                     current_deps = DoctorDeps(
                         patient_data=patient,
@@ -176,12 +130,11 @@ class SimulationRunner:
                     )
                     continue
                 
-                # Check test cycle limit
+                # Check cycle limit
                 test_cycles += 1
                 if test_cycles > MAX_TEST_CYCLES:
-                    print(f"  ⚠️  Maximum test cycles ({MAX_TEST_CYCLES}) reached")
-                    print(f"  Forcing diagnosis with existing results...")
-                    context = "Make a final diagnosis. You've done enough testing."
+                    print(f"  ⚠️ Max test cycles ({MAX_TEST_CYCLES}) reached")
+                    context = "Final diagnosis with existing results."
                     current_agent_name = "Doctor"
                     current_deps = DoctorDeps(
                         patient_data=patient,
@@ -191,7 +144,6 @@ class SimulationRunner:
                     )
                     continue
                 
-                # NEW: Track this test
                 print(f"  Ordering: {result.output.ordered_test}")
                 ordered_tests.add(requested_test)
                 
@@ -204,9 +156,8 @@ class SimulationRunner:
                         test_type=result.output.ordered_test
                     )
                 )
-                time.sleep(12)
-                api_calls += 1
                 
+                api_calls += 1
                 timeline.append({
                     "step": api_calls,
                     "agent": "Lab",
@@ -214,8 +165,14 @@ class SimulationRunner:
                     "tools_used": extract_tool_calls(lab_result)
                 })
                 
-                lab_results = (current_deps.lab_results or []) + [lab_result.output]
+                if CHOSEN_LLM == "gemini-2.5-flash":
+                    time.sleep(12)
                 
+                # Update doctor deps with new results
+                lab_results = current_deps.lab_results or []
+                lab_results.append(lab_result.output)
+                
+                context = result.output.context_for_next
                 current_agent_name = "Doctor"
                 current_deps = DoctorDeps(
                     patient_data=patient,
@@ -224,61 +181,43 @@ class SimulationRunner:
                     department=department
                 )
         
-        # === VALIDATION AND LEARNING ===
-        is_correct = None
-        validation_reason = "No diagnosis to validate"
+        # Validation
+        is_correct = False
+        validation_reason = ""
         
-        # Check if we have a diagnosis (doctor finished, not nurse)
-        has_diagnosis = result and hasattr(result.output, 'diagnosis') and result.output.diagnosis
-        
-        if actual_disease and has_diagnosis:
-            is_correct, validation_reason = validate_diagnosis(
-                result.output.diagnosis,
-                actual_disease
-            )
+        if result and hasattr(result.output, 'diagnosis') and result.output.diagnosis:
+            print(f"\n💊 DIAGNOSIS: {result.output.diagnosis}")
             
-            print(f"\n{'='*60}")
-            print(f"VALIDATION")
-            print(f"{'='*60}")
-            print(f"Doctor diagnosed: {result.output.diagnosis}")
-            print(f"Actual disease:   {actual_disease}")
-            print(f"Result: {'✓ CORRECT' if is_correct else '✗ WRONG'}")
-            print(f"Reason: {validation_reason}")
-            print(f"{'='*60}\n")
-            
-            # Add validation to timeline
-            timeline.append({
-                "step": "validation",
-                "is_correct": is_correct,
-                "reason": validation_reason
-            })
-            
-            # Track experience outcomes for this session
-            self.db.track_session_outcome(was_correct=is_correct)
-            
-            # Store successful case in database
-            if is_correct:
-                self._store_successful_case(
-                    patient=patient,
-                    timeline=timeline,
-                    diagnosis=result.output.diagnosis,
-                    treatment=result.output.recommended_treatment,
-                    department=department
+            if actual_disease:
+                is_correct, validation_reason = validate_diagnosis(
+                    doctor_diagnosis=result.output.diagnosis,
+                    actual_disease=actual_disease,
+                    use_llm="fallback"
                 )
-            else:
-                # Learn from error
-                self._learn_from_error(
-                    patient=patient,
-                    timeline=timeline,
-                    wrong_diagnosis=result.output.diagnosis,
-                    correct_diagnosis=actual_disease,
-                    department=department
-                )
-        elif actual_disease and not has_diagnosis:
-            # Case ended without diagnosis (nurse finished directly)
-            print(f"\n⚠️  WARNING: Simulation ended without diagnosis")
-            print(f"Last agent: {current_agent_name}")
-            validation_reason = "No diagnosis made"
+                
+                status = "✅ CORRECT" if is_correct else "❌ WRONG"
+                print(f"{status}: {validation_reason}")
+                
+                # Track session outcome
+                self.db.track_session_outcome(is_correct)
+                
+                # Learn or store
+                if not is_correct:
+                    self._learn_from_error(
+                        patient, timeline, 
+                        result.output.diagnosis, actual_disease, 
+                        department
+                    )
+                else:
+                    self._store_successful_case(
+                        patient, timeline,
+                        result.output.diagnosis,
+                        result.output.recommended_treatment or "N/A",
+                        department
+                    )
+        else:
+            print(f"\n⚠️ No diagnosis made")
+            validation_reason = "No diagnosis"
         
         return {
             "patient": asdict(patient),
@@ -292,16 +231,10 @@ class SimulationRunner:
         }
     
     def _store_successful_case(
-        self,
-        patient: PatientData,
-        timeline: list,
-        diagnosis: str,
-        treatment: str,
-        department: str
+        self, patient: PatientData, timeline: list,
+        diagnosis: str, treatment: str, department: str
     ):
-        """Store a successful diagnosis in the Medical Case Base."""
-        
-        # Extract lab tests from timeline
+        """Store successful case in Medical Case Base."""
         examinations = []
         exam_results = []
         
@@ -312,7 +245,7 @@ class SimulationRunner:
                 exam_results.append(lab_data.get("test_outcome", ""))
         
         examination_ordered = ", ".join(examinations) if examinations else "None"
-        examination_results = "\n".join(exam_results) if exam_results else "Clinical diagnosis without tests"
+        examination_results = "\n".join(exam_results) if exam_results else "Clinical diagnosis"
         
         case_id = f"case_{uuid.uuid4()}"
         
@@ -322,31 +255,25 @@ class SimulationRunner:
                 department=department,
                 patient_age=patient.age,
                 patient_gender=patient.gender,
-                medical_history=patient.medical_history or "None reported",
+                medical_history=patient.medical_history or "None",
                 symptoms=", ".join(patient.symptoms),
                 examination_ordered=examination_ordered,
                 examination_results=examination_results,
                 diagnosis=diagnosis,
-                treatment_plan=treatment or "Not specified",
+                treatment_plan=treatment,
                 outcome="success"
             )
-            print(f"💾 Case {case_id} saved to Medical Case Base ({department})")
+            print(f"💾 Case saved to Medical Base ({department})")
         except Exception as e:
             print(f"❌ Error saving case: {e}")
     
     def _learn_from_error(
-        self,
-        patient: PatientData,
-        timeline: list,
-        wrong_diagnosis: str,
-        correct_diagnosis: str,
-        department: str
+        self, patient: PatientData, timeline: list,
+        wrong_diagnosis: str, correct_diagnosis: str, department: str
     ):
-        """Learn from a diagnostic error by creating and storing a principle."""
+        """Learn from diagnostic error."""
+        print(f"\n🧠 Reflecting...")
         
-        print(f"\n🧠 Reflecting on error...")
-        
-        # Extract tests from timeline
         tests_ordered = []
         test_results = []
         
@@ -356,7 +283,6 @@ class SimulationRunner:
                 tests_ordered.append(lab_data.get("tests_ran", ""))
                 test_results.append(lab_data.get("test_outcome", ""))
         
-        # Create principle
         principle = create_learning_principle(
             patient_data=patient,
             symptoms=", ".join(patient.symptoms),
@@ -368,13 +294,12 @@ class SimulationRunner:
         )
         
         if not principle:
-            print("❌ Failed to create learning principle")
+            print("❌ Failed to create principle")
             return
         
-        print(f"💡 Principle: {principle.principle_text}")
+        print(f"💡 {principle.principle_text}")
         print(f"   Confidence: {principle.confidence:.2f}")
         
-        # Save to experience base
         exp_id = f"exp_{uuid.uuid4()}"
         
         try:
@@ -384,29 +309,22 @@ class SimulationRunner:
                 principle_text=principle.principle_text,
                 validation_accuracy=principle.confidence
             )
-            print(f"💾 Experience {exp_id} saved to Experience Base ({department})")
+            print(f"💾 Experience saved to Base ({department})")
         except Exception as e:
             print(f"❌ Error saving experience: {e}")
 
 
-
-
 if __name__ == "__main__":    
-    # ======== CHANGE THESE PARAMETERS ========
-    NUM_SIMULATIONS = 3               # How many simulations to run
-    TARGET_DEPARTMENT = "Neurology"   # None for random, or: "Cardiology", "Neurology", "Respiratory", "Gastroenterology", "Endocrinology", "Rheumatology", "General"
-    # =========================================
-
+    NUM_SIMULATIONS = 1
+    TARGET_DEPARTMENT = "Orthopedics"  # departments are: Cardiology, Neurology, Respiratory, Gastroenterology, Endocrinology, Rheumatology, Orthopedics, General; set to None for random
+    
     runner = SimulationRunner()
     
     print(f"\n{'='*60}")
-    if TARGET_DEPARTMENT:
-        print(f"Running {NUM_SIMULATIONS} simulation(s) - Department: {TARGET_DEPARTMENT}")
-    else:
-        print(f"Running {NUM_SIMULATIONS} simulation(s) - Random departments")
+    dept_str = f"Department: {TARGET_DEPARTMENT}" if TARGET_DEPARTMENT else "Random departments"
+    print(f"Running {NUM_SIMULATIONS} simulations - {dept_str}")
     print(f"{'='*60}\n")
     
-    # Track results
     results_summary = {
         "correct": 0,
         "wrong": 0,
@@ -419,28 +337,20 @@ if __name__ == "__main__":
         print(f"# SIMULATION {i+1}/{NUM_SIMULATIONS}")
         print(f"{'#'*60}\n")
         
-        # Generate patient - either from specific department or random
         if TARGET_DEPARTMENT:
             patient, disease = generate_patient_for_department(TARGET_DEPARTMENT)
             department = TARGET_DEPARTMENT
         else:
             patient, disease, department = generate_random_patient()
         
-        # Run simulation
-        result = runner.run_simulation(
-            patient, 
-            actual_disease=disease, 
-            department=department
-        )
+        result = runner.run_simulation(patient, disease, department)
         
-        # Track results
         results_summary["total"] += 1
         if result["is_correct"]:
             results_summary["correct"] += 1
         else:
             results_summary["wrong"] += 1
         
-        # Track by department
         if department not in results_summary["by_department"]:
             results_summary["by_department"][department] = {"correct": 0, "wrong": 0}
         
@@ -449,23 +359,20 @@ if __name__ == "__main__":
         else:
             results_summary["by_department"][department]["wrong"] += 1
         
-        # Save individual result
         filename = f"simulation_results/sim_{i+1}_{department}_{disease}.json"
         with open(filename, "w") as f:
             json.dump(result, f, indent=2)
         print(f"📄 Saved to {filename}")
         
-        # Small delay between simulations to be safe
         if i < NUM_SIMULATIONS - 1:
             time.sleep(2)
     
-    # Print summary
     print(f"\n{'='*60}")
     print(f"SUMMARY - {NUM_SIMULATIONS} Simulations")
     print(f"{'='*60}")
-    print(f"Correct:   {results_summary['correct']} ({results_summary['correct']/results_summary['total']*100:.1f}%)")
-    print(f"Wrong:     {results_summary['wrong']} ({results_summary['wrong']/results_summary['total']*100:.1f}%)")
-    print(f"Total:     {results_summary['total']}")
+    print(f"Correct: {results_summary['correct']} ({results_summary['correct']/results_summary['total']*100:.1f}%)")
+    print(f"Wrong: {results_summary['wrong']} ({results_summary['wrong']/results_summary['total']*100:.1f}%)")
+    print(f"Total: {results_summary['total']}")
     print()
     
     print("By Department:")

@@ -37,8 +37,8 @@ You're a learning doctor who improves through experience.
 
 WORKFLOW (always in order):
 1. get_nurse_assessment() - understand urgency
-2. search_similar_cases() - learn from past successes
-3. search_relevant_experiences() - avoid past mistakes
+2. search_similar_cases() - learn from past successes across ALL departments
+3. search_relevant_experiences() - avoid past mistakes from ALL cases
 4. get_lab_results() - check existing tests BEFORE ordering new ones
 5. Decide: diagnose or test?
 
@@ -80,24 +80,41 @@ def get_lab_results(ctx: RunContext[DoctorDeps]) -> str:
 
 
 @doctor_agent.tool
-def search_similar_cases(ctx: RunContext[DoctorDeps], query: str = "") -> str:
-    """Search past cases with similar presentations."""
+def search_similar_cases(
+    ctx: RunContext[DoctorDeps], 
+    query: str = "",
+    search_all_departments: bool = True
+) -> str:
+    """
+    Search past cases with similar presentations.
+    
+    Args:
+        query: Search query (auto-generated from patient if empty)
+        search_all_departments: If True, search ALL departments; if False, only current department
+    """
     db = get_db()
     
     if not query:
         symptoms_str = ", ".join(ctx.deps.patient_data.symptoms)
         query = f"Age {ctx.deps.patient_data.age}, {symptoms_str}"
     
-    results = db.search_similar_cases(ctx.deps.department, query, n_results=3)
+    # Search globally or within department
+    dept_filter = None if search_all_departments else ctx.deps.department
+    results = db.search_similar_cases(query, department=dept_filter, n_results=3)
     
     if not results['ids'][0]:
-        return "No similar cases found yet."
+        scope = "any department" if search_all_departments else ctx.deps.department
+        return f"No similar cases found in {scope} yet."
     
-    output = f"Found {len(results['ids'][0])} similar cases:\n\n"
+    output = f"Found {len(results['ids'][0])} similar cases"
+    if search_all_departments:
+        output += " (across all departments)"
+    output += ":\n\n"
+    
     for i, case_id in enumerate(results['ids'][0], 1):
         case = db.get_case_details(case_id)
         if case:
-            output += f"Case {i}: Age {case['patient_age']}, {case['patient_gender']}\n"
+            output += f"Case {i} [{case['department']}]: Age {case['patient_age']}, {case['patient_gender']}\n"
             output += f"  Symptoms: {case['symptoms']}\n"
             output += f"  Tests: {case['examination_ordered']}\n"
             output += f"  Diagnosis: {case['diagnosis']}, Outcome: {case['outcome']}\n\n"
@@ -106,25 +123,43 @@ def search_similar_cases(ctx: RunContext[DoctorDeps], query: str = "") -> str:
 
 
 @doctor_agent.tool
-def search_relevant_experiences(ctx: RunContext[DoctorDeps], query: str = "") -> str:
-    """Search lessons learned from past mistakes."""
+def search_relevant_experiences(
+    ctx: RunContext[DoctorDeps], 
+    query: str = "",
+    search_all_departments: bool = True
+) -> str:
+    """
+    Search lessons learned from past mistakes.
+    
+    Args:
+        query: Search query (auto-generated from patient if empty)
+        search_all_departments: If True, search ALL departments; if False, only current department
+    """
     db = get_db()
     
     if not query:
         query = f"{', '.join(ctx.deps.patient_data.symptoms)} diagnosis"
     
-    results = db.search_relevant_experiences(ctx.deps.department, query, n_results=4)
+    # Search globally or within department
+    dept_filter = None if search_all_departments else ctx.deps.department
+    results = db.search_relevant_experiences(query, department=dept_filter, n_results=4)
     
     if not results['ids'][0]:
-        return "No experiences yet - learning from scratch!"
+        scope = "any department" if search_all_departments else ctx.deps.department
+        return f"No experiences in {scope} yet - learning from scratch!"
     
     # Auto-track retrieval
     db.track_experience_retrieval(results['ids'][0])
     
-    output = f"Found {len(results['ids'][0])} relevant experiences:\n\n"
+    output = f"Found {len(results['ids'][0])} relevant experiences"
+    if search_all_departments:
+        output += " (across all departments)"
+    output += ":\n\n"
+    
     for i, exp_id in enumerate(results['ids'][0], 1):
         exp = db.get_experience_details(exp_id)
         if exp:
-            output += f"{i}. {exp['principle_text']}\n   (Validation: {exp['validation_accuracy']:.0%})\n\n"
+            output += f"{i}. [{exp['department']}] {exp['principle_text']}\n"
+            output += f"   (Validation: {exp['validation_accuracy']:.0%})\n\n"
     
     return output
