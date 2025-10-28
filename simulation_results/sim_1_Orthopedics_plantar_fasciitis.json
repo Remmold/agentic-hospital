@@ -1,0 +1,44 @@
+{
+  "patient": {
+    "name": "Liam Thompson",
+    "age": 43,
+    "gender": "Male",
+    "symptoms": [
+      "mild heel pain after prolonged sitting",
+      "discomfort in the morning when getting out of bed",
+      "occasional tightness in the calf muscles",
+      "differences in foot arch noticed recently",
+      "slight swelling around the heel"
+    ],
+    "medical_history": "Has a history of experiencing occasional lower back pain, which was attributed to an old sports injury. Recently, has taken up running again after a long break.",
+    "current_medications": [
+      "Ibuprofen 200mg as needed for discomfort"
+    ]
+  },
+  "actual_disease": "plantar_fasciitis",
+  "department": "Orthopedics",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "decision": {
+        "urgency": "non_urgent",
+        "triage_reasoning": "The patient's symptoms are mild and not indicative of a life-threatening condition. They exhibit minor discomfort related to heel pain and tightness in calf muscles, likely related to increased activity after a long break. No significant acute distress is noted, and the condition does not pose an immediate risk.",
+        "vital_signs_concern": false,
+        "notes": "Patient may benefit from advice on proper footwear and stretches for calf and heel pain. Current medications (Ibuprofen) are appropriate for managing discomfort.",
+        "next_step": "discharge",
+        "context_for_next": "Advised to monitor symptoms and report any worsening or persistence. Recommended rest and possible follow-up if symptoms do not improve."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    }
+  ],
+  "final_diagnosis": null,
+  "total_steps": 1,
+  "is_correct": false,
+  "validation_reason": "No diagnosis"
+}

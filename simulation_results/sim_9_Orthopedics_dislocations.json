@@ -1,0 +1,71 @@
+{
+  "patient": {
+    "name": "Jordan Ellis",
+    "age": 27,
+    "gender": "Male",
+    "symptoms": [
+      "shoulder discomfort after a game",
+      "mild swelling around the shoulder",
+      "restricted mobility when lifting overhead",
+      "a sensation of instability when moving arm"
+    ],
+    "medical_history": "previous shoulder sprain while playing basketball",
+    "current_medications": null
+  },
+  "actual_disease": "dislocations",
+  "department": "Orthopedics",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "decision": {
+        "urgency": "semi_urgent",
+        "triage_reasoning": "The patient presents with shoulder discomfort and mild swelling after playing a game, which could indicate a possible sprain or injury. The symptoms of restricted mobility and instability when moving the arm suggest that the situation may not be life-threatening but does require assessment within 30-60 minutes to prevent potential worsening.",
+        "vital_signs_concern": false,
+        "notes": "The patient has a history of shoulder sprain, which may contribute to the current symptoms. No medications are reported, indicating minimal immediate risks.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "The doctor will need to assess the shoulder for potential injuries and recommend appropriate imaging or treatment."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": "Shoulder Sprain",
+        "recommended_treatment": "Rest, ice application, and possibly a physical therapy referral.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "Patient presents with shoulder discomfort and mild swelling, likely indicating a sprain based on previous similar cases.",
+        "ordered_test": null,
+        "reasoning": "The similar cases found indicate consistent outcomes for shoulder injuries with conservative treatment. Given the symptoms of discomfort and mild swelling, a shoulder sprain diagnosis is supported. No tests are needed at this time as treatment can proceed based on clinical findings and past experiences.",
+        "tests_completed_count": 0
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "final_result"
+      ]
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "Shoulder Sprain",
+    "recommended_treatment": "Rest, ice application, and possibly a physical therapy referral.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "Patient presents with shoulder discomfort and mild swelling, likely indicating a sprain based on previous similar cases.",
+    "ordered_test": null,
+    "reasoning": "The similar cases found indicate consistent outcomes for shoulder injuries with conservative treatment. Given the symptoms of discomfort and mild swelling, a shoulder sprain diagnosis is supported. No tests are needed at this time as treatment can proceed based on clinical findings and past experiences.",
+    "tests_completed_count": 0
+  },
+  "total_steps": 2,
+  "is_correct": false,
+  "validation_reason": "Clear mismatch: 'shoulder sprain' != 'dislocations'"
+}
