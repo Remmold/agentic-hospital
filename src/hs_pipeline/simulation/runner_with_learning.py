@@ -18,6 +18,7 @@ from hs_pipeline.utils.constants import DATA_PATH, CHOSEN_LLM
 from hs_pipeline.agents.disease_validation import validate_diagnosis
 from hs_pipeline.database_management.db_manager import get_db
 from hs_pipeline.agents.reflection_agent import create_learning_principle
+from hs_pipeline.agents.timeline_utils import extract_lab_data, format_examination_data
 
 
 class SimulationRunner:
@@ -235,17 +236,8 @@ class SimulationRunner:
         diagnosis: str, treatment: str, department: str
     ):
         """Store successful case in Medical Case Base."""
-        examinations = []
-        exam_results = []
-        
-        for event in timeline:
-            if event.get("agent") == "Lab":
-                lab_data = event.get("decision", {})
-                examinations.append(lab_data.get("tests_ran", ""))
-                exam_results.append(lab_data.get("test_outcome", ""))
-        
-        examination_ordered = ", ".join(examinations) if examinations else "None"
-        examination_results = "\n".join(exam_results) if exam_results else "Clinical diagnosis"
+        tests_ordered, test_results = extract_lab_data(timeline)
+        examination_ordered, examination_results = format_examination_data(tests_ordered, test_results)
         
         case_id = f"case_{uuid.uuid4()}"
         
@@ -274,14 +266,7 @@ class SimulationRunner:
         """Learn from diagnostic error."""
         print(f"\n🧠 Reflecting...")
         
-        tests_ordered = []
-        test_results = []
-        
-        for event in timeline:
-            if event.get("agent") == "Lab":
-                lab_data = event.get("decision", {})
-                tests_ordered.append(lab_data.get("tests_ran", ""))
-                test_results.append(lab_data.get("test_outcome", ""))
+        tests_ordered, test_results = extract_lab_data(timeline)
         
         principle = create_learning_principle(
             patient_data=patient,
@@ -315,8 +300,8 @@ class SimulationRunner:
 
 
 if __name__ == "__main__":    
-    NUM_SIMULATIONS = 1
-    TARGET_DEPARTMENT = "Orthopedics"  # departments are: Cardiology, Neurology, Respiratory, Gastroenterology, Endocrinology, Rheumatology, Orthopedics, General; set to None for random
+    NUM_SIMULATIONS = 10
+    TARGET_DEPARTMENT = "Neurology"  # or None for random
     
     runner = SimulationRunner()
     
