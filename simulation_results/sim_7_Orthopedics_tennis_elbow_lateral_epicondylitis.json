@@ -1,0 +1,73 @@
+{
+  "patient": {
+    "name": "David Johnson",
+    "age": 42,
+    "gender": "Male",
+    "symptoms": [
+      "occasional discomfort in the outer elbow",
+      "difficulty gripping objects but not constant",
+      "mild stiffness after resting",
+      "some tenderness when tapping the elbow"
+    ],
+    "medical_history": "previous minor wrist sprains",
+    "current_medications": [
+      "ibuprofen"
+    ]
+  },
+  "actual_disease": "tennis_elbow_lateral_epicondylitis",
+  "department": "Orthopedics",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "decision": {
+        "urgency": "semi_urgent",
+        "triage_reasoning": "The patient has symptoms suggesting a possible tendinopathy or mild inflammatory issue in the elbow, including occasional discomfort, difficulty gripping, and mild stiffness. These symptoms warrant attention due to potential worsening if untreated, but they do not present an immediate life-threatening risk.",
+        "vital_signs_concern": false,
+        "notes": "Patient has not indicated any acute distress or critical symptoms, and vital signs are stable. However, based on the nature of the symptoms and medical history, evaluation is necessary but can wait within 30-60 minutes.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "Elbow discomfort with difficulty gripping, mild stiffness after resting."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": "Lateral Epicondylitis (Tennis Elbow)",
+        "recommended_treatment": "Activity modification, NSAIDs for pain relief, physical therapy focusing on stretching and strengthening exercises, avoidance of repetitive strain activities.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "Monitor progress and consider imaging if symptoms do not improve with conservative management.",
+        "ordered_test": null,
+        "reasoning": "The patient's symptoms of elbow discomfort, difficulty griping, and mild stiffness are consistent with Lateral Epicondylitis, which is common in individuals with repetitive arm use. Cases found in orthopedics frequently relate to tendon injuries, and relevant experiences suggest conservative management is often effective.  No tests are needed at this time as the diagnosis is clear from the symptomatology and commonality in similar cases. Confidence level is high based on frequent presentations and successful outcomes in practice.",
+        "tests_completed_count": 0
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "final_result"
+      ]
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "Lateral Epicondylitis (Tennis Elbow)",
+    "recommended_treatment": "Activity modification, NSAIDs for pain relief, physical therapy focusing on stretching and strengthening exercises, avoidance of repetitive strain activities.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "Monitor progress and consider imaging if symptoms do not improve with conservative management.",
+    "ordered_test": null,
+    "reasoning": "The patient's symptoms of elbow discomfort, difficulty griping, and mild stiffness are consistent with Lateral Epicondylitis, which is common in individuals with repetitive arm use. Cases found in orthopedics frequently relate to tendon injuries, and relevant experiences suggest conservative management is often effective.  No tests are needed at this time as the diagnosis is clear from the symptomatology and commonality in similar cases. Confidence level is high based on frequent presentations and successful outcomes in practice.",
+    "tests_completed_count": 0
+  },
+  "total_steps": 2,
+  "is_correct": true,
+  "validation_reason": "LLM (high): Both terms refer to the same condition; Lateral Epicondylitis is the medical term for Tennis Elbow, and the actual disease name confirms this."
+}

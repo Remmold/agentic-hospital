@@ -11,7 +11,7 @@ class NurseAssessment(BaseModel):
     triage_reasoning: str = Field(description="Why this triage level?")
     vital_signs_concern: bool = Field(description="Are vitals concerning?")
     notes: str
-    next_step: Literal["send_to_doctor", "discharge"]
+    next_step: Literal["send_to_doctor"]
     context_for_next: str
 
 

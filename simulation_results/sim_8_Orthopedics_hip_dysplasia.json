@@ -1,0 +1,71 @@
+{
+  "patient": {
+    "name": "Samantha Blake",
+    "age": 27,
+    "gender": "Female",
+    "symptoms": [
+      "occasional hip discomfort during prolonged standing",
+      "slight limping after exercise",
+      "difficulty crossing legs while sitting",
+      "mild clicking sound in hip when getting up"
+    ],
+    "medical_history": "Experiences mild knee pain occasionally; no surgeries; plays recreational soccer.",
+    "current_medications": null
+  },
+  "actual_disease": "hip_dysplasia",
+  "department": "Orthopedics",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "decision": {
+        "urgency": "non_urgent",
+        "triage_reasoning": "The symptoms presented are mild and related to occasional discomfort without any acute pain, indicating that the patient can wait for further assessment. There are no concerning acute symptoms or a chronic disorder that would elevate the urgency.",
+        "vital_signs_concern": false,
+        "notes": "The patient shows signs of mild discomfort and some limitations in movement but is stable and without severe symptoms. Regular assessments for musculoskeletal conditions are recommended.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "Continue monitoring and provide guidance for exercises or physical therapy to alleviate discomfort."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": "Lateral Epicondylitis (Tennis Elbow)",
+        "recommended_treatment": "Rest, ice, use of forearm brace, and physical therapy guided by a professional. Stretching and strengthening exercises for the forearm muscles.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "Monitor symptoms and provide exercises for relief.",
+        "ordered_test": null,
+        "reasoning": "I found similar cases of Lateral Epicondylitis where symptoms aligned with occasional discomfort during activities. Successful treatments involved physical therapy and exercises aimed at strengthening and alleviating discomfort in the forearm muscles. No tests were required based on symptom clarity and past successful experiences.",
+        "tests_completed_count": 0
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "final_result"
+      ]
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "Lateral Epicondylitis (Tennis Elbow)",
+    "recommended_treatment": "Rest, ice, use of forearm brace, and physical therapy guided by a professional. Stretching and strengthening exercises for the forearm muscles.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "Monitor symptoms and provide exercises for relief.",
+    "ordered_test": null,
+    "reasoning": "I found similar cases of Lateral Epicondylitis where symptoms aligned with occasional discomfort during activities. Successful treatments involved physical therapy and exercises aimed at strengthening and alleviating discomfort in the forearm muscles. No tests were required based on symptom clarity and past successful experiences.",
+    "tests_completed_count": 0
+  },
+  "total_steps": 2,
+  "is_correct": false,
+  "validation_reason": "Clear mismatch: 'lateral epicondylitis' != 'hip dysplasia'"
+}

@@ -1,17 +1,17 @@
 {
   "patient": {
-    "name": "Eleanor Vance",
-    "age": 45,
+    "name": "Emily Johnson",
+    "age": 42,
     "gender": "Female",
     "symptoms": [
-      "Persistent low back stiffness, especially in the mornings",
-      "a deep ache in the glutes after prolonged standing",
-      "sometimes notices a feeling of 'instability' in her lower back with certain movements",
-      "occasional, fleeting numbness in the outer thigh"
+      "lower back discomfort",
+      "occasional tingling in the legs",
+      "stiffness after prolonged sitting",
+      "difficulty standing up straight after resting"
     ],
-    "medical_history": "Reports a history of gymnastics in high school, with a few minor back strains reported then. Has had intermittent lower back discomfort for several years, usually managed with rest.",
+    "medical_history": "previous episodes of back pain, mild scoliosis diagnosed in adolescence",
     "current_medications": [
-      "Naproxen (over-the-counter) as needed"
+      "ibuprofen"
     ]
   },
   "actual_disease": "spondylolisthesis",
@@ -22,11 +22,11 @@
       "agent": "Nurse",
       "decision": {
         "urgency": "semi_urgent",
-        "triage_reasoning": "Patient reports persistent low back stiffness, a deep ache in the glutes after prolonged standing, a feeling of instability in her lower back, and occasional fleeting numbness in the outer thigh. Her medical history includes intermittent lower back discomfort for several years, managed with rest and OTC Naproxen. The new symptoms of instability and fleeting numbness, even if intermittent, suggest potential nerve involvement and warrant evaluation within 30-60 minutes to rule out progressing musculoskeletal or neurological issues.",
+        "triage_reasoning": "The patient's lower back discomfort and occasional tingling in the legs suggest a potential underlying issue that requires attention. Given the medical history of previous back pain and scoliosis, these symptoms indicate at least a semi-urgent need for evaluation due to the risk of deterioration in condition.",
         "vital_signs_concern": false,
-        "notes": "Patient has chronic back pain with new onset of instability and fleeting numbness. Needs further assessment to determine the cause of these new symptoms and ensure appropriate management.",
+        "notes": "Patient exhibits symptoms related to chronic back issues, but no immediate life-threatening concerns noted. Current medication (ibuprofen) suggests mild management of pain.",
         "next_step": "send_to_doctor",
-        "context_for_next": "The patient requires a medical evaluation to assess the new symptoms of instability and fleeting numbness in the context of her chronic back pain. A doctor should perform a thorough examination to investigate potential nerve impingement or other spinal issues."
+        "context_for_next": "Patient should be evaluated by a physician for further assessment and possible imaging to rule out serious underlying conditions."
       },
       "tools_used": [
         "get_patient_symptoms",
@@ -43,9 +43,9 @@
         "recommended_treatment": null,
         "follow_up_needed": true,
         "next_step": "order_test",
-        "context_for_next": "The patient requires imaging to assess potential nerve impingement or other spinal issues causing the new symptoms of instability and fleeting numbness.",
+        "context_for_next": "MRI of the lumbar spine to assess for potential structural issues due to the symptoms of lower back discomfort and tingling in the legs.",
         "ordered_test": "MRI of the lumbar spine",
-        "reasoning": "The nurse's assessment indicates new, concerning symptoms of instability and fleeting numbness, suggesting potential nerve involvement. No similar cases or relevant experiences were found in the database, and no lab tests have been completed yet. To thoroughly investigate the spinal issues and potential nerve impingement, an MRI of the lumbar spine is necessary. The risk level is moderate due to potential neurological involvement, and confidence in a definitive diagnosis without further testing is moderate.",
+        "reasoning": "The patient presents with lower back pain and tingling in the legs, which, considering their medical history (previous back pain and scoliosis), raises concerns for significant structural issues. Similar cases have indicated that MRI is a crucial next step, especially in cases involving potential nerve compression or structural abnormalities. Given the absence of completed tests, MRI is warranted to explore the underlying causes of these symptoms. The urgency of the case is rated as semi-urgent due to risks of deterioration.",
         "tests_completed_count": 0
       },
       "tools_used": [
@@ -61,11 +61,10 @@
       "agent": "Lab",
       "decision": {
         "tests_ran": "MRI of the lumbar spine",
-        "test_outcome": "L5-S1 anterior vertebral body slippage: 6 mm, L5-S1 disc height: 5 mm, Bilateral L5 foraminal diameter: 3 mm, Lumbar spinal canal AP diameter at L4-L5: 11 mm, L5-S1 facet joint effusions and hypertrophy noted"
+        "test_outcome": "Findings suggest the presence of pars defect at L5 with anterior displacement of L5 over S1. Moderate neuroforaminal stenosis noted bilaterally. Mild degenerative changes in adjacent discs."
       },
       "tools_used": [
-        "get_test_type",
-        "get_disease",
+        "get_test_context",
         "final_result"
       ]
     },
@@ -73,13 +72,13 @@
       "step": 4,
       "agent": "Doctor",
       "decision": {
-        "diagnosis": "L5-S1 Spondylolisthesis (6mm anterior slippage) with Bilateral L5 Foraminal Stenosis and Degenerative Disc Disease, accompanied by Lumbar Spinal Canal Stenosis at L4-L5.",
-        "recommended_treatment": "Initial conservative management including targeted physical therapy for core strengthening and pain management (e.g., NSAIDs, muscle relaxants, epidural injections if needed). Immediate referral to an orthopedic spine specialist or neurosurgeon is strongly recommended for surgical evaluation due to the significant L5-S1 spondylolisthesis and bilateral L5 nerve root compression, which are likely contributing to the instability and neurological symptoms.",
+        "diagnosis": "L5-S1 Spondylolisthesis with moderate neuroforaminal stenosis",
+        "recommended_treatment": "Physical therapy, possible surgical consultation depending on symptoms and response to conservative management.",
         "follow_up_needed": true,
         "next_step": "finish_chain",
-        "context_for_next": "Patient has L5-S1 spondylolisthesis, bilateral L5 foraminal stenosis, and degenerative disc disease at L5-S1, with contributing lumbar spinal canal stenosis at L4-L5.",
+        "context_for_next": "Patient reports lower back discomfort and tingling in legs.",
         "ordered_test": null,
-        "reasoning": "Similar cases: None found. Relevant experiences: None found. Tests completed: 1 (MRI of the lumbar spine). Risk level: Semi-urgent due to new neurological symptoms (fleeting numbness) and spinal instability confirmed by imaging. Confidence: High, as MRI findings strongly correlate with and explain patient's symptoms of low back stiffness, gluteal ache, instability, and fleeting numbness. The 6mm spondylolisthesis and 3mm foraminal diameter at L5 are significant findings.",
+        "reasoning": "The findings from the MRI indicate a pars defect and L5-S1 spondylolisthesis, which correlates with the patient's symptoms of lower back discomfort and tingling in the legs. The similar previous cases show that spondylolisthesis with neuroforaminal stenosis can lead to such symptoms. Given these factors and the existing imaging results, the diagnosis is clear. Treatment will focus on conservative management initially, with a possibility of surgery if warranted.",
         "tests_completed_count": 1
       },
       "tools_used": [
@@ -92,16 +91,16 @@
     }
   ],
   "final_diagnosis": {
-    "diagnosis": "L5-S1 Spondylolisthesis (6mm anterior slippage) with Bilateral L5 Foraminal Stenosis and Degenerative Disc Disease, accompanied by Lumbar Spinal Canal Stenosis at L4-L5.",
-    "recommended_treatment": "Initial conservative management including targeted physical therapy for core strengthening and pain management (e.g., NSAIDs, muscle relaxants, epidural injections if needed). Immediate referral to an orthopedic spine specialist or neurosurgeon is strongly recommended for surgical evaluation due to the significant L5-S1 spondylolisthesis and bilateral L5 nerve root compression, which are likely contributing to the instability and neurological symptoms.",
+    "diagnosis": "L5-S1 Spondylolisthesis with moderate neuroforaminal stenosis",
+    "recommended_treatment": "Physical therapy, possible surgical consultation depending on symptoms and response to conservative management.",
     "follow_up_needed": true,
     "next_step": "finish_chain",
-    "context_for_next": "Patient has L5-S1 spondylolisthesis, bilateral L5 foraminal stenosis, and degenerative disc disease at L5-S1, with contributing lumbar spinal canal stenosis at L4-L5.",
+    "context_for_next": "Patient reports lower back discomfort and tingling in legs.",
     "ordered_test": null,
-    "reasoning": "Similar cases: None found. Relevant experiences: None found. Tests completed: 1 (MRI of the lumbar spine). Risk level: Semi-urgent due to new neurological symptoms (fleeting numbness) and spinal instability confirmed by imaging. Confidence: High, as MRI findings strongly correlate with and explain patient's symptoms of low back stiffness, gluteal ache, instability, and fleeting numbness. The 6mm spondylolisthesis and 3mm foraminal diameter at L5 are significant findings.",
+    "reasoning": "The findings from the MRI indicate a pars defect and L5-S1 spondylolisthesis, which correlates with the patient's symptoms of lower back discomfort and tingling in the legs. The similar previous cases show that spondylolisthesis with neuroforaminal stenosis can lead to such symptoms. Given these factors and the existing imaging results, the diagnosis is clear. Treatment will focus on conservative management initially, with a possibility of surgery if warranted.",
     "tests_completed_count": 1
   },
   "total_steps": 4,
   "is_correct": true,
-  "validation_reason": "LLM (high): The doctor's diagnosis explicitly includes 'Spondylolisthesis' with additional details and co-occurring conditions, making it a match for the actual disease 'spondylolisthesis'."
+  "validation_reason": "LLM (high): L5-S1 Spondylolisthesis is a specific type of spondylolisthesis that occurs at the L5-S1 spinal segment. Since the actual disease is spondylolisthesis, they refer to the same condition, with the doctor's diagnosis being more specific."
 }

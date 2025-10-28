@@ -120,6 +120,19 @@ class SimulationRunner:
             
             # Order test
             elif result.output.next_step == "order_test":
+                # Handle case where doctor said "order_test" but didn't specify which test
+                if not result.output.ordered_test:
+                    print(f"  ⚠️ Doctor requested test but didn't specify which one")
+                    context = "You need to specify which test to order, or make a diagnosis."
+                    current_agent_name = "Doctor"
+                    current_deps = DoctorDeps(
+                        patient_data=patient,
+                        nurse_assessment=current_deps.nurse_assessment,
+                        lab_results=current_deps.lab_results or [],
+                        department=department
+                    )
+                    continue
+                
                 requested_test = result.output.ordered_test.lower()
                 
                 # Check duplicate
@@ -305,7 +318,7 @@ class SimulationRunner:
 
 if __name__ == "__main__":    
     NUM_SIMULATIONS = 10
-    TARGET_DEPARTMENT = "Neurology"  # or None for random
+    TARGET_DEPARTMENT = "Orthopedics"  # or None for random
     
     runner = SimulationRunner()
     

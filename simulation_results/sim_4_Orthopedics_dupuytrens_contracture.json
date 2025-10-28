@@ -1,0 +1,73 @@
+{
+  "patient": {
+    "name": "Lillian Graham",
+    "age": 64,
+    "gender": "Female",
+    "symptoms": [
+      "difficulty straightening ring finger",
+      "occasional tenderness in palm",
+      "slight hand fatigue after activities",
+      "noticing a bump in palm over time"
+    ],
+    "medical_history": "Mild diabetes, managed with diet",
+    "current_medications": [
+      "Metformin"
+    ]
+  },
+  "actual_disease": "dupuytrens_contracture",
+  "department": "Orthopedics",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "decision": {
+        "urgency": "semi_urgent",
+        "triage_reasoning": "Patient has symptoms consistent with possible trigger finger or Dupuytren's contracture, which while not life-threatening, show signs of moderate symptoms that may require intervention. The mild diabetes adds a level of caution since it can affect overall healing and may complicate treatment.",
+        "vital_signs_concern": false,
+        "notes": "Symptoms include difficulty straightening the ring finger and tenderness; these warrant further evaluation. No acute distress is noted and vital signs are stable.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "Patient will need an orthopedic evaluation for hand symptoms and consideration of treatment options."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "decision": {
+        "diagnosis": "trigger finger",
+        "recommended_treatment": "Option for corticosteroid injection or splinting, depending on severity.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "Patient has moderate symptoms consistent with trigger finger, which has been successfully treated in similar cases with corticosteroid injection or splinting.",
+        "ordered_test": null,
+        "reasoning": "Based on nurse assessment indicating semi-urgent symptoms consistent with trigger finger and four successful similar cases. No new lab tests are necessary, as symptoms are clear and treatment options exist that have previously succeeded.",
+        "tests_completed_count": 0
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "final_result"
+      ]
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "trigger finger",
+    "recommended_treatment": "Option for corticosteroid injection or splinting, depending on severity.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "Patient has moderate symptoms consistent with trigger finger, which has been successfully treated in similar cases with corticosteroid injection or splinting.",
+    "ordered_test": null,
+    "reasoning": "Based on nurse assessment indicating semi-urgent symptoms consistent with trigger finger and four successful similar cases. No new lab tests are necessary, as symptoms are clear and treatment options exist that have previously succeeded.",
+    "tests_completed_count": 0
+  },
+  "total_steps": 2,
+  "is_correct": false,
+  "validation_reason": "Clear mismatch: 'trigger finger' != 'dupuytrens contracture'"
+}

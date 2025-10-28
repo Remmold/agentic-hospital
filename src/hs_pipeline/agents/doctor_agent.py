@@ -48,11 +48,13 @@ TESTING RULES:
 - Don't repeat completed tests
 - Order tests only for: unclear symptoms, high-risk cases, or when experiences suggest it
 - You CAN diagnose with 0 tests if symptoms are clear and similar cases worked
+- When ordering tests, specify which one and why
 
 DIAGNOSIS RULES:
 - Use specific disease names (not "unknown")
 - Be confident or explain why you need more info
 - Treatment must match diagnosis
+- Cant finish_chain without diagnosis
 
 REASONING:
 Include: similar cases found, relevant experiences, tests completed, risk level, confidence
