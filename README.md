@@ -1,73 +1,100 @@
-# Hospital Simulation Pipeline
+# Hospital Simulation System
 
-**The Goal**:
-A modular Python application for extracting, parsing, and structuring medical document data to simulate hospital workflows.
+**Multi-Agent Medical Diagnosis Simulation with Visual Environment**
 
 ## Project Overview
 
-This project processes medical PDF documents (athletic trainer notes, injury reports, doctor notes) and converts them into structured FHIR-compliant data. The extracted information is used to simulate and compare patient flow through traditional hospitals versus AI-enhanced digital hospitals.
+An interactive hospital simulation system that visualizes AI agents (doctors, nurses, lab staff) diagnosing patients through a step-by-step workflow. The system uses synthetic medical simulation data to animate agent movements through a digital hospital, tracking diagnostic accuracy and learning from outcomes.
 
-### Key Features
+### Key Components
 
-- **PDF Text Extraction**: Extracts text from medical documents using PyMuPDF
-- **Medical Data Parsing**: Identifies patient information, clinical sections (SOAP notes), and medical entities
-- **FHIR Conversion**: Transforms parsed data into FHIR-compliant JSON format
-- **Patient Grouping**: Organizes multiple documents by patient for longitudinal analysis
-- **Hospital Simulation**: Compares workflow efficiency between traditional and AI-powered hospitals
+1. **Agent-Based Simulation**: `Pydantic AI`-based medical agents (Nurse, Doctor, Lab, etc) that process patient cases through triage, examination, and testing
+2. **Visual Environment**: `Phaser.js`-powered 2D hospital with tile-based rooms and animated character sprites
+3. **Streamlit Dashboard**: Interface for selecting cases, viewing simulation steps, and tracking diagnostic outcomes (*in development - might drop later*)
+4. **Learning Loop**: Agents improve diagnostic accuracy by analyzing successful vs unsuccessful cases
 
 ## Project Structure
-```
-hospital-simulation-pipeline/
-├── src/
-│   └── hs_pipeline/
-│       ├── ocr/              # PDF extraction and parsing
-│       │   └── data/         # Input data (PDF documents)
-│       ├── nlp/              # Medical entity extraction
-│       ├── fhir/             # FHIR conversion
-│       ├── simulation/       # Hospital workflow simulation
-│       └── utils/            # Shared utilities & constants
-├── pyproject.toml            # Project configuration
-├── uv.lock                   # Dependency lock file
-└── README.md                 # This file
-```
+### agents/
+AI agent implementations that simulate medical staff decision-making. Each agent (Nurse, Doctor, Lab) has structured inputs/outputs and follows clinical workflows. Agents use LLMs to make realistic decisions based on patient data and previous steps in the diagnostic process.
+
+### database_management/
+Storage layer for patient cases, learning, and diagnostic outcomes. Intended for tracking agent performance over time and enabling the learning system to analyze patterns in successful vs unsuccessful diagnoses.
+
+### extraction/
+(Legacy) PDF text extraction and medical document parsing. Originally designed to convert different medical documents into structured data. Contains OCR utilities and LLM-based parsing. Currently unused but retained for potential integration with real medical documents.
+
+### simulation/
+Orchestrates multi-agent diagnostic workflows. The `runner.py` coordinates agent interactions (Nurse → Doctor → Lab), manages state between steps, and outputs JSON timelines. The `ui/data/` subfolder contains pre-configured case scenarios for testing.
+
+### ui/
+Streamlit dashboard for case selection and simulation playback. Provides a two-column interface: left side shows patient info and controls (Start/Pause/Reset), right side displays the step-by-step timeline as agents make decisions. Links to the Phaser visualization for spatial representation.
+
+### utils/
+Shared utilities, constants, and helper functions used across modules. Includes common data structures, configuration management, and reusable logic for agent coordination.
+
+### visualization/
+Phaser.js-powered 2D hospital environment. Contains the Tiled map (`hospital_scene.json`), all tilesets (floors, walls, props, borders), character spritesheets, and the game logic (`game.js`, `HospitalScene.js`, etc).
+
+(To be implemented) Reads JSON timelines from the simulation module and animates agents moving through rooms to perform diagnostic tasks.
+
+## Current Status: MVP Phase
+
+### ✅ Completed
+- Agent-based simulation pipeline (Nurse → Doctor → Lab)
+- JSON timeline generation from agent decisions
+- Learning system (agents improve from mistakes)
+- Character sprite loading and positioning
+- Layer depth management for sprite occlusion
+- Animation system (idle, walking)
+- Streamlit case selection interface
+
+### 🚧 In Progress
+- AI-agent integration with Phaser
+- A* pathfinding
+- Simulation playback from JSON timeline
+
+### 📋 Planned
+- Custom user input scenario
+- Diagnostic outcome metrics
+- Polishing of depth zones, collision, etc
 
 ## Installation
 
 ### Prerequisites
+- **Python 3.9+**
+- **uv** (Python package manager)
+- **Node.js** (optional, for Phaser development)
 
-- Python 3.9 or higher
-- uv (fast Python package installer)
-
-### Setup
+### Setup & Run
 
 1. **Clone the repository**
-    ```bash
-    git clone 
-    cd hospital-simulation-pipeline
-    ```
-
-2. **Install dependencies**
-    ```bash
-    uv sync
-    ```
-
-    This will create a virtual environment and install all dependencies from `uv.lock`.
-
-### Required Dependencies
-```
-pymupdf>=1.23.0
-fhir.resources>=7.0.0
-spacy>=3.7.0
-pandas>=2.0.0
+```bash
+   git clone <repository-url>
+   cd hospital-simulation-pipeline
 ```
 
-## Development
+2. **Install Python dependencies**
+```bash
+   uv sync
+```
 
-This project is under active development. The codebase is designed with modularity and scalability in mind.
+3. **Run Phaser visualization**
+```bash
+   cd src/hs_pipeline/visualization
+   python -m http.server 8000
+```
+   Open browser to `http://localhost:8000`
 
-### Design Principles
+## Technology Stack
 
-- **Modular Architecture**: Each component has a single, well-defined responsibility
-- **Separation of Concerns**: OCR, parsing, NLP, and FHIR conversion are independent modules
-- **Extensibility**: Easy to add new document types, extraction patterns, or FHIR resources
-- **Testability**: Functions are designed to be easily unit tested
+- **Backend**: Python 3.9, OpenAI API, Pydantic & Pydantic AI
+- **Frontend**: Streamlit (dashboard), Phaser 3 (visualization)
+- **Map Editor**: Tiled (2D map creation)
+- **Asset Management**: Custom 32x32px tilesets
+
+## Design Philosophy
+
+- **Modular Architecture**: Each agent operates independently
+- **Data-Driven**: Simulation behavior defined by JSON configurations
+- **Visual First**: Every agent action is visually represented
+- **Iterative Learning**: System improves through outcome analysis
