@@ -2,10 +2,8 @@
 import time
 
 
-# ============================================================================
-# RETRY & ERROR HANDLING
-# ============================================================================
 
+# RETRY & ERROR HANDLING
 def run_agent_with_retry(agent, context, deps, max_attempts=3):
     """Run agent with automatic retry on failure."""
     for attempt in range(max_attempts):
@@ -19,10 +17,8 @@ def run_agent_with_retry(agent, context, deps, max_attempts=3):
             time.sleep(1)
 
 
-# ============================================================================
-# TOOL CALL EXTRACTION
-# ============================================================================
 
+# TOOL CALL EXTRACTION
 def extract_tool_calls(result) -> list[str]:
     """Extract list of tool names used by agent."""
     tools = []
@@ -44,10 +40,8 @@ def show_tool_calls(result, agent_name: str):
                     print(f"   Args: {part.args}")
 
 
-# ============================================================================
-# TIMELINE PARSING
-# ============================================================================
 
+# TIMELINE PARSING
 def extract_lab_data(timeline: list) -> tuple[list[str], list[str]]:
     """
     Extract test names and results from timeline.

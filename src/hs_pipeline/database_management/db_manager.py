@@ -84,7 +84,7 @@ class AgentHospitalDB:
         
         self.duckdb.commit()
     
-    # Global ChromaDB collections (not department-specific)
+    
     def get_medical_cases_collection(self):
         """Global vector store for all medical cases."""
         return self.chroma.get_or_create_collection(

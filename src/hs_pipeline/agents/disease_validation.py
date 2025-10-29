@@ -9,10 +9,8 @@ from hs_pipeline.utils.constants import CHOSEN_LLM
 import re
 
 
-# ============================================================================
-# LLM VALIDATOR (only used for uncertain cases)
-# ============================================================================
 
+# LLM VALIDATOR (only used for uncertain cases)
 class ValidationResult(BaseModel):
     """LLM validation result."""
     is_match: bool
@@ -41,10 +39,8 @@ llm_validator = Agent(
 )
 
 
-# ============================================================================
-# RULE-BASED VALIDATION (fast, deterministic)
-# ============================================================================
 
+# RULE-BASED VALIDATION (fast, deterministic)
 def normalize_disease_name(disease: str) -> str:
     """Normalize disease name for comparison."""
     if not disease:
@@ -141,10 +137,8 @@ def validate_with_rules(doctor_diagnosis: str, actual_disease: str) -> Tuple[boo
     return None, f"Uncertain match", 0.3
 
 
-# ============================================================================
-# LLM VALIDATION (for uncertain cases)
-# ============================================================================
 
+# LLM VALIDATION (for uncertain cases)
 def validate_with_llm(doctor_diagnosis: str, actual_disease: str) -> Tuple[bool, str]:
     """LLM-based validation."""
     try:
@@ -168,10 +162,7 @@ def validate_with_llm(doctor_diagnosis: str, actual_disease: str) -> Tuple[bool,
         return False, f"LLM validation failed: {e}"
 
 
-# ============================================================================
 # MAIN VALIDATION FUNCTION (the only one you need to call)
-# ============================================================================
-
 def validate_diagnosis(
     doctor_diagnosis: str,
     actual_disease: str,
@@ -218,10 +209,6 @@ def validate_diagnosis(
     # "never" mode but uncertain - default to False
     return False, f"Uncertain: {reason}"
 
-
-# ============================================================================
-# QUICK TEST
-# ============================================================================
 
 if __name__ == "__main__":
     print("Testing hybrid validation...\n")
