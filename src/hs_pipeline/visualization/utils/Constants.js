@@ -4,7 +4,7 @@ export const LOCATIONS = {
     ENTRANCE: { x: 21 * 32, y: 33 * 32, name: 'Hospital Entrance' },
     
     // Examination Rooms
-    NURSE_OFFICE: { x: 34 * 32, y: 18 * 32, name: 'Examination Room 1' }, // Nurses office
+    NURSE_OFFICE: { x: 34 * 32, y: 17 * 32, name: 'Examination Room 1' }, // Nurses office
     DOCTORS_OFFICE: { x: 37 * 32, y: 12 * 32, name: 'Examination Room 2' }, // Doctors office
     
     RECEPTION: { x: 17 * 32, y: 26 * 32, name: 'Reception' },

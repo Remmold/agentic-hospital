@@ -1,13 +1,27 @@
 export class PathfindingGrid {
-    constructor(tilemap, collisionLayer) {
+    constructor(tilemap, collisionLayer, collisionManager = null) {
         this.tilemap = tilemap;
         this.layer = collisionLayer;
+        this.collisionManager = collisionManager;
         this.tileSize = tilemap.tileWidth;
     }
 
     isWalkable(tileX, tileY) {
+        // Check Tile-based collision
         const tile = this.layer.getTileAt(tileX, tileY);
-        return !tile || !tile.collides;
+        if (tile && tile.collides) {
+            return false;
+        }
+
+        // Check Prop collision objects (circles/rectangles)
+        if (this.collisionManager) {
+            const worldPos = this.tileToWorld(tileX, tileY);
+            if (this.collisionManager.isBlocked(worldPos.x, worldPos.y)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     worldToTile(x, y) {
