@@ -73,6 +73,50 @@ export class CollisionManager {
         return this.collisionGroup;
     }
 
+    /**
+     * Check if a world position is blocked by any collision object
+     * @param {number} worldX - World X coordinate
+     * @param {number} worldY - World Y coordinate
+     * @param {number} buffer - Buffer distance around collision (default: 8 pixels)
+     * @returns {boolean} True if position is blocked
+     */
+    isBlocked(worldX, worldY, buffer = 8) {
+        if (!this.collisionGroup) return false;
+
+        const colliders = this.collisionGroup.getChildren();
+
+        for (let i = 0; i < colliders.length; i++) {
+            const collider = colliders[i];
+
+            // Check if it's a circle (Arc type)
+            if (collider.type === 'Arc') {
+                const dx = worldX - collider.x;
+                const dy = worldY - collider.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance <= collider.radius + buffer) {
+                    return true; // Blocked by circle
+                }
+            }
+            // Check if it's a rectangle
+            else if (collider.type === 'Rectangle') {
+                // Rectangle bounds (collider.x and collider.y are center positions)
+                const halfWidth = collider.width / 2;
+                const halfHeight = collider.height / 2;
+                const left = collider.x - halfWidth - buffer;
+                const right = collider.x + halfWidth + buffer;
+                const top = collider.y - halfHeight - buffer;
+                const bottom = collider.y + halfHeight + buffer;
+
+                if (worldX >= left && worldX <= right &&
+                    worldY >= top && worldY <= bottom) {
+                    return true; // Blocked by rectangle
+                }
+            }
+        }
+
+        return false; // Not blocked
+    }
+
     // Enable debug visualization of collision shapes (only if DEV_MODE is enabled)
     enableDebug() {
         if (!this.collisionGroup) return;

@@ -2,9 +2,9 @@ import { PathfindingGrid } from './PathfindingGrid.js';
 import { AStarPathfinder } from './AStarPathfinder.js';
 
 export class PathfindingManager {
-    constructor(scene, map, collisionLayer) {
+    constructor(scene, map, collisionLayer, collisionManager = null) {
         this.scene = scene;
-        this.grid = new PathfindingGrid(map, collisionLayer);
+        this.grid = new PathfindingGrid(map, collisionLayer, collisionManager);
         this.pathfinder = new AStarPathfinder(this.grid);
     }
 

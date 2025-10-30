@@ -39,18 +39,24 @@ export class SimulationPlayer {
 
     spawnPatient() {
         const entrance = LOCATIONS.ENTRANCE;
-        
+
         // USE FACTORY TO CREATE CHARACTER
         this.npc = CharacterFactory.createCharacter(
             this.scene,
             'patient',
-            'patient', // Can change to 'patient_1', 'patient_2', etc.
+            'patient',
             entrance.x,
             entrance.y
         );
-        
+
+        // Collision
         this.scene.physics.add.collider(this.npc, this.scene.layers.collision);
-        
+
+        const collisionGroup = this.scene.collisionManager?.getCollisionGroup();
+        if (collisionGroup) {
+            this.scene.physics.add.collider(this.npc, collisionGroup);
+        }
+
         console.log(`Patient spawned: ${this.simulationData.patient.name}`);
     }
 

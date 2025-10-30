@@ -72,7 +72,7 @@ export class HospitalScene extends Phaser.Scene {
         // Center the narrower body horizontally and offset vertically
         // X offset: (32 - 20) / 2 = 6px to center the 20px body in the 32px sprite
         // Y offset: 64 - 24 = 40px to position at the feet
-        this.patient.body.setOffset(6, 40);
+        this.patient.body.setOffset(6, 42);
 
         // Collisions
         this.physics.add.collider(this.patient, this.layers.collision);
@@ -107,7 +107,12 @@ export class HospitalScene extends Phaser.Scene {
     
     // Setup pathfinding system
     setupPathfinding() {
-        this.pathfinding = new PathfindingManager(this, this.map, this.layers.collision);
+        this.pathfinding = new PathfindingManager(
+            this,
+            this.map,
+            this.layers.collision,
+            this.collisionManager
+        );
     }
 
     // Setup click-to-move for testing
