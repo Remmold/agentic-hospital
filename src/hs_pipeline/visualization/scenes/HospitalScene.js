@@ -3,6 +3,12 @@ import { InputManager } from '../utils/InputManager.js';
 import { DepthManager } from '../utils/DepthManager.js';
 import { ZoneManager } from '../utils/ZoneManager.js';
 import { MovementController } from '../utils/MovementController.js';
+//ANDREAS ADDITION
+import { PathfindingManager } from '../pathfinding/PathfindingManager.js';  
+import { LOCATIONS } from '../utils/Constants.js';
+import { SimulationPlayer } from '../utils/SimulationPlayer.js';
+import { CharacterFactory } from '../utils/CharacterFactory.js';
+//END ANDREAS ADDITION
 
 export class HospitalScene extends Phaser.Scene {
     constructor() {
@@ -72,6 +78,13 @@ export class HospitalScene extends Phaser.Scene {
         // Create player
         this.setupPlayer();
 
+        //ANDREAS ADDITION
+        this.setupPathfinding();
+        this.setupClickToMove();
+        // Initialize simulation player
+        this.simulationPlayer = new SimulationPlayer(this, this.pathfinding, this.depthManager);
+        this.loadAndPlaySimulation();
+        //END ANDREAS ADDITION
         console.log('Map loaded successfully!');
         console.log('Use WASD or Arrow Keys to move');
     }
@@ -143,6 +156,9 @@ export class HospitalScene extends Phaser.Scene {
         // Y offset: 64 - 24 = 40px to position at the feet
         this.patient.body.setOffset(6, 40);
 
+        //ANDREAS ADDITION
+        this.patient.lastDirection = 'down';
+        //END ANDREAS ADDITION
         // Set up collisions
         this.physics.add.collider(this.patient, this.layers.collision);
 
@@ -151,14 +167,65 @@ export class HospitalScene extends Phaser.Scene {
 
         // Play initial idle animation
         this.patient.play('patient_idle_down');
+        //ANDREAS ADDITION
+        this.isPlayerPathfinding = false;
+        //END ANDREAS ADDITION
     }
 
     update() {
-        // Update depth based on Y position
         this.depthManager.updateSpriteDepth(this.patient);
-
-        // Handle player movement
-        const input = this.inputManager.getMovementInput();
-        this.movementController.handleMovement(input);
+        
+        // Update simulation player
+        if (this.simulationPlayer) {
+            this.simulationPlayer.update();
+        }
+        
+        if (!this.isPlayerPathfinding) {
+            const input = this.inputManager.getMovementInput();
+            this.movementController.handleMovement(input);
+        }
     }
+    //ANDREAS ADDITION
+    // Setup pathfinding system
+    setupPathfinding() {
+        this.pathfinding = new PathfindingManager(this, this.map, this.layers.collision);
+    }
+
+    // Setup click-to-move for testing
+    setupClickToMove() {
+        this.input.on('pointerdown', (pointer) => {
+            const worldX = pointer.worldX;
+            const worldY = pointer.worldY;
+            
+            console.log(`Moving to: ${worldX}, ${worldY}`);
+            this.isPlayerPathfinding = true; // DISABLE KEYBOARD
+            
+            this.pathfinding.moveToPoint(this.patient, worldX, worldY, 250, () => {
+                console.log('Player reached destination!');
+                this.movementController.playIdleAnimation();
+                this.isPlayerPathfinding = false; // RE-ENABLE KEYBOARD
+            });
+        });
+    }
+    loadAndPlaySimulation() {
+        fetch('./assets/simulation_results/sim_4_Orthopedics_hip_dysplasia.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Simulation loaded:', data);
+                
+                // Start simulation (no need to pass NPC, it spawns itself)
+                this.time.delayedCall(1000, () => {
+                    this.simulationPlayer.playSimulation(data, 3000);
+                });
+            })
+            .catch(error => {
+                console.error('Failed to load simulation:', error);
+            });
+    }
+    //END ANDREAS ADDITION
 }
