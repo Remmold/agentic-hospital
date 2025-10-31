@@ -59,7 +59,6 @@ export class DepthManager {
         if (this.debugMode) {
             this.logThrottle++;
             if (this.logThrottle >= 60) {
-                console.log(`[DepthManager] Depth: ${depth.toFixed(2)} | Zone: ${this.currentZoneType} | Pos: (${sprite.x.toFixed(0)}, ${sprite.y.toFixed(0)})`);
                 this.logThrottle = 0;
             }
         }
@@ -74,7 +73,7 @@ export class DepthManager {
     }
 
     setDebugMode(enabled) {
-        this.debugMode = enabled;
+        this.debugMode = disabled;
         if (enabled) {
             console.log('[DepthManager] Debug mode enabled');
             console.log('[DepthManager] Layer depths:');
