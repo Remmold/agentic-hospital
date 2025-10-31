@@ -12,12 +12,23 @@ export class PatientQueueManager {
         this.completedPatients = [];
         this.usedCases = [];
 
-        this.minSpawnDelay = 5000;  // 5 seconds minimum between spawns
-        this.maxSpawnDelay = 10000; // 10 seconds maximum between spawns
-        this.nextSpawnTime = null;
+        this.minSpawnDelay = 5000;
+        this.maxSpawnDelay = 10000;
+        this.nextPatientTime = Date.now() + 2000;
 
         this.patientCounter = 0;
         this.spriteSheetList = ['patient_1', 'patient_2', 'patient_3'];
+
+        this.waitingRoomChairs = [
+            'WAITING_ROOM.CHAIR_1', 'WAITING_ROOM.CHAIR_2', 'WAITING_ROOM.CHAIR_3', 'WAITING_ROOM.CHAIR_4',
+            'WAITING_ROOM.CHAIR_5', 'WAITING_ROOM.CHAIR_6', 'WAITING_ROOM.CHAIR_7', 'WAITING_ROOM.CHAIR_8',
+            'WAITING_ROOM.CHAIR_9', 'WAITING_ROOM.CHAIR_10', 'WAITING_ROOM.CHAIR_11'
+        ];
+        this.occupiedChairs = new Set();
+        this.maxWaitingCapacity = this.waitingRoomChairs.length;
+
+        this.receptionDesks = ['RECEPTION.LEFT', 'RECEPTION.RIGHT'];
+        this.occupiedReceptionDesks = new Set();
     }
 
     async loadAvailableCases() {
@@ -35,23 +46,38 @@ export class PatientQueueManager {
 
     getRandomUnusedCase(availableCases) {
         const unused = availableCases.filter(c => !this.usedCases.includes(c));
-
         if (unused.length === 0) {
             console.warn('[PatientQueue] All cases used! Resetting...');
             this.usedCases = [];
             return availableCases[Phaser.Math.Between(0, availableCases.length - 1)];
         }
-
         const randomCase = unused[Phaser.Math.Between(0, unused.length - 1)];
         this.usedCases.push(randomCase);
         return randomCase;
     }
 
     getNextSpriteSheet() {
-        // Cycle through patient_1, patient_2, patient_3
         const sheet = this.spriteSheetList[this.patientCounter % this.spriteSheetList.length];
         this.patientCounter++;
         return sheet;
+    }
+
+    getRandomAvailableWaitingChair() {
+        const available = this.waitingRoomChairs.filter(chair => !this.occupiedChairs.has(chair));
+        if (available.length === 0) return null;
+        return available[Math.floor(Math.random() * available.length)];
+    }
+
+    getRandomAvailableReceptionDesk() {
+        const available = this.receptionDesks.filter(desk => !this.occupiedReceptionDesks.has(desk));
+        if (available.length === 0) return null;
+        return available[Math.floor(Math.random() * available.length)];
+    }
+
+    canSpawnNextPatient() {
+        if (this.activePatient === null) return true;
+        const availableChairs = this.maxWaitingCapacity - this.waitingPatients.length;
+        return availableChairs > 0;
     }
 
     async loadCaseFile(filename) {
@@ -65,37 +91,11 @@ export class PatientQueueManager {
         }
     }
 
-    /**
-     * Start automatic patient generation
-     * Patients spawn every 5-10 seconds
-     */
-    startAutoPatientGeneration(availableCases) {
-        // Schedule first patient immediately
-        this.scheduleNextPatient(availableCases, 0);
-    }
-
-    /**
-     * Schedule the next patient to spawn
-     */
-    scheduleNextPatient(availableCases, delay = null) {
-        if (delay === null) {
-            // Random delay between min and max
-            delay = Phaser.Math.Between(this.minSpawnDelay, this.maxSpawnDelay);
+    spawnPatient(availableCases) {
+        if (!this.canSpawnNextPatient()) {
+            return;
         }
 
-        this.scene.time.delayedCall(delay, () => {
-            this.spawnPatient(availableCases);
-            // Schedule the next one
-            this.scheduleNextPatient(availableCases);
-        });
-    }
-
-    /**
-     * Spawn a new patient
-     * - If no active patient: Start immediately
-     * - If active patient: Add to waiting room queue
-     */
-    spawnPatient(availableCases) {
         const caseFile = this.getRandomUnusedCase(availableCases);
         const spritesheet = this.getNextSpriteSheet();
         const patientId = `patient_${Date.now()}_${Math.random()}`;
@@ -106,89 +106,99 @@ export class PatientQueueManager {
                 return;
             }
 
+            const simulationPlayer = new SimulationPlayer(this.scene, this.pathfinding, this.depthManager);
+
             if (this.activePatient === null) {
-                // ✅ NO ACTIVE PATIENT - Start immediately
-                this.startPatient(patientId, spritesheet, caseData, caseFile);
+                const receptionDesk = this.getRandomAvailableReceptionDesk() || this.receptionDesks[0];
+                this.occupiedReceptionDesks.add(receptionDesk);
+
+                this.activePatient = {
+                    id: patientId,
+                    player: simulationPlayer,
+                    caseFile: caseFile,
+                    spritesheet: spritesheet,
+                    spawnTime: Date.now(),
+                    waitingChair: null,
+                    receptionDesk: receptionDesk
+                };
+
+                simulationPlayer.playSimulation(caseData, 2000, spritesheet, receptionDesk);
+                simulationPlayer.onComplete(() => this.handlePatientComplete());
+
+                console.log(`[PatientQueue] ✅ ${patientId} ACTIVE (${spritesheet}) at ${receptionDesk}`);
+
             } else {
-                // ✅ ACTIVE PATIENT EXISTS - Add to waiting room
-                this.addToWaitingRoom(patientId, spritesheet, caseData, caseFile);
+                const waitingChair = this.getRandomAvailableWaitingChair();
+
+                if (waitingChair === null) {
+                    return;
+                }
+
+                this.occupiedChairs.add(waitingChair);
+
+                this.waitingPatients.push({
+                    id: patientId,
+                    player: simulationPlayer,
+                    caseData: caseData,
+                    spritesheet: spritesheet,
+                    spawnTime: Date.now(),
+                    waitingChair: waitingChair
+                });
+
+                simulationPlayer.goToWaitingRoom(spritesheet, waitingChair);
+
+                console.log(`[PatientQueue] ⏳ ${patientId} WAITING (${spritesheet}) at ${waitingChair} - Queue: ${this.waitingPatients.length}/${this.maxWaitingCapacity}`);
             }
         }).catch(error => {
-            console.error(`[PatientQueue] Error spawning patient ${patientId}:`, error);
+            console.error(`[PatientQueue] Error spawning patient:`, error);
         });
     }
 
-    /**
-     * Start patient - they enter hospital and begin their timeline
-     */
-    startPatient(patientId, spritesheet, caseData, caseFile) {
-        const simulationPlayer = new SimulationPlayer(this.scene, this.pathfinding, this.depthManager);
-
-        this.activePatient = {
-            id: patientId,
-            player: simulationPlayer,
-            caseFile: caseFile,
-            spritesheet: spritesheet,
-            startTime: Date.now()
-        };
-
-        console.log(`[PatientQueue] ✅ Patient ${patientId} ACTIVE - Spritesheet: ${spritesheet}`);
-
-        // Start the simulation
-        simulationPlayer.playSimulation(caseData, 2000, spritesheet);
-        simulationPlayer.onComplete(() => this.handlePatientComplete());
-    }
-
-    /**
-     * Add patient to waiting room queue - they don't move yet
-     */
-    addToWaitingRoom(patientId, spritesheet, caseData, caseFile) {
-        const simulationPlayer = new SimulationPlayer(this.scene, this.pathfinding, this.depthManager);
-
-        // Store in waiting list - DONT call playSimulation yet!
-        this.waitingPatients.push({
-            id: patientId,
-            player: simulationPlayer,
-            caseData: caseData,
-            spritesheet: spritesheet,
-            caseFile: caseFile,
-            waitingSince: Date.now()
-        });
-
-        console.log(`[PatientQueue] ⏳ Patient ${patientId} WAITING - Queue length: ${this.waitingPatients.length}`);
-    }
-
-    /**
-     * Called when active patient finishes their timeline
-     */
     handlePatientComplete() {
         if (this.activePatient) {
-            const elapsedTime = (Date.now() - this.activePatient.startTime) / 1000;
-            console.log(`[PatientQueue] ✔️ Patient ${this.activePatient.id} COMPLETED (${elapsedTime.toFixed(1)}s)`);
+            const elapsed = (Date.now() - this.activePatient.spawnTime) / 1000;
+            console.log(`[PatientQueue] ✔️ ${this.activePatient.id} COMPLETED (${elapsed.toFixed(1)}s)`);
+
+            if (this.activePatient.receptionDesk) {
+                this.occupiedReceptionDesks.delete(this.activePatient.receptionDesk);
+            }
+
             this.completedPatients.push(this.activePatient);
             this.activePatient = null;
         }
 
-        // Start next patient from waiting room
         if (this.waitingPatients.length > 0) {
             const nextPatient = this.waitingPatients.shift();
-            const waitTime = Phaser.Math.Between(1000, 3000);
+            this.occupiedChairs.delete(nextPatient.waitingChair);
 
-            console.log(`[PatientQueue] ⏱️ Next patient ${nextPatient.id} starting in ${waitTime}ms...`);
+            const receptionDesk = this.getRandomAvailableReceptionDesk() || this.receptionDesks[0];
+            this.occupiedReceptionDesks.add(receptionDesk);
 
-            this.scene.time.delayedCall(waitTime, () => {
-                this.startPatient(
-                    nextPatient.id,
-                    nextPatient.spritesheet,
-                    nextPatient.caseData,
-                    nextPatient.caseFile
-                );
-            });
+            console.log(`[PatientQueue] Starting: ${nextPatient.id} from waiting room`);
+
+            this.activePatient = {
+                id: nextPatient.id,
+                player: nextPatient.player,
+                caseFile: nextPatient.caseFile,
+                spritesheet: nextPatient.spritesheet,
+                spawnTime: nextPatient.spawnTime,
+                waitingChair: null,
+                receptionDesk: receptionDesk
+            };
+
+            nextPatient.player.startTimelineFromWaitingRoom(nextPatient.caseData, 2000, receptionDesk);
+            nextPatient.player.onComplete(() => this.handlePatientComplete());
+
+            console.log(`[PatientQueue] ✅ ${nextPatient.id} NOW ACTIVE at ${receptionDesk}`);
         }
     }
 
     update(availableCases) {
-        // Update depths
+        if (Date.now() >= this.nextPatientTime) {
+            this.spawnPatient(availableCases);
+            this.nextPatientTime = Date.now() + Phaser.Math.Between(this.minSpawnDelay, this.maxSpawnDelay);
+        }
+
         if (this.activePatient && this.activePatient.player.npc) {
             this.depthManager.updateSpriteDepth(this.activePatient.player.npc);
         }
@@ -201,11 +211,17 @@ export class PatientQueueManager {
     }
 
     getStats() {
+        const hospitalized = (this.activePatient ? 1 : 0) + this.waitingPatients.length;
         return {
             active: this.activePatient?.id || 'None',
-            waiting: this.waitingPatients.length,
+            waiting: `${this.waitingPatients.length}/${this.maxWaitingCapacity}`,
+            hospitalized: `${hospitalized}/${1 + this.maxWaitingCapacity}`,
             completed: this.completedPatients.length,
             spawned: this.patientCounter
         };
+    }
+
+    startAutoPatientGeneration(availableCases) {
+        console.log('[PatientQueue] Auto-generation started');
     }
 }

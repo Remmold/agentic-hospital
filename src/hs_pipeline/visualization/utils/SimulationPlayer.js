@@ -6,6 +6,7 @@ export class SimulationPlayer {
         this.scene = scene;
         this.pathfinding = pathfindingManager;
         this.depthManager = depthManager;
+
         this.isPlaying = false;
         this.currentStep = 0;
         this.simulationData = null;
@@ -18,7 +19,56 @@ export class SimulationPlayer {
         this.onCompleteCallback = callback;
     }
 
-    playSimulation(jsonData, waitTimeMs = 2000, spritesheet = 'patient_1') {
+    onReturnStart(callback) {
+        this.onReturnStartCallback = callback;
+    }
+
+    /**
+     * For waiting patients - spawn at entrance and go to waiting room
+     */
+    goToWaitingRoom(spritesheet, chairKey = 'WAITING_ROOM.CHAIR_1') {
+        this.spritesheet = spritesheet;
+        this.spawnPatient();
+
+        console.log(`[GoToWaitingRoom] ${spritesheet} starting: entrance → reception → ${chairKey}`);
+
+        // Go to reception first
+        this.moveToLocation('RECEPTION', 'idle', 'up', () => {
+            console.log(`[GoToWaitingRoom] ${spritesheet} arrived at reception`);
+
+            // Idle at reception for 2 seconds
+            this.scene.time.delayedCall(2000, () => {
+                console.log(`[GoToWaitingRoom] ${spritesheet} done idling, moving to ${chairKey}`);
+
+                // Then to waiting room chair
+                this.moveToLocation(chairKey, 'sit', 'down', () => {
+                    console.log(`[GoToWaitingRoom] ${spritesheet} sitting in ${chairKey}`);
+                });
+            });
+        });
+    }
+
+    /**
+     * Start timeline from waiting room (already patient is waiting in waiting room)
+     */
+    startTimelineFromWaitingRoom(jsonData, waitTimeMs = 2000, receptionDesk = 'RECEPTION.LEFT') {
+        this.simulationData = jsonData;
+        this.currentStep = 0;
+        this.isPlaying = true;
+        this.waitTimeMs = waitTimeMs;
+
+        console.log(`Starting timeline for ${jsonData.patient.name} from waiting room`);
+
+        // Small delay, then start timeline
+        this.scene.time.delayedCall(waitTimeMs, () => {
+            this.playNextStep();
+        });
+    }
+
+    /**
+     * Start active patient simulation
+     */
+    playSimulation(jsonData, waitTimeMs = 2000, spritesheet = 'patient_1', receptionDesk = 'RECEPTION.LEFT') {
         if (this.isPlaying) {
             console.warn('Simulation already playing');
             return;
@@ -29,11 +79,14 @@ export class SimulationPlayer {
         this.currentStep = 0;
         this.isPlaying = true;
         this.waitTimeMs = waitTimeMs;
+
         console.log(`Starting simulation: ${jsonData.patient.name}`);
         console.log(`Total steps: ${jsonData.timeline.length}`);
+
         this.spawnPatient();
 
-        this.moveToLocation('RECEPTION', 'idle', 'up', () => {
+        // Walk to reception (specific desk)
+        this.moveToLocation(receptionDesk, 'idle', 'up', () => {
             console.log('Arrived at reception, starting timeline...');
             this.scene.time.delayedCall(this.waitTimeMs, () => {
                 this.playNextStep();
@@ -57,7 +110,7 @@ export class SimulationPlayer {
             this.scene.physics.add.collider(this.npc, collisionGroup);
         }
 
-        console.log(`Patient spawned: ${this.simulationData.patient.name} (${this.spritesheet})`);
+        console.log(`Patient spawned at entrance (${this.spritesheet})`);
     }
 
     playNextStep() {
@@ -68,7 +121,6 @@ export class SimulationPlayer {
 
         const step = this.simulationData.timeline[this.currentStep];
         const agent = step.agent;
-
         let locationKey = AGENT_LOCATIONS[agent];
         let animation = 'idle';
         let direction = 'down';
@@ -86,7 +138,8 @@ export class SimulationPlayer {
             direction = 'down';
         }
 
-        console.log(`Step ${this.currentStep + 1}: ${agent} at ${locationKey}`);
+        console.log(`Step ${this.currentStep + 1}/${this.simulationData.timeline.length}: ${agent} at ${locationKey}`);
+
         this.moveToLocation(locationKey, animation, direction, () => {
             this.scene.time.delayedCall(this.waitTimeMs, () => {
                 this.currentStep++;
@@ -109,7 +162,7 @@ export class SimulationPlayer {
             }
         }
 
-        console.log(`Lab test from ordered_test: ${testDescription}`);
+        console.log(`Lab test: ${testDescription}`);
 
         if (testDescription.includes('mri')) {
             return { location: 'LAB_MRI', animation: 'idle', direction: 'up' };
@@ -128,7 +181,12 @@ export class SimulationPlayer {
     }
 
     returnToEntrance() {
-        console.log('Timeline complete, returning to entrance...');
+        console.log(`${this.spritesheet} finished ALL steps, returning to entrance...`);
+
+        if (this.onReturnStartCallback) {
+            this.onReturnStartCallback();
+        }
+
         this.moveToLocation('ENTRANCE', 'idle', 'down', () => {
             this.scene.time.delayedCall(1000, () => {
                 this.finishSimulation();
@@ -138,6 +196,7 @@ export class SimulationPlayer {
 
     moveToLocation(locationKey, action, direction, onComplete) {
         const location = getLocation(locationKey);
+
         if (!location) {
             console.error(`Location not found: ${locationKey}`);
             if (onComplete) onComplete();
