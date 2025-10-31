@@ -10,15 +10,23 @@ export class MapLoader {
      * Load all required assets
      */
     static loadAssets(scene, cacheBuster = '') {
+        // Clear Phaser's cache to force fresh loads
+        scene.textures.remove(['patient_1', 'patient_2', 'patient_3', 'patient_4',
+            'nurse_1', 'nurse_2', 'nurse_3',
+            'doctor_1', 'doctor_2',
+            'mri_1', 'xray_1', 'hospitalMap']);
+
         const assets = [
             // Tilemap
             { type: 'tilemapTiledJSON', key: 'hospitalMap', path: './assets/hospital_tilemap.json' },
             { type: 'spritesheet', key: 'floors', path: './assets/props/hospital_floors_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
+            
             // Tilesheets
             { type: 'spritesheet', key: 'walls', path: './assets/props/hospital_walls_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
             { type: 'spritesheet', key: 'borders', path: './assets/props/hospital_borders_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
             { type: 'spritesheet', key: 'hospital_props', path: './assets/props/hospital_props_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
             { type: 'spritesheet', key: 'generic_props', path: './assets/props/generic_props_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
+            
             // Characters
             { type: 'spritesheet', key: 'patient_1', path: './assets/characters/patient_1.png', config: { frameWidth: 32, frameHeight: 64 } },
             { type: 'spritesheet', key: 'patient_2', path: './assets/characters/patient_2.png', config: { frameWidth: 32, frameHeight: 64 } },
