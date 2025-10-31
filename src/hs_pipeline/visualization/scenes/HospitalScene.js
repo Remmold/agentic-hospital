@@ -1,4 +1,5 @@
 import { LOCATIONS } from '../utils/Constants.js';
+import { AnimationManager } from '../utils/AnimationManager.js';
 import { InputManager } from '../utils/InputManager.js';
 import { DepthManager } from '../utils/DepthManager.js';
 import { ZoneManager } from '../utils/ZoneManager.js';
@@ -7,7 +8,8 @@ import { MovementController } from '../utils/MovementController.js';
 import { DebugManager } from '../utils/DebugManager.js';
 import { MapLoader } from '../utils/MapLoader.js';
 import { PathfindingManager } from '../pathfinding/PathfindingManager.js';
-import { SimulationPlayer } from '../utils/SimulationPlayer.js';
+import { PatientQueueManager } from '../utils/PatientQueueManager.js';
+import { StaffManager } from '../utils/StaffManager.js';
 import { CharacterFactory } from '../utils/CharacterFactory.js';
 
 export class HospitalScene extends Phaser.Scene {
@@ -22,16 +24,36 @@ export class HospitalScene extends Phaser.Scene {
         MapLoader.loadAssets(this, cacheBuster);
     }
 
-    create() {
+    async create() {
         this.setupManagers();
         this.setupPlayer();
         this.setupPathfinding();
         this.setupClickToMove();
 
-        // Initialize simulation player
-        this.simulationPlayer = new SimulationPlayer(this, this.pathfinding, this.depthManager);
-        this.loadAndPlaySimulation();
+        // Initialize staff NPCs FIRST
+        this.staffManager = new StaffManager(this, this.depthManager);
+        this.staffManager.spawnAllStaff();
+
+        // Initialize patient queue
+        this.patientQueue = new PatientQueueManager(this, this.pathfinding, this.depthManager);
+
+        // Load available cases
+        const availableCases = await this.patientQueue.loadAvailableCases();
+        console.log(`[HospitalScene] Available cases: ${availableCases.length}`);
+
+        if (availableCases.length === 0) {
+            console.error('[HospitalScene] No simulation cases found!');
+            return;
+        }
+
+        this.availableCases = availableCases;
+
+        // Start the automatic patient generation system
+        this.patientQueue.startAutoPatientGeneration(availableCases);
+
+        console.log('[HospitalScene] Setup complete! Auto-generation started.');
     }
+
 
     setupManagers() {
         // Map and zones
@@ -59,7 +81,6 @@ export class HospitalScene extends Phaser.Scene {
     }
 
     setupPlayer() {
-        // Use CharacterFactory to create player
         this.player = CharacterFactory.createCharacter(
             this,
             'player',
@@ -75,7 +96,6 @@ export class HospitalScene extends Phaser.Scene {
             }
         );
 
-        // Collisions
         this.player.setCollideWorldBounds(true);
         this.physics.add.collider(this.player, this.layers.collision);
 
@@ -84,26 +104,8 @@ export class HospitalScene extends Phaser.Scene {
             this.physics.add.collider(this.player, collisionGroup);
         }
 
-        // Movement controller
         this.movementController = new MovementController(this, this.player, 250);
         this.isPlayerPathfinding = false;
-    }
-
-    update() {
-        this.depthManager.updateSpriteDepth(this.player);
-
-        // Update simulation player
-        if (this.simulationPlayer) {
-            this.simulationPlayer.update();
-        }
-
-        // Keyboard movement (if not pathfinding)
-        if (!this.isPlayerPathfinding) {
-            const input = this.inputManager.getMovementInput();
-            this.movementController.handleMovement(input);
-        }
-
-        this.debugManager.updateDepthPanel(this.player);
     }
 
     setupPathfinding() {
@@ -119,33 +121,37 @@ export class HospitalScene extends Phaser.Scene {
         this.input.on('pointerdown', (pointer) => {
             const worldX = pointer.worldX;
             const worldY = pointer.worldY;
-            console.log(`Moving to: ${worldX}, ${worldY}`);
 
             this.isPlayerPathfinding = true;
             this.pathfinding.moveToPoint(this.player, worldX, worldY, 250, () => {
-                console.log('Player reached destination!');
                 CharacterFactory.playAnimation(this.player, 'idle', this.player.lastDirection);
                 this.isPlayerPathfinding = false;
             });
         });
     }
 
-    loadAndPlaySimulation() {
-        fetch('./assets/simulation_results/sim_4_Orthopedics_hip_dysplasia.json')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Simulation loaded:', data);
-                this.time.delayedCall(1000, () => {
-                    this.simulationPlayer.playSimulation(data, 3000);
-                });
-            })
-            .catch(error => {
-                console.error('Failed to load simulation:', error);
-            });
+    update() {
+        // Safety checks
+        if (!this.player || !this.depthManager) return;
+
+        this.depthManager.updateSpriteDepth(this.player);
+
+        // Update staff
+        if (this.staffManager) {
+            this.staffManager.update();
+        }
+
+        // Update patient queue
+        if (this.patientQueue && this.availableCases) {
+            this.patientQueue.update(this.availableCases);
+        }
+
+        // Keyboard movement
+        if (!this.isPlayerPathfinding) {
+            const input = this.inputManager.getMovementInput();
+            this.movementController.handleMovement(input);
+        }
+
+        this.debugManager.updateDepthPanel(this.player);
     }
 }

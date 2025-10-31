@@ -1,4 +1,4 @@
-import { LOCATIONS, AGENT_LOCATIONS, LAB_TEST_LOCATIONS } from './Constants.js';
+import { LOCATIONS, AGENT_LOCATIONS, LAB_TEST_LOCATIONS, getLocation } from './Constants.js';
 import { CharacterFactory } from './CharacterFactory.js';
 
 export class SimulationPlayer {
@@ -10,25 +10,29 @@ export class SimulationPlayer {
         this.currentStep = 0;
         this.simulationData = null;
         this.npc = null;
+        this.onCompleteCallback = null;
+        this.spritesheet = 'patient_1';
     }
 
-    playSimulation(jsonData, waitTimeMs = 2000) {
+    onComplete(callback) {
+        this.onCompleteCallback = callback;
+    }
+
+    playSimulation(jsonData, waitTimeMs = 2000, spritesheet = 'patient_1') {
         if (this.isPlaying) {
             console.warn('Simulation already playing');
             return;
         }
 
         this.simulationData = jsonData;
+        this.spritesheet = spritesheet;
         this.currentStep = 0;
         this.isPlaying = true;
         this.waitTimeMs = waitTimeMs;
-
         console.log(`Starting simulation: ${jsonData.patient.name}`);
         console.log(`Total steps: ${jsonData.timeline.length}`);
-
         this.spawnPatient();
 
-        // Walk to reception
         this.moveToLocation('RECEPTION', 'idle', 'up', () => {
             console.log('Arrived at reception, starting timeline...');
             this.scene.time.delayedCall(this.waitTimeMs, () => {
@@ -39,25 +43,21 @@ export class SimulationPlayer {
 
     spawnPatient() {
         const entrance = LOCATIONS.ENTRANCE;
-
-        // Use CharacterFactory to create NPC
         this.npc = CharacterFactory.createCharacter(
             this.scene,
             'patient',
-            'patient_1',  // Can use different spritesheets: 'nurse_1', 'doctor_1', etc.
+            this.spritesheet,
             entrance.x,
             entrance.y
         );
 
-        // Add collisions
         this.scene.physics.add.collider(this.npc, this.scene.layers.collision);
-
         const collisionGroup = this.scene.collisionManager?.getCollisionGroup();
         if (collisionGroup) {
             this.scene.physics.add.collider(this.npc, collisionGroup);
         }
 
-        console.log(`Patient spawned: ${this.simulationData.patient.name}`);
+        console.log(`Patient spawned: ${this.simulationData.patient.name} (${this.spritesheet})`);
     }
 
     playNextStep() {
@@ -68,13 +68,11 @@ export class SimulationPlayer {
 
         const step = this.simulationData.timeline[this.currentStep];
         const agent = step.agent;
-        
-        // Determine location and animation based on agent and step data
+
         let locationKey = AGENT_LOCATIONS[agent];
         let animation = 'idle';
         let direction = 'down';
 
-        // Special handling for Lab - check test type
         if (agent === 'Lab') {
             const labLocation = this.getLabLocation(step);
             locationKey = labLocation.location;
@@ -89,7 +87,6 @@ export class SimulationPlayer {
         }
 
         console.log(`Step ${this.currentStep + 1}: ${agent} at ${locationKey}`);
-
         this.moveToLocation(locationKey, animation, direction, () => {
             this.scene.time.delayedCall(this.waitTimeMs, () => {
                 this.currentStep++;
@@ -98,20 +95,14 @@ export class SimulationPlayer {
         });
     }
 
-    // Determine which lab location based on test type
     getLabLocation(step) {
         let testDescription = '';
-        
-        // First check current step's ordered_test
+
         if (step.decision?.ordered_test) {
             testDescription = step.decision.ordered_test.toLowerCase();
-        }
-        // Fallback to tests_ran if Lab agent
-        else if (step.decision?.tests_ran) {
+        } else if (step.decision?.tests_ran) {
             testDescription = step.decision.tests_ran.toLowerCase();
-        }
-        // Also check previous step if Lab agent (Doctor ordered it)
-        else if (this.currentStep > 0) {
+        } else if (this.currentStep > 0) {
             const previousStep = this.simulationData.timeline[this.currentStep - 1];
             if (previousStep.decision?.ordered_test) {
                 testDescription = previousStep.decision.ordered_test.toLowerCase();
@@ -120,58 +111,24 @@ export class SimulationPlayer {
 
         console.log(`Lab test from ordered_test: ${testDescription}`);
 
-        // MRI - lying down
         if (testDescription.includes('mri')) {
-            console.log(`Matched MRI -> LAB_MRI`);
-            return {
-                location: 'LAB_MRI',
-                animation: 'idle',
-                direction: 'up'
-            };
+            return { location: 'LAB_MRI', animation: 'idle', direction: 'up' };
         }
-        
-        // X-Ray - standing
         if (testDescription.includes('xray') || testDescription.includes('x-ray')) {
-            console.log(`Matched X-Ray -> LAB_XRAY`);
-            return {
-                location: 'LAB_XRAY',
-                animation: 'idle',
-                direction: 'down'
-            };
+            return { location: 'LAB_XRAY', animation: 'idle', direction: 'down' };
         }
-        
-        // CT Scan - lying down
         if (testDescription.includes('ct')) {
-            console.log(`Matched CT -> LAB_CT`);
-            return {
-                location: 'LAB_CT',
-                animation: 'idle',
-                direction: 'up'
-            };
+            return { location: 'LAB_CT', animation: 'idle', direction: 'up' };
         }
-        
-        // Blood test - sitting
         if (testDescription.includes('blood')) {
-            console.log(`Matched Blood -> LAB_BLOOD`);
-            return {
-                location: 'LAB_BLOOD',
-                animation: 'sit',
-                direction: 'left'
-            };
+            return { location: 'LAB_BLOOD', animation: 'sit', direction: 'left' };
         }
 
-        // Default lab - sitting
-        console.log(`Using default lab`);
-        return {
-            location: 'LAB_DEFAULT',
-            animation: 'sit',
-            direction: 'left'
-        };
+        return { location: 'LAB_DEFAULT', animation: 'sit', direction: 'left' };
     }
 
     returnToEntrance() {
         console.log('Timeline complete, returning to entrance...');
-        
         this.moveToLocation('ENTRANCE', 'idle', 'down', () => {
             this.scene.time.delayedCall(1000, () => {
                 this.finishSimulation();
@@ -179,27 +136,22 @@ export class SimulationPlayer {
         });
     }
 
-    // Move to location with custom animation and direction
     moveToLocation(locationKey, action, direction, onComplete) {
-        const location = LOCATIONS[locationKey];
-        
+        const location = getLocation(locationKey);
         if (!location) {
-            console.error(`Location ${locationKey} not found`);
+            console.error(`Location not found: ${locationKey}`);
             if (onComplete) onComplete();
             return;
         }
 
         console.log(`Moving to ${location.name}`);
-        
         this.pathfinding.moveToPoint(
             this.npc,
             location.x,
             location.y,
             150,
             () => {
-                // Play arrival animation using factory
                 CharacterFactory.playAnimation(this.npc, action, direction);
-                
                 if (onComplete) onComplete();
             }
         );
@@ -217,15 +169,22 @@ export class SimulationPlayer {
     finishSimulation() {
         this.isPlaying = false;
         console.log(`Simulation complete: ${this.simulationData.patient.name}`);
-        console.log(`Final diagnosis: ${this.simulationData.final_diagnosis?.diagnosis || 'None'}`);
-        console.log(`Is correct: ${this.simulationData.is_correct}`);
-        
         if (this.npc) {
+            if (this.npc.pathTween) {
+                this.npc.pathTween.stop();
+            }
+            if (this.npc.body) {
+                this.npc.body.setVelocity(0, 0);
+            }
             this.npc.destroy();
             this.npc = null;
         }
+
+        if (this.onCompleteCallback) {
+            this.onCompleteCallback();
+        }
     }
-    
+
     update() {
         if (this.npc && this.depthManager) {
             this.depthManager.updateSpriteDepth(this.npc);
