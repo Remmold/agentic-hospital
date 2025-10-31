@@ -1,0 +1,45 @@
+services:
+  reverse-proxy:
+    image: traefik:v3.1
+    container_name: traefik
+    command:
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.le.acme.httpchallenge=true"
+      - "--certificatesresolvers.le.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.le.acme.email=you@yourdomain.com"
+      - "--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json"
+      - "--api.dashboard=true"  # optional
+    ports:
+      - "80:80"
+      - "443:443"
+      # - "8080:8080" # dashboard (secure with auth if you expose it)
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./letsencrypt:/letsencrypt
+    restart: unless-stopped
+
+  app:
+    build: .
+    container_name: hospital-simulation-phaser
+    restart: unless-stopped
+    expose:
+      - "8000"
+    ports:
+      - "0.0.0.0:8000:8000"
+    environment:
+      VECTOR_STORE_DIR: /app/vector_store
+    volumes:
+      - vector_store:/app/vector_store
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app.rule=Host(`hospital-simulation.lifeatlas.online`)"
+      - "traefik.http.routers.app.entrypoints=websecure"
+      - "traefik.http.routers.app.tls.certresolver=le"
+      - "traefik.http.services.app.loadbalancer.server.port=8000"
+
+volumes:
+  vector_store:
+  letsencrypt:
+    driver: local
