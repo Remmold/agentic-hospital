@@ -23,26 +23,34 @@ export class SimulationPlayer {
         this.onReturnStartCallback = callback;
     }
 
-    /**
-     * For waiting patients - spawn at entrance and go to waiting room
-     */
+    getChairDirection(chairKey) {
+        const chairNum = parseInt(chairKey.match(/\d+/)[0]);
+
+        if (chairNum >= 1 && chairNum <= 4) {
+            return 'down';
+        } else if (chairNum >= 5 && chairNum <= 8) {
+            return 'up';
+        } else if (chairNum >= 9 && chairNum <= 11) {
+            return 'left';
+        }
+        return 'down';
+    }
+
     goToWaitingRoom(spritesheet, chairKey = 'WAITING_ROOM.CHAIR_1') {
         this.spritesheet = spritesheet;
         this.spawnPatient();
-
         console.log(`[GoToWaitingRoom] ${spritesheet} starting: entrance → reception → ${chairKey}`);
 
-        // Go to reception first
         this.moveToLocation('RECEPTION', 'idle', 'up', () => {
             console.log(`[GoToWaitingRoom] ${spritesheet} arrived at reception`);
 
-            // Idle at reception for 2 seconds
             this.scene.time.delayedCall(2000, () => {
                 console.log(`[GoToWaitingRoom] ${spritesheet} done idling, moving to ${chairKey}`);
 
-                // Then to waiting room chair
-                this.moveToLocation(chairKey, 'sit', 'down', () => {
-                    console.log(`[GoToWaitingRoom] ${spritesheet} sitting in ${chairKey}`);
+                const chairDirection = this.getChairDirection(chairKey);
+
+                this.moveToLocation(chairKey, 'sit', chairDirection, () => {
+                    console.log(`[GoToWaitingRoom] ${spritesheet} sitting in ${chairKey} facing ${chairDirection}`);
                 });
             });
         });
