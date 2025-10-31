@@ -11,13 +11,26 @@ export class MapLoader {
      */
     static loadAssets(scene, cacheBuster = '') {
         const assets = [
+            // Tilemap
             { type: 'tilemapTiledJSON', key: 'hospitalMap', path: './assets/hospital_tilemap.json' },
             { type: 'spritesheet', key: 'floors', path: './assets/props/hospital_floors_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
+            // Tilesheets
             { type: 'spritesheet', key: 'walls', path: './assets/props/hospital_walls_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
             { type: 'spritesheet', key: 'borders', path: './assets/props/hospital_borders_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
             { type: 'spritesheet', key: 'hospital_props', path: './assets/props/hospital_props_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
             { type: 'spritesheet', key: 'generic_props', path: './assets/props/generic_props_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
-            { type: 'spritesheet', key: 'patient', path: './assets/characters/patient_1.png', config: { frameWidth: 32, frameHeight: 64 } }
+            // Characters
+            { type: 'spritesheet', key: 'patient_1', path: './assets/characters/patient_1.png', config: { frameWidth: 32, frameHeight: 64 } },
+            { type: 'spritesheet', key: 'patient_2', path: './assets/characters/patient_2.png', config: { frameWidth: 32, frameHeight: 64 } },
+            { type: 'spritesheet', key: 'patient_3', path: './assets/characters/patient_3.png', config: { frameWidth: 32, frameHeight: 64 } },
+            { type: 'spritesheet', key: 'patient_4', path: './assets/characters/patient_4.png', config: { frameWidth: 32, frameHeight: 64 } },
+            { type: 'spritesheet', key: 'nurse_1', path: './assets/characters/nurse_1.png', config: { frameWidth: 32, frameHeight: 64 } },
+            { type: 'spritesheet', key: 'nurse_2', path: './assets/characters/nurse_2.png', config: { frameWidth: 32, frameHeight: 64 } },
+            { type: 'spritesheet', key: 'nurse_3', path: './assets/characters/nurse_3.png', config: { frameWidth: 32, frameHeight: 64 } },
+            { type: 'spritesheet', key: 'doctor_1', path: './assets/characters/doctor_1.png', config: { frameWidth: 32, frameHeight: 64 } },
+            { type: 'spritesheet', key: 'doctor_2', path: './assets/characters/doctor_2.png', config: { frameWidth: 32, frameHeight: 64 } },
+            { type: 'spritesheet', key: 'mri_1', path: './assets/characters/mri_1.png', config: { frameWidth: 32, frameHeight: 64 } },
+            { type: 'spritesheet', key: 'xray_1', path: './assets/characters/xray_1.png', config: { frameWidth: 32, frameHeight: 64 } },
         ];
 
         assets.forEach(asset => {

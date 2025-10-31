@@ -1,4 +1,6 @@
-/*
+import { CharacterFactory } from './CharacterFactory.js';
+
+/**
  * Handles character movement and animations
  */
 export class MovementController {
@@ -6,13 +8,15 @@ export class MovementController {
         this.scene = scene;
         this.sprite = sprite;
         this.speed = speed;
-        this.lastDirection = 'down';
     }
 
-    /* Handle player movement based on input
+    /**
+     * Handle player movement based on input
      * @param {Object} input - Movement input { x, y, direction }
      */
     handleMovement(input) {
+        if (!this.sprite || !this.sprite.body) return;
+
         // Reset velocity
         this.sprite.setVelocity(0);
 
@@ -30,13 +34,7 @@ export class MovementController {
 
             // Play walk animation
             if (input.direction) {
-                this.lastDirection = input.direction;
-                const targetAnim = `patient_walk_${input.direction}`;
-                const currentAnim = this.sprite.anims.currentAnim;
-
-                if (!currentAnim || currentAnim.key !== targetAnim) {
-                    this.sprite.play(targetAnim);
-                }
+                CharacterFactory.playAnimation(this.sprite, 'walk', input.direction);
             }
         } else {
             // Play idle animation
@@ -44,24 +42,24 @@ export class MovementController {
         }
     }
 
-    // Play idle animation for last direction
+    /**
+     * Play idle animation for last direction
+     */
     playIdleAnimation() {
-        const currentAnim = this.sprite.anims.currentAnim;
-        const idleAnim = `patient_idle_${this.lastDirection}`;
-
-        if (!currentAnim || currentAnim.key !== idleAnim) {
-            this.sprite.play(idleAnim);
-        }
+        const direction = this.sprite.lastDirection || 'down';
+        CharacterFactory.playAnimation(this.sprite, 'idle', direction);
     }
 
-    /* Set movement speed
+    /**
+     * Set movement speed
      * @param {number} speed - New speed value
      */
     setSpeed(speed) {
         this.speed = speed;
     }
 
-    /* Get current movement speed
+    /**
+     * Get current movement speed
      * @returns {number}
      */
     getSpeed() {
