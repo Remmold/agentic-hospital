@@ -7,36 +7,55 @@ export class StaffManager {
         this.depthManager = depthManager;
         this.staff = [];
 
-        // Staff configuration - uses LOCATIONS from Constants.js
+        // Staff configuration
         this.staffConfig = [
             {
                 id: 'doctor_1',
                 spritesheet: 'doctor_1',
-                initialPosition: { ...LOCATIONS.DOCTORS_OFFICE.DOCTORS_CHAIR },  // Doctor at their chair
+                initialPosition: { ...LOCATIONS.DOCTORS_OFFICE.DOCTORS_CHAIR },
                 patrol: false,
                 idleAction: 'sit',
                 idleDirection: 'down',
                 idleMs: 3000
             },
             {
-                id: 'nurse_1',
+                id: 'lab_nurse',
                 spritesheet: 'nurse_1',
-                initialPosition: { ...LOCATIONS.LAB_NURSE_POSITION },
+                initialPosition: { ...LOCATIONS.LAB.NURSE_POSITION },
+                patrol: [
+                    { ...LOCATIONS.LAB.BIG_MACHINE, idleMs: 2000 },
+                    { ...LOCATIONS.LAB.SMALL_MACHINE, idleMs: 4000 }
+                ],
+                idleAction: 'idle',
+                idleDirection: 'right'
+            },
+            {
+                id: 'mri_nurse',
+                spritesheet: 'mri_1',
+                initialPosition: { ...LOCATIONS.MRI.STAFF_CHAIR },
                 patrol: false,
                 // patrol: [
-                //     { ...LOCATIONS.LAB_NURSE_POSITION, idleMs: 4000 },
-                //     { ...LOCATIONS.XRAY_TECH_POSITION, idleMs: 2000 },
-                //     { ...LOCATIONS.LAB_NURSE_POSITION, idleMs: 4000 }
+                //     { ...LOCATIONS.LAB.BIG_MACHINE, idleMs: 2000 },
+                //     { ...LOCATIONS.LAB.SMALL_MACHINE, idleMs: 4000 }
                 // ],
                 idleAction: 'idle',
                 idleDirection: 'right'
             },
             {
-                id: 'receptionist',
+                id: 'receptionist_1',
                 spritesheet: 'nurse_2',
-                initialPosition: { ...LOCATIONS.RECEPTION },
+                initialPosition: { ...LOCATIONS.RECEPTION.LEFT_COMPUTER },
                 patrol: false,
-                idleAction: 'sit',
+                idleAction: 'idle',
+                idleDirection: 'down',
+                idleMs: 3000
+            },
+            {
+                id: 'receptionist_2',
+                spritesheet: 'nurse_2',
+                initialPosition: { ...LOCATIONS.RECEPTION.RIGHT_COMPUTER },
+                patrol: false,
+                idleAction: 'idle',
                 idleDirection: 'down',
                 idleMs: 3000
             }
