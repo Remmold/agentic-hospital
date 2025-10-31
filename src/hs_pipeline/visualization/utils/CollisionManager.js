@@ -57,10 +57,7 @@ export class CollisionManager {
                 this.scene.physics.add.existing(collisionBody, true);
             }
 
-            this.collisionGroup.add(collisionBody);
-
-            const shapeType = obj.ellipse ? 'circle' : 'rectangle';
-            console.log(`Added ${shapeType} collision: ${obj.name || 'unnamed'} at (${obj.x}, ${obj.y})`);
+            this.collisionGroup.add(collisionBody);        
         });
 
         console.log(`Total collision objects loaded: ${collisionLayer.objects.length}`);
