@@ -50,12 +50,11 @@ export const LOCATIONS = {
 
     // Lab
     LAB: {
-        base: { x: 20 * 32, y: 20 * 32, name: 'default' },
-        NURSE_POSITION: { x: 21 * 32, y: 19 * 32, name: 'Lab Nurse Position' },
-        BIG_MACHINE: { x: 21 * 32, y: 18 * 32, name: 'Lab Big Machine' },
-        SMALL_MACHINE: { x: 21 * 32, y: 19 * 32, name: 'Lab Small Machine' },
-        PATIENT_CHAIR: { x: 23 * 32, y: 21 * 32, name: 'Lab Small Machine' },
-        PATIENT_SEAT: { x: 35 * 32, y: 17 * 32, name: 'Patient Seat' }
+        base: { x: 21 * 32, y: 20 * 32, name: 'default' },
+        NURSE_POSITION: { x: 21 * 32, y: 20 * 32, name: 'Lab Nurse Position' },
+        BIG_MACHINE: { x: 21 * 32, y: 17.2 * 32, name: 'Lab Big Machine' },
+        SMALL_MACHINE: { x: 21 * 32, y: 19.8 * 32, name: 'Lab Small Machine' },
+        PATIENT_CHAIR: { x: 23 * 32, y: 21 * 32, name: 'Patient Chair' },
     },
 
     // MRI

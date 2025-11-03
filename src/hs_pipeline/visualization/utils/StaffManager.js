@@ -80,7 +80,7 @@ export class StaffManager {
                 config.id,
                 config.spritesheet,
                 config.initialPosition.x,
-                config.initialPosition.y
+                config.initialPosition.y,
             );
 
             const staffData = {
@@ -97,7 +97,10 @@ export class StaffManager {
                 config.idleAction,
                 config.idleDirection
             );
-
+            if (config.patrol && Array.isArray(config.patrol)) {
+                const firstWaypoint = config.patrol[0];
+                this.moveToWaypoint(staffData, firstWaypoint);
+            }
             this.staff.push(staffData);
             console.log(`[StaffManager] Spawned ${config.id} at (${config.initialPosition.x}, ${config.initialPosition.y})`);
         } catch (error) {
