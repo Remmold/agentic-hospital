@@ -1,0 +1,92 @@
+{
+  "patient": {
+    "name": "Jennifer Collins",
+    "age": 47,
+    "gender": "Female",
+    "symptoms": [
+      "occasional foot pain",
+      "worsening discomfort after wearing certain shoes",
+      "slight swelling on the inside of the foot",
+      "difficulty finding comfortable footwear",
+      "mild stiffness in the big toe"
+    ],
+    "medical_history": "previously diagnosed with flat feet, history of plantar fasciitis",
+    "current_medications": [
+      "ibuprofen",
+      "orthotic inserts"
+    ]
+  },
+  "actual_disease": "bunions_hallux_valgus",
+  "department": "Orthopedics",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "summary": "Triaged as SEMI_URGENT. Patient experiencing worsening foot pain and slight swelling. Sent to doctor for evaluation.",
+      "details": {
+        "urgency": "semi_urgent",
+        "triage_reasoning": "Patient has a history of flat feet and plantar fasciitis, with current symptoms indicating a potential exacerbation of these conditions. While they are not life-threatening, the worsening discomfort and inability to find comfortable footwear may impact mobility significantly.",
+        "vital_signs_concern": false,
+        "notes": "No concerning vital signs noted. Patient is stable but requires attention for pain management and further evaluation of foot condition.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "Patient needs to be evaluated for foot pain exacerbation and management options.",
+        "viewer_output": "Triaged as SEMI_URGENT. Patient experiencing worsening foot pain and slight swelling. Sent to doctor for evaluation."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "summary": "Diagnosis: Plantar Fasciitis exacerbation. Found 3 similar cases with successful outcomes. Treatment: Consider orthotic support and physical therapy, along with NSAIDs for pain management.",
+      "details": {
+        "diagnosis": "Plantar Fasciitis exacerbation",
+        "recommended_treatment": "Consider orthotic support and physical therapy, along with NSAIDs for pain management.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "Patient has a history of flat feet and plantar fasciitis, presenting with exacerbation symptoms.",
+        "ordered_test": null,
+        "reasoning": "Found 3 similar cases with successful outcomes, specifically focusing on plantar fasciitis and its management. The past experiences validate the importance of conservative treatment approaches that align with the current symptoms. Confidence in the diagnosis is high due to clear symptomatology and previous case successes.",
+        "tests_completed_count": 0,
+        "viewer_output": "Diagnosis: Plantar Fasciitis exacerbation. Found 3 similar cases with successful outcomes. Treatment: Consider orthotic support and physical therapy, along with NSAIDs for pain management."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "Reflection",
+      "summary": "Learned: Foot pain with swelling and stiffness in the big toe requires assessment for bunions. This will improve future bunion diagnoses.",
+      "details": {
+        "principle_text": "Foot pain with swelling and stiffness in the big toe requires assessment for bunions (hallux valgus) and not just plantar fasciitis. Use proper imaging to rule out structural deformities before diagnosis.",
+        "reasoning": "The misdiagnosis occurred due to not considering structural changes of the foot, which are critical in differentiating these conditions.",
+        "confidence": 0.9,
+        "viewer_output": "Learned: Foot pain with swelling and stiffness in the big toe requires assessment for bunions. This will improve future bunion diagnoses."
+      },
+      "tools_used": []
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "Plantar Fasciitis exacerbation",
+    "recommended_treatment": "Consider orthotic support and physical therapy, along with NSAIDs for pain management.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "Patient has a history of flat feet and plantar fasciitis, presenting with exacerbation symptoms.",
+    "ordered_test": null,
+    "reasoning": "Found 3 similar cases with successful outcomes, specifically focusing on plantar fasciitis and its management. The past experiences validate the importance of conservative treatment approaches that align with the current symptoms. Confidence in the diagnosis is high due to clear symptomatology and previous case successes.",
+    "tests_completed_count": 0,
+    "viewer_output": "Diagnosis: Plantar Fasciitis exacerbation. Found 3 similar cases with successful outcomes. Treatment: Consider orthotic support and physical therapy, along with NSAIDs for pain management."
+  },
+  "total_steps": 2,
+  "is_correct": false,
+  "validation_reason": "Clear mismatch: 'plantar fasciitis exacerbation' != 'bunions hallux valgus'"
+}

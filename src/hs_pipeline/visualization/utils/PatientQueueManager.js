@@ -1,5 +1,5 @@
 import { SimulationPlayer } from './SimulationPlayer.js';
-import { LOCATIONS } from './Constants.js';
+import { PatientSpriteRegistry } from './PatientSpriteRegistry.js';
 
 export class PatientQueueManager {
     constructor(scene, pathfinding, depthManager) {
@@ -17,7 +17,6 @@ export class PatientQueueManager {
         this.nextPatientTime = Date.now() + 2000;
 
         this.patientCounter = 0;
-        this.spriteSheetList = ['patient_1', 'patient_2', 'patient_3'];
 
         this.waitingRoomChairs = [
             'WAITING_ROOM.CHAIR_1', 'WAITING_ROOM.CHAIR_2', 'WAITING_ROOM.CHAIR_3', 'WAITING_ROOM.CHAIR_4',
@@ -57,9 +56,7 @@ export class PatientQueueManager {
     }
 
     getNextSpriteSheet() {
-        const sheet = this.spriteSheetList[this.patientCounter % this.spriteSheetList.length];
-        this.patientCounter++;
-        return sheet;
+        return PatientSpriteRegistry.getNextSprite();
     }
 
     getRandomAvailableWaitingChair() {
@@ -145,7 +142,8 @@ export class PatientQueueManager {
                     waitingChair: waitingChair
                 });
 
-                simulationPlayer.goToWaitingRoom(spritesheet, waitingChair);
+                // Pass caseData so waiting patients are clickable
+                simulationPlayer.goToWaitingRoom(spritesheet, waitingChair, caseData);
 
                 console.log(`[PatientQueue] ⏳ ${patientId} WAITING (${spritesheet}) at ${waitingChair} - Queue: ${this.waitingPatients.length}/${this.maxWaitingCapacity}`);
             }

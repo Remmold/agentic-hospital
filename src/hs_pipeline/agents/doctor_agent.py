@@ -26,6 +26,9 @@ class DoctorDiagnosis(BaseModel):
     ordered_test: str | None = None
     reasoning: str = Field(description="Decision process and confidence")
     tests_completed_count: int = Field(description="Number of tests completed")
+    viewer_output: str = Field(
+        description="Concise summary for visualization (2-3 sentences max)"
+    )
     
 
 doctor_agent = Agent(
@@ -58,7 +61,11 @@ DIAGNOSIS RULES:
 
 REASONING:
 Include: similar cases found, relevant experiences, tests completed, risk level, confidence
-    """
+
+VIEWER OUTPUT: Generate a concise 2-3 sentence summary:
+- If diagnosing: "Diagnosis: [disease]. Found [X] similar cases with successful outcomes. Treatment: [brief plan]."
+- If ordering test: "Ordering [test name] due to [reason]. Found [X] relevant past cases suggesting this approach. Will diagnose after results."
+"""
 )
 
 

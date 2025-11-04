@@ -25,6 +25,27 @@ from hs_pipeline.database_management.db_manager import get_db
 from hs_pipeline.agents.reflection_agent import create_learning_principle
 
 
+def format_timeline_for_viewer(timeline: list) -> list:
+    """Convert internal timeline to viewer-friendly format."""
+    viewer_timeline = []
+    
+    for event in timeline:
+        agent = event.get("agent")
+        decision = event.get("decision", {})
+        
+        viewer_step = {
+            "step": event.get("step"),
+            "agent": agent,
+            "summary": decision.get("viewer_output", "No details available"),
+            "details": decision,  # Full data for expansion
+            "tools_used": event.get("tools_used", [])
+        }
+        
+        viewer_timeline.append(viewer_step)
+    
+    return viewer_timeline
+
+
 class SimulationRunner:
     """Runs medical simulations with learning."""
     
@@ -237,11 +258,14 @@ class SimulationRunner:
             print(f"\n⚠️ No diagnosis made")
             validation_reason = "No diagnosis"
         
+        # Generate viewer-friendly timeline
+        viewer_timeline = format_timeline_for_viewer(timeline)
+
         return {
             "patient": asdict(patient),
             "actual_disease": actual_disease,
             "department": department,
-            "timeline": timeline,
+            "timeline": viewer_timeline,  # Only one timeline now
             "final_diagnosis": result.output.model_dump() if (result and hasattr(result.output, 'diagnosis')) else None,
             "total_steps": api_calls,
             "is_correct": is_correct,
@@ -297,10 +321,27 @@ class SimulationRunner:
         
         if not principle:
             print("❌ Failed to create principle")
+            # Add failed reflection to timeline
+            timeline.append({
+                "step": len(timeline) + 1,
+                "agent": "Reflection",
+                "decision": {
+                    "viewer_output": "Reflection failed - unable to generate learning principle"
+                },
+                "tools_used": []
+            })
             return
         
         print(f"💡 {principle.principle_text}")
         print(f"   Confidence: {principle.confidence:.2f}")
+        
+        # Add successful reflection to timeline
+        timeline.append({
+            "step": len(timeline) + 1,
+            "agent": "Reflection",
+            "decision": principle.model_dump(),
+            "tools_used": []
+        })
         
         exp_id = f"exp_{uuid.uuid4()}"
         
@@ -318,7 +359,7 @@ class SimulationRunner:
 
 if __name__ == "__main__":    
     NUM_SIMULATIONS = 10
-    TARGET_DEPARTMENT = "Orthopedics"  # or None for random
+    TARGET_DEPARTMENT = None  # or None for random
     
     runner = SimulationRunner()
     

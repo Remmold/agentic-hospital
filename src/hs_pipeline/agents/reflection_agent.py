@@ -21,6 +21,9 @@ class ExperiencePrinciple(BaseModel):
     principle_text: str = Field(description="Short actionable principle (max 2 sentences)")
     reasoning: str = Field(description="Why error happened and how to prevent it")
     confidence: float = Field(description="0.0 to 1.0", ge=0.0, le=1.0)
+    viewer_output: str = Field(
+        description="Concise summary for visualization (1-2 sentences max)"
+    )
 
 
 reflection_agent = Agent(
@@ -37,7 +40,11 @@ BAD: "Be careful with cardiac symptoms"
 
 Use exact symptom keywords from patient for searchability.
 Keep under 2 sentences. Be specific and actionable.
-    """
+
+VIEWER OUTPUT: Generate 1-2 sentence summary:
+"Learned: [brief lesson]. This will improve future [disease type] diagnoses."
+Example: "Learned: Chest pain with sweating requires cardiac workup before discharge. This will improve future MI detection."
+"""
 )
 
 

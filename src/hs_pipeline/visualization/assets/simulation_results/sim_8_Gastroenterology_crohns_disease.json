@@ -1,0 +1,129 @@
+{
+  "patient": {
+    "name": "Laura Mitchell",
+    "age": 29,
+    "gender": "Female",
+    "symptoms": [
+      "intermittent abdominal discomfort",
+      "slight weight loss",
+      "occasional diarrhea",
+      "mild fatigue",
+      "persistent bloating"
+    ],
+    "medical_history": "History of IBS and occasional vitamin B12 deficiency",
+    "current_medications": [
+      "Proton pump inhibitor",
+      "Multivitamin"
+    ]
+  },
+  "actual_disease": "crohns_disease",
+  "department": "Gastroenterology",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "summary": "Triaged as SEMI_URGENT. Patient reports intermittent abdominal discomfort and persistent bloating. Sent to doctor for further evaluation.",
+      "details": {
+        "urgency": "semi_urgent",
+        "triage_reasoning": "Patient has intermittent abdominal discomfort and bloating, alongside a history of IBS, requiring attention but stable overall.",
+        "vital_signs_concern": false,
+        "notes": "Weight loss and fatigue suggest monitoring; however, no acute distress noted.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "patient presenting with symptoms that warrant further evaluation by a physician.",
+        "viewer_output": "Triaged as SEMI_URGENT. Patient reports intermittent abdominal discomfort and persistent bloating. Sent to doctor for further evaluation."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "summary": "Ordering abdominal ultrasound due to intermittent abdominal discomfort and bloating, which may indicate gallstones. Found 4 relevant past cases suggesting this approach. Will diagnose after results.",
+      "details": {
+        "diagnosis": null,
+        "recommended_treatment": null,
+        "follow_up_needed": false,
+        "next_step": "order_test",
+        "context_for_next": "Ordering an abdominal ultrasound to evaluate for gallstones based on relevant experiences and similar cases.",
+        "ordered_test": "abdominal ultrasound",
+        "reasoning": "Found 4 relevant past experiences suggesting that intermittent abdominal discomfort with bloating could indicate gallstones. No tests have been completed yet, so I am ordering an abdominal ultrasound for further evaluation.",
+        "tests_completed_count": 0,
+        "viewer_output": "Ordering abdominal ultrasound due to intermittent abdominal discomfort and bloating, which may indicate gallstones. Found 4 relevant past cases suggesting this approach. Will diagnose after results."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "Lab",
+      "summary": "Abdominal ultrasound completed. Results will be reviewed by your doctor.",
+      "details": {
+        "tests_ran": "abdominal ultrasound",
+        "test_outcome": "Liver: normal size, no lesions; Gallbladder: no gallstones, wall appears normal; Pancreas: normal echogenicity; Spleen: normal size and echogenicity; Kidneys: no hydronephrosis, normal size; Aorta: no aneurysm or displacement; Bowel: wall thickening noted in terminal ileum; Free fluid: small amount detected in the abdominal cavity.",
+        "viewer_output": "Abdominal ultrasound completed. Results will be reviewed by your doctor."
+      },
+      "tools_used": [
+        "get_test_context",
+        "final_result"
+      ]
+    },
+    {
+      "step": 4,
+      "agent": "Doctor",
+      "summary": "Diagnosis: Terminal Ileitis. Found 4 similar cases with successful outcomes. Treatment: Consider lifestyle modifications and follow-up with a gastroenterologist.",
+      "details": {
+        "diagnosis": "Terminal Ileitis",
+        "recommended_treatment": "Consider lifestyle modifications, dietary changes, and potential medications for symptom management. Follow up with a gastroenterologist for further evaluation and management.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "Patient presents with abdominal discomfort and bloating; ultrasound showed bowel wall thickening in the terminal ileum. Given the context and findings, terminal ileitis is likely causing the symptoms.",
+        "ordered_test": null,
+        "reasoning": "Patient has semi-urgent symptoms of abdominal discomfort and bloating, matched with ultrasound findings of bowel wall thickening in the terminal ileum. Relevant experiences indicate that similar cases with such presentations often lead to diagnosing conditions like terminal ileitis. Overall, there were no gallstones detected, which was initially suspected.",
+        "tests_completed_count": 1,
+        "viewer_output": "Diagnosis: Terminal Ileitis. Found 4 similar cases with successful outcomes. Treatment: Consider lifestyle modifications and follow-up with a gastroenterologist."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 5,
+      "agent": "Reflection",
+      "summary": "Learned: Intermittent abdominal discomfort with weight loss and diarrhea requires thorough evaluation. This will improve future Crohn's disease diagnoses.",
+      "details": {
+        "principle_text": "Intermittent abdominal discomfort with weight loss and diarrhea requires thorough evaluation including imaging to rule out Crohn's disease.",
+        "reasoning": "The original diagnosis of terminal ileitis was inaccurate due to insufficient testing; proper imaging would have clarified the underlying condition.",
+        "confidence": 0.85,
+        "viewer_output": "Learned: Intermittent abdominal discomfort with weight loss and diarrhea requires thorough evaluation. This will improve future Crohn's disease diagnoses."
+      },
+      "tools_used": []
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "Terminal Ileitis",
+    "recommended_treatment": "Consider lifestyle modifications, dietary changes, and potential medications for symptom management. Follow up with a gastroenterologist for further evaluation and management.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "Patient presents with abdominal discomfort and bloating; ultrasound showed bowel wall thickening in the terminal ileum. Given the context and findings, terminal ileitis is likely causing the symptoms.",
+    "ordered_test": null,
+    "reasoning": "Patient has semi-urgent symptoms of abdominal discomfort and bloating, matched with ultrasound findings of bowel wall thickening in the terminal ileum. Relevant experiences indicate that similar cases with such presentations often lead to diagnosing conditions like terminal ileitis. Overall, there were no gallstones detected, which was initially suspected.",
+    "tests_completed_count": 1,
+    "viewer_output": "Diagnosis: Terminal Ileitis. Found 4 similar cases with successful outcomes. Treatment: Consider lifestyle modifications and follow-up with a gastroenterologist."
+  },
+  "total_steps": 4,
+  "is_correct": false,
+  "validation_reason": "Clear mismatch: 'terminal ileitis' != 'crohns disease'"
+}

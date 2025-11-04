@@ -1,0 +1,121 @@
+{
+  "patient": {
+    "name": "Brian Wilkins",
+    "age": 45,
+    "gender": "Male",
+    "symptoms": [
+      "intermittent abdominal discomfort",
+      "bloating after meals",
+      "mild nausea",
+      "occasional diarrhea"
+    ],
+    "medical_history": "History of alcohol use disorder, managed with counseling",
+    "current_medications": [
+      "omeprazole",
+      "multivitamin"
+    ]
+  },
+  "actual_disease": "pancreatitis",
+  "department": "Gastroenterology",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "summary": "Triaged as SEMI_URGENT. Patient presenting with intermittent abdominal discomfort and mild nausea. Sent to doctor for evaluation.",
+      "details": {
+        "urgency": "semi_urgent",
+        "triage_reasoning": "Patient presents with intermittent abdominal discomfort, bloating, mild nausea, and occasional diarrhea, indicating a need for timely evaluation due to gastrointestinal symptoms.",
+        "vital_signs_concern": false,
+        "notes": "Patient has a history of alcohol use disorder but is currently managed with counseling. Current medications include omeprazole, suggesting a possible history of acid-related issues.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "Evaluate gastrointestinal symptoms and consider further diagnostic tests or interventions.",
+        "viewer_output": "Triaged as SEMI_URGENT. Patient presenting with intermittent abdominal discomfort and mild nausea. Sent to doctor for evaluation."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "summary": "Ordering abdominal ultrasound due to semi-urgent gastrointestinal symptoms with potential structural concerns. Found 3 similar cases with successful outcomes suggesting this approach. Will diagnose after results.",
+      "details": {
+        "diagnosis": null,
+        "recommended_treatment": null,
+        "follow_up_needed": true,
+        "next_step": "order_test",
+        "context_for_next": "assess gastrointestinal symptoms after ultrasound results.",
+        "ordered_test": "abdominal ultrasound",
+        "reasoning": "Given the semi-urgent nature of the symptoms and no prior tests completed, an abdominal ultrasound is warranted to rule out any structural issues and assess for potential causes of the gastrointestinal symptoms. Found 3 similar cases with successful outcomes, which support the need for thorough evaluation.",
+        "tests_completed_count": 0,
+        "viewer_output": "Ordering abdominal ultrasound due to semi-urgent gastrointestinal symptoms with potential structural concerns. Found 3 similar cases with successful outcomes suggesting this approach. Will diagnose after results."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "final_result",
+        "final_result"
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "Lab",
+      "summary": "Ultrasound of the abdomen completed. Results will be reviewed by your doctor.",
+      "details": {
+        "tests_ran": "abdominal ultrasound",
+        "test_outcome": "Gallbladder 3.5 cm, Common bile duct 6 mm, Pancreas appears edematous, No masses detected, Fluid collection present near pancreatic head",
+        "viewer_output": "Ultrasound of the abdomen completed. Results will be reviewed by your doctor."
+      },
+      "tools_used": [
+        "get_test_context",
+        "final_result"
+      ]
+    },
+    {
+      "step": 4,
+      "agent": "Doctor",
+      "summary": "Diagnosis: Acute Pancreatitis. Found 3 similar cases with successful outcomes. Treatment: IV fluids, pain management, and observation.",
+      "details": {
+        "diagnosis": "Acute Pancreatitis",
+        "recommended_treatment": "IV fluids, pain management, and observation. Possible consultation with gastroenterology for further management.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "Patient diagnosed with acute pancreatitis based on ultrasound results showing an edematous pancreas and fluid collection near the pancreatic head.",
+        "ordered_test": null,
+        "reasoning": "Found 3 similar cases regarding edematous pancreas with successful outcomes. The ultrasound indicates an inflammatory process consistent with acute pancreatitis. 1 test completed. Confidence in diagnosis is high due to ultrasound findings directly correlating with symptoms.",
+        "tests_completed_count": 1,
+        "viewer_output": "Diagnosis: Acute Pancreatitis. Found 3 similar cases with successful outcomes. Treatment: IV fluids, pain management, and observation."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "get_lab_results",
+        "final_result"
+      ]
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "Acute Pancreatitis",
+    "recommended_treatment": "IV fluids, pain management, and observation. Possible consultation with gastroenterology for further management.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "Patient diagnosed with acute pancreatitis based on ultrasound results showing an edematous pancreas and fluid collection near the pancreatic head.",
+    "ordered_test": null,
+    "reasoning": "Found 3 similar cases regarding edematous pancreas with successful outcomes. The ultrasound indicates an inflammatory process consistent with acute pancreatitis. 1 test completed. Confidence in diagnosis is high due to ultrasound findings directly correlating with symptoms.",
+    "tests_completed_count": 1,
+    "viewer_output": "Diagnosis: Acute Pancreatitis. Found 3 similar cases with successful outcomes. Treatment: IV fluids, pain management, and observation."
+  },
+  "total_steps": 4,
+  "is_correct": true,
+  "validation_reason": "Exact match: 'pancreatitis'"
+}

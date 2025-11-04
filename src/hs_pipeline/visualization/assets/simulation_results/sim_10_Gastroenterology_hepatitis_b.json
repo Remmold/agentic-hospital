@@ -1,0 +1,91 @@
+{
+  "patient": {
+    "name": "Carlos Martinez",
+    "age": 40,
+    "gender": "Male",
+    "symptoms": [
+      "intermittent fatigue",
+      "mild nausea",
+      "slight abdominal discomfort",
+      "occasional joint aches",
+      "loss of appetite"
+    ],
+    "medical_history": "Hypertension, managed with lifestyle changes",
+    "current_medications": [
+      "Lisinopril"
+    ]
+  },
+  "actual_disease": "hepatitis_b",
+  "department": "Gastroenterology",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "summary": "Triaged as SEMI_URGENT. Patient experiencing intermittent fatigue and mild nausea. Sent to doctor for further evaluation.",
+      "details": {
+        "urgency": "semi_urgent",
+        "triage_reasoning": "Patient has persistent symptoms including intermittent fatigue, mild nausea, and loss of appetite, which are concerning given the history of hypertension. Symptoms suggest the need for further evaluation to rule out underlying issues.",
+        "vital_signs_concern": false,
+        "notes": "No critical or urgent symptoms; stable chronic condition.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "Monitoring for any deterioration.",
+        "viewer_output": "Triaged as SEMI_URGENT. Patient experiencing intermittent fatigue and mild nausea. Sent to doctor for further evaluation."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "summary": "Diagnosis: Gastroenteritis. Found 3 similar cases with successful outcomes. Treatment: Rehydration and dietary management.",
+      "details": {
+        "diagnosis": "Gastroenteritis",
+        "recommended_treatment": "Rehydration, possible anti-emetics, and dietary management while monitoring symptoms.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "Patient has persistent symptoms indicating mild gastroenteritis.",
+        "ordered_test": null,
+        "reasoning": "Found 3 similar cases with successful outcomes indicating possible gastroenteritis. Relevant experiences suggest a thorough assessment is beneficial. Symptoms are consistent with diagnosis. No tests required as symptoms are clear.",
+        "tests_completed_count": 0,
+        "viewer_output": "Diagnosis: Gastroenteritis. Found 3 similar cases with successful outcomes. Treatment: Rehydration and dietary management."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "Reflection",
+      "summary": "Learned: Intermittent fatigue with mild nausea and abdominal discomfort requires hepatitis panel testing to rule out hepatitis B. This will improve future hepatitis diagnoses.",
+      "details": {
+        "principle_text": "Intermittent fatigue with mild nausea and abdominal discomfort requires hepatitis panel testing to rule out hepatitis B.",
+        "reasoning": "The non-specific symptoms and lack of targeted testing led to a misdiagnosis of gastroenteritis instead of hepatitis B.",
+        "confidence": 0.9,
+        "viewer_output": "Learned: Intermittent fatigue with mild nausea and abdominal discomfort requires hepatitis panel testing to rule out hepatitis B. This will improve future hepatitis diagnoses."
+      },
+      "tools_used": []
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "Gastroenteritis",
+    "recommended_treatment": "Rehydration, possible anti-emetics, and dietary management while monitoring symptoms.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "Patient has persistent symptoms indicating mild gastroenteritis.",
+    "ordered_test": null,
+    "reasoning": "Found 3 similar cases with successful outcomes indicating possible gastroenteritis. Relevant experiences suggest a thorough assessment is beneficial. Symptoms are consistent with diagnosis. No tests required as symptoms are clear.",
+    "tests_completed_count": 0,
+    "viewer_output": "Diagnosis: Gastroenteritis. Found 3 similar cases with successful outcomes. Treatment: Rehydration and dietary management."
+  },
+  "total_steps": 2,
+  "is_correct": false,
+  "validation_reason": "Clear mismatch: 'gastroenteritis' != 'hepatitis b'"
+}

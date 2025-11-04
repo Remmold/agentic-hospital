@@ -1,0 +1,79 @@
+{
+  "patient": {
+    "name": "Linda Jensen",
+    "age": 29,
+    "gender": "Female",
+    "symptoms": [
+      "persistent fatigue",
+      "occasional headaches",
+      "difficulty sleeping",
+      "feeling irritable",
+      "muscle tension in shoulders"
+    ],
+    "medical_history": "history of anxiety",
+    "current_medications": [
+      "occasionally uses herbal sleep aids"
+    ]
+  },
+  "actual_disease": "stress",
+  "department": "General",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "summary": "Triaged as SEMI_URGENT. Patient presenting with persistent fatigue and sleep difficulties, with a history of anxiety. Sent to doctor for further evaluation.",
+      "details": {
+        "urgency": "semi_urgent",
+        "triage_reasoning": "The patient exhibits persistent fatigue, occasional headaches, difficulty sleeping, irritability, and muscle tension, indicating a potential escalation of anxiety symptoms that necessitates attention. The history of anxiety adds to the concern, requiring evaluation within a timely manner.",
+        "vital_signs_concern": false,
+        "notes": "Patient's vital signs are stable, but symptoms are impacting daily functioning.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "The doctor will further assess the patient's anxiety management and possible treatment options.",
+        "viewer_output": "Triaged as SEMI_URGENT. Patient presenting with persistent fatigue and sleep difficulties, with a history of anxiety. Sent to doctor for further evaluation."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "summary": "The patient exhibits anxiety symptoms requiring management. Found 3 similar cases indicating effective approaches in past treatments.",
+      "details": {
+        "diagnosis": null,
+        "recommended_treatment": null,
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "The patient has anxiety symptoms requiring management. Similar cases show successful outcomes without tests.",
+        "ordered_test": null,
+        "reasoning": "The patient presents with increased anxiety-related symptoms. 3 relevant similar cases were found, indicating effective management strategies in the past without the need for diagnostic tests. The urgency is semi-urgent, and further assessment of treatment options is needed, considering the complex nature of anxiety management.",
+        "tests_completed_count": 0,
+        "viewer_output": "The patient exhibits anxiety symptoms requiring management. Found 3 similar cases indicating effective approaches in past treatments."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "final_result"
+      ]
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": null,
+    "recommended_treatment": null,
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "The patient has anxiety symptoms requiring management. Similar cases show successful outcomes without tests.",
+    "ordered_test": null,
+    "reasoning": "The patient presents with increased anxiety-related symptoms. 3 relevant similar cases were found, indicating effective management strategies in the past without the need for diagnostic tests. The urgency is semi-urgent, and further assessment of treatment options is needed, considering the complex nature of anxiety management.",
+    "tests_completed_count": 0,
+    "viewer_output": "The patient exhibits anxiety symptoms requiring management. Found 3 similar cases indicating effective approaches in past treatments."
+  },
+  "total_steps": 2,
+  "is_correct": false,
+  "validation_reason": "No diagnosis"
+}

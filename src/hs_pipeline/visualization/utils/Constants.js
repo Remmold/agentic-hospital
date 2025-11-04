@@ -68,7 +68,7 @@ export const LOCATIONS = {
     },
 
     // Labs
-    LAB_DEFAULT: { x: 20 * 32, y: 20 * 32, name: 'Lab (Blood Test)' },
+    LAB_DEFAULT: { x: 23 * 32, y: 16 * 32, name: 'Lab (Blood Test)' },
     LAB_NURSE_POSITION: { x: 20 * 32, y: 20 * 32, name: 'Lab Nurse Position' },
     XRAY_TECH_POSITION: { x: 37 * 32, y: 2 * 32, name: 'X-Ray Tech Position' },
     LAB_MRI: { x: 2 * 32, y: 7 * 32, name: 'MRI Room' },
@@ -111,6 +111,16 @@ export function getRandomWaitingRoomChair() {
     ];
     return chairs[Math.floor(Math.random() * chairs.length)];
 }
+
+/**
+ * Phone animation timing configuration
+ */
+export const PHONE_ANIMATION = {
+    HOLD_MIN: 5000,      // Minimum hold time (ms)
+    HOLD_MAX: 15000,     // Maximum hold time (ms)
+    WAIT_MIN: 3000,      // Minimum wait between cycles (ms)
+    WAIT_MAX: 7000       // Maximum wait between cycles (ms)
+};
 
 /**
  * Get location coordinates - handles both flat and nested locations

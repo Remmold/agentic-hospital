@@ -1,0 +1,117 @@
+{
+  "patient": {
+    "name": "Margaret Johnson",
+    "age": 67,
+    "gender": "Female",
+    "symptoms": [
+      "occasional back discomfort",
+      "unexplained fatigue",
+      "slight height reduction over the past few years",
+      "increased tendency to bruise",
+      "mild joint stiffness"
+    ],
+    "medical_history": "Hypertension, mild arthritis in hands",
+    "current_medications": [
+      "Lisinopril",
+      "Ibuprofen"
+    ]
+  },
+  "actual_disease": "osteoporosis",
+  "department": "General",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "summary": "Triaged as NON_URGENT. Patient presenting with occasional back discomfort and unexplained fatigue. Routine check scheduled with the doctor.",
+      "details": {
+        "urgency": "non_urgent",
+        "triage_reasoning": "Patient presents with occasional back discomfort, unexplained fatigue, and mild joint stiffness. These symptoms do not present an immediate risk, and vital signs are not concerning. No signs of acute distress or life-threatening conditions were observed.",
+        "vital_signs_concern": false,
+        "notes": "Patient has a history of hypertension and mild arthritis, with current medications including Lisinopril and Ibuprofen.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "Routine check to manage chronic symptoms and evaluate for any changes in condition.",
+        "viewer_output": "Triaged as NON_URGENT. Patient presenting with occasional back discomfort and unexplained fatigue. Routine check scheduled with the doctor."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "summary": "Ordering DEXA scan due to evaluation for osteoporosis risk related to chronic back discomfort. Found 4 relevant past cases suggesting this approach. Will diagnose after results.",
+      "details": {
+        "diagnosis": null,
+        "recommended_treatment": null,
+        "follow_up_needed": true,
+        "next_step": "order_test",
+        "context_for_next": "Routine check for chronic symptoms. No tests completed yet.",
+        "ordered_test": "DEXA scan",
+        "reasoning": "Ordering a DEXA scan due to the need to evaluate for osteoporosis, given the chronic back discomfort and potential osteoporosis risk. Found 4 relevant past cases suggesting assessment for underlying causes. Will diagnose after results.",
+        "tests_completed_count": 0,
+        "viewer_output": "Ordering DEXA scan due to evaluation for osteoporosis risk related to chronic back discomfort. Found 4 relevant past cases suggesting this approach. Will diagnose after results."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "final_result"
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "Lab",
+      "summary": "DEXA scan completed. Results will be shared with your doctor.",
+      "details": {
+        "tests_ran": "DEXA scan",
+        "test_outcome": "T-score: -2.5, spine BMD: 0.760 g/cm\u00b2, hip BMD: 0.740 g/cm\u00b2",
+        "viewer_output": "DEXA scan completed. Results will be shared with your doctor."
+      },
+      "tools_used": [
+        "get_test_context",
+        "final_result"
+      ]
+    },
+    {
+      "step": 4,
+      "agent": "Doctor",
+      "summary": "Diagnosis: osteoporosis. Found 3 similar cases with successful outcomes. Treatment: Calcium and Vitamin D supplementation; consideration for bisphosphonates.",
+      "details": {
+        "diagnosis": "osteoporosis",
+        "recommended_treatment": "Calcium and Vitamin D supplementation; consideration for bisphosphonates based on patient history and risk factors.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "Patient presents with chronic back discomfort, fatigue, and joint stiffness consistent with osteoporosis diagnosis.",
+        "ordered_test": null,
+        "reasoning": "The DEXA scan indicates osteoporosis with a T-score of -2.5. Similar cases involved addressing back discomfort associated with osteoporosis. Treatment includes supplements and potential medication for prevention of fractures.",
+        "tests_completed_count": 1,
+        "viewer_output": "Diagnosis: osteoporosis. Found 3 similar cases with successful outcomes. Treatment: Calcium and Vitamin D supplementation; consideration for bisphosphonates."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "final_result"
+      ]
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "osteoporosis",
+    "recommended_treatment": "Calcium and Vitamin D supplementation; consideration for bisphosphonates based on patient history and risk factors.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "Patient presents with chronic back discomfort, fatigue, and joint stiffness consistent with osteoporosis diagnosis.",
+    "ordered_test": null,
+    "reasoning": "The DEXA scan indicates osteoporosis with a T-score of -2.5. Similar cases involved addressing back discomfort associated with osteoporosis. Treatment includes supplements and potential medication for prevention of fractures.",
+    "tests_completed_count": 1,
+    "viewer_output": "Diagnosis: osteoporosis. Found 3 similar cases with successful outcomes. Treatment: Calcium and Vitamin D supplementation; consideration for bisphosphonates."
+  },
+  "total_steps": 4,
+  "is_correct": true,
+  "validation_reason": "Exact match: 'osteoporosis'"
+}

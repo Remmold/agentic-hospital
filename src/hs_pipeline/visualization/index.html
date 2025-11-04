@@ -10,9 +10,108 @@
 </head>
 
 <body>
-    <h1>🏥 Hospital Simulation Visualizer</h1>
+    <div id="information-panel" class="side-panel">
+        <div class="panel-header">
+            <div class="header-content">
+                <h2>Information</h2>
+                <button id="collapseBtn" class="control-btn collapse-btn" aria-label="Toggle information panel">
+                    <span class="collapse-icon">◀</span>
+                </button>
+            </div>
+        </div>
+        <div class="panel-content">
+            <div class="patient-info">
+                <h3>About This Simulation</h3>
+                <p>
+                    This system simulates a hospital workflow, where AI agents (nurses, doctors, lab techs) collaborate to diagnose
+                    patients step by step.
+                </p>
+                <p>
+                    <strong>How it works:</strong> Each case begins with triage, followed by a doctor’s exam, then lab tests. Agents
+                    learn from outcomes to improve diagnoses.
+                </p>
+                <p>
+                    <strong>Your role:</strong> Watch as agents work through each scenario. The right panel shows the decision
+                    timeline.
+                </p>
+                <p>
+                    Use the controls below to navigate and interact with the simulation.
+                </p>
+            </div>
+            <div class="patient-info">
+                <h3>Controllers</h3>
+                <div class="controllers-wrapper">
+                    <div class="controller-group">
+                        <div class="movement-controllers-grid">
+                            <div class="controller-item">
+                                <button class="control-btn">W</button>
+                            </div>
+                            <div class="controller-item">
+                                <button class="control-btn">A</button>
+                            </div>
+                            <div class="controller-item">
+                                <button class="control-btn">S</button>
+                            </div>
+                            <div class="controller-item">
+                                <button class="control-btn">D</button>
+                            </div>
+                        </div>
+                    </div>
 
-    <div id="game-container"></div>
+                    <div class="controller-group">
+                        <div class="arrow-controllers-grid">
+                            <div class="controller-item">
+                                <button class="control-btn">↑</button>
+                            </div>
+                            <div class="controller-item">
+                                <button class="control-btn">←</button>
+                            </div>
+                            <div class="controller-item">
+                                <button class="control-btn">↓</button>
+                            </div>
+                            <div class="controller-item">
+                                <button class="control-btn">→</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-button-container">
+                    <div class="controller-item">
+                        <button class="control-btn space-btn">Space</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-section">
+        <div class="panel-header">
+            <h1>🏥 Hospital Simulation Visualizer</h1>
+        </div>
+        <div id="game-container"></div>
+    </div>
+
+    <div id="simulation-panel" class="side-panel">
+        <div class="panel-header">
+            <div class="header-content">
+                <h2>Patient Timeline</h2>
+                <div class="controls">
+                    <button id="playPauseBtn" class="control-btn">⏸️ Pause</button>
+                    <button id="speedBtn" class="control-btn">1x</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel-content">
+            <div id="patient-info" class="patient-info">
+                <p>No active patient</p>
+            </div>
+
+            <div id="timeline-container" class="timeline-container">
+            </div>
+        </div>
+    </div>
 
     <script type="module" src="game.js"></script>
 </body>

@@ -13,6 +13,9 @@ class NurseAssessment(BaseModel):
     notes: str
     next_step: Literal["send_to_doctor"]
     context_for_next: str
+    viewer_output: str = Field(
+        description="Concise summary for visualization (2-3 sentences max)"
+    )
 
 
 nurse_agent = Agent(
@@ -40,7 +43,11 @@ Chronic disease symptoms (diabetes, thyroid) = at least SEMI_URGENT
 Cardiac/respiratory = URGENT minimum
 
 Use tools to review medical history and current medications.
-    """
+
+VIEWER OUTPUT: Generate a concise 2-3 sentence summary for display:
+"Triaged as [LEVEL]. [Key concern]. [Action taken]."
+Example: "Triaged as URGENT. Patient presenting with chest pain and shortness of breath. Vital signs show elevated heart rate. Sent to doctor immediately."
+"""
 )
 
 

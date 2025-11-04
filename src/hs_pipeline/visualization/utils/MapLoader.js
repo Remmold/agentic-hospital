@@ -7,31 +7,26 @@ export class MapLoader {
     }
 
     /**
-     * Load all required assets
-     */
+ * Load all required assets
+ */
     static loadAssets(scene, cacheBuster = '') {
-        // Clear Phaser's cache to force fresh loads
-        scene.textures.remove(['patient_1', 'patient_2', 'patient_3', 'patient_4',
-            'nurse_1', 'nurse_2', 'nurse_3',
-            'doctor_1', 'doctor_2',
-            'mri_1', 'xray_1', 'hospitalMap']);
-
-        const assets = [
-            // Tilemap
+        // Tilemap and props
+        const propAssets = [
             { type: 'tilemapTiledJSON', key: 'hospitalMap', path: './assets/hospital_tilemap.json' },
             { type: 'spritesheet', key: 'floors', path: './assets/props/hospital_floors_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
-            
-            // Tilesheets
             { type: 'spritesheet', key: 'walls', path: './assets/props/hospital_walls_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
             { type: 'spritesheet', key: 'borders', path: './assets/props/hospital_borders_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
             { type: 'spritesheet', key: 'hospital_props', path: './assets/props/hospital_props_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
             { type: 'spritesheet', key: 'generic_props', path: './assets/props/generic_props_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
-            
-            // Characters
-            { type: 'spritesheet', key: 'patient_1', path: './assets/characters/patient_1.png', config: { frameWidth: 32, frameHeight: 64 } },
-            { type: 'spritesheet', key: 'patient_2', path: './assets/characters/patient_2.png', config: { frameWidth: 32, frameHeight: 64 } },
-            { type: 'spritesheet', key: 'patient_3', path: './assets/characters/patient_3.png', config: { frameWidth: 32, frameHeight: 64 } },
-            { type: 'spritesheet', key: 'patient_4', path: './assets/characters/patient_4.png', config: { frameWidth: 32, frameHeight: 64 } },
+            { type: 'spritesheet', key: 'wooden_door', path: './assets/doors/animated_door_big_5_32x32.png', config: { frameWidth: 32, frameHeight: 96 } },
+            { type: 'spritesheet', key: 'surgery_door', path: './assets/doors/animated_hospital_surgery_door_32x32.png', config: { frameWidth: 64, frameHeight: 96 } },
+        ];
+
+        // Generate patient sprites dynamically (pat_1.png through pat_29.png)
+        const patientAssets = MapLoader.generatePatientAssets(1, 29);
+
+        // Staff sprites
+        const staffAssets = [
             { type: 'spritesheet', key: 'nurse_1', path: './assets/characters/nurse_1.png', config: { frameWidth: 32, frameHeight: 64 } },
             { type: 'spritesheet', key: 'nurse_2', path: './assets/characters/nurse_2.png', config: { frameWidth: 32, frameHeight: 64 } },
             { type: 'spritesheet', key: 'nurse_3', path: './assets/characters/nurse_3.png', config: { frameWidth: 32, frameHeight: 64 } },
@@ -39,9 +34,18 @@ export class MapLoader {
             { type: 'spritesheet', key: 'doctor_2', path: './assets/characters/doctor_2.png', config: { frameWidth: 32, frameHeight: 64 } },
             { type: 'spritesheet', key: 'mri_1', path: './assets/characters/mri_1.png', config: { frameWidth: 32, frameHeight: 64 } },
             { type: 'spritesheet', key: 'xray_1', path: './assets/characters/xray_1.png', config: { frameWidth: 32, frameHeight: 64 } },
+            { type: 'spritesheet', key: 'player', path: './assets/characters/pat_player.png', config: { frameWidth: 32, frameHeight: 64 } },
         ];
 
-        assets.forEach(asset => {
+        // Combine all assets
+        const allAssets = [...propAssets, ...patientAssets, ...staffAssets];
+
+        // Clear cache for all keys
+        const keysToRemove = allAssets.map(a => a.key);
+        keysToRemove.forEach(key => scene.textures.remove(key));
+
+        // Load all assets
+        allAssets.forEach(asset => {
             const path = `${asset.path}${cacheBuster}`;
             if (asset.type === 'tilemapTiledJSON') {
                 scene.load.tilemapTiledJSON(asset.key, path);
@@ -51,6 +55,25 @@ export class MapLoader {
         });
 
         scene.load.on('loaderror', (file) => console.error('Failed to load:', file.key));
+    }
+
+    /**
+     * Generate patient sprite assets dynamically
+     * @param {number} startNum - Starting patient number (e.g., 1)
+     * @param {number} endNum - Ending patient number (e.g., 29)
+     */
+    static generatePatientAssets(startNum, endNum) {
+        const patients = [];
+        for (let i = startNum; i <= endNum; i++) {
+            const key = `pat_${i}`;
+            patients.push({
+                type: 'spritesheet',
+                key: key,
+                path: `./assets/characters/${key}.png`,
+                config: { frameWidth: 32, frameHeight: 64 }
+            });
+        }
+        return patients;
     }
 
     /**
@@ -77,7 +100,8 @@ export class MapLoader {
             map.addTilesetImage('walls', 'walls'),
             map.addTilesetImage('borders', 'borders'),
             map.addTilesetImage('hospital_props', 'hospital_props'),
-            map.addTilesetImage('generic_props', 'generic_props')
+            map.addTilesetImage('generic_props', 'generic_props'),
+            map.addTilesetImage('doors', 'wooden_door'),
         ];
     }
 
@@ -94,7 +118,6 @@ export class MapLoader {
             { name: 'props', key: 'props', depth: 60 },
             { name: 'props_dynamic_in_front', key: 'propsDynamicInFront', depth: 70 },
             { name: 'props_in_front', key: 'propsInFront', depth: 10000 },
-            { name: 'doors', key: 'doors', depth: 20000, optional: true },
             { name: 'wall_inside', key: 'wallInside', depth: 30000 },
             { name: 'wall_in_front', key: 'wallInFront', depth: 30001 },
             { name: 'glass_outside', key: 'glassOutside', depth: 30002, optional: true },

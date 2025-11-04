@@ -27,4 +27,13 @@ window.onload = () => {
     });
 };
 
+const collapseBtn = document.getElementById('collapseBtn');
+const infoPanel = document.getElementById('information-panel');
+const mainSection = document.getElementById('main-section');
+
+collapseBtn.addEventListener('click', () => {
+    infoPanel.classList.toggle('collapsed');
+    mainSection.classList.toggle('left-collapsed');
+});
+
 export { game, scene };

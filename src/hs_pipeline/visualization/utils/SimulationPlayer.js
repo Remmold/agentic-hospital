@@ -1,5 +1,7 @@
-import { LOCATIONS, AGENT_LOCATIONS, LAB_TEST_LOCATIONS, getLocation } from './Constants.js';
+import { LOCATIONS, AGENT_LOCATIONS, getLocation } from './Constants.js';
 import { CharacterFactory } from './CharacterFactory.js';
+import { AnimationManager } from './AnimationManager.js';
+import { PatientSpriteRegistry } from './PatientSpriteRegistry.js';
 
 export class SimulationPlayer {
     constructor(scene, pathfindingManager, depthManager) {
@@ -12,7 +14,14 @@ export class SimulationPlayer {
         this.simulationData = null;
         this.npc = null;
         this.onCompleteCallback = null;
-        this.spritesheet = 'patient_1';
+        this.spritesheet = null; // Will be set when patient is spawned
+        this.baseWaitTime = 2000;
+        this.speedMultiplier = 1;
+        this.isPausedByUI = false;
+    }
+
+    getRandomPatientSprite() {
+        return PatientSpriteRegistry.getNextSprite();
     }
 
     onComplete(callback) {
@@ -21,6 +30,21 @@ export class SimulationPlayer {
 
     onReturnStart(callback) {
         this.onReturnStartCallback = callback;
+    }
+
+    setSpeedMultiplier(speed) {
+        this.speedMultiplier = speed;
+        console.log(`[SimulationPlayer] Speed set to ${speed}x`);
+    }
+
+    setPaused(paused) {
+        this.isPausedByUI = paused;
+        console.log(`[SimulationPlayer] ${paused ? 'PAUSED' : 'RESUMED'}`);
+        
+        if (!paused && this.isPlaying) {
+            // Resume if we were waiting
+            this.playNextStep();
+        }
     }
 
     getChairDirection(chairKey) {
@@ -36,9 +60,15 @@ export class SimulationPlayer {
         return 'down';
     }
 
-    goToWaitingRoom(spritesheet, chairKey = 'WAITING_ROOM.CHAIR_1') {
+    goToWaitingRoom(spritesheet, chairKey = 'WAITING_ROOM.CHAIR_1', caseData = null) {
         this.spritesheet = spritesheet;
         this.spawnPatient();
+        
+        // Store simulation data so clicking works even in waiting room
+        if (caseData) {
+            this.simulationData = caseData;
+        }
+        
         console.log(`[GoToWaitingRoom] ${spritesheet} starting: entrance → reception → ${chairKey}`);
 
         this.moveToLocation('RECEPTION', 'idle', 'up', () => {
@@ -49,26 +79,52 @@ export class SimulationPlayer {
 
                 const chairDirection = this.getChairDirection(chairKey);
 
-                this.moveToLocation(chairKey, 'sit', chairDirection, () => {
-                    console.log(`[GoToWaitingRoom] ${spritesheet} sitting in ${chairKey} facing ${chairDirection}`);
+                const sittingAnim = AnimationManager.getRandomSittingAnimation(chairDirection);
+                
+                this.moveToLocation(chairKey, sittingAnim, chairDirection, () => {
+                    console.log(`[GoToWaitingRoom] ${spritesheet} sitting in ${chairKey} with animation: ${sittingAnim}`);
+
+                    // If phone animation, use special looped handler
+                    if (sittingAnim === 'sit_phone') {
+                        AnimationManager.playPhoneAnimation(this.npc, this.scene);
+                    }
                 });
             });
         });
     }
 
     /**
-     * Start timeline from waiting room (already patient is waiting in waiting room)
-     */
+ * Start timeline from waiting room (patient already waiting)
+ */
     startTimelineFromWaitingRoom(jsonData, waitTimeMs = 2000, receptionDesk = 'RECEPTION.LEFT') {
         this.simulationData = jsonData;
         this.currentStep = 0;
         this.isPlaying = true;
         this.waitTimeMs = waitTimeMs;
 
-        console.log(`Starting timeline for ${jsonData.patient.name} from waiting room`);
+        console.log(`[SimulationPlayer] Starting timeline for ${jsonData.patient.name} from waiting room`);
+
+        // Notify UI that patient case is loaded (with sprite for glow)
+        try {
+            const event = new CustomEvent('patientCaseLoaded', {
+                detail: {
+                    caseData: jsonData,
+                    sprite: this.npc
+                }
+            });
+            window.dispatchEvent(event);
+            console.log('[SimulationPlayer] Dispatched patientCaseLoaded event');
+        } catch (error) {
+            console.error('[SimulationPlayer] Error dispatching event:', error);
+        }
 
         // Small delay, then start timeline
         this.scene.time.delayedCall(waitTimeMs, () => {
+            // STOP phone animation if patient was using it
+            if (this.npc) {
+                AnimationManager.stopPhoneAnimation(this.npc, this.scene);
+            }
+
             this.playNextStep();
         });
     }
@@ -78,7 +134,7 @@ export class SimulationPlayer {
      */
     playSimulation(jsonData, waitTimeMs = 2000, spritesheet = 'patient_1', receptionDesk = 'RECEPTION.LEFT') {
         if (this.isPlaying) {
-            console.warn('Simulation already playing');
+            console.warn('[SimulationPlayer] Simulation already playing');
             return;
         }
 
@@ -88,15 +144,30 @@ export class SimulationPlayer {
         this.isPlaying = true;
         this.waitTimeMs = waitTimeMs;
 
-        console.log(`Starting simulation: ${jsonData.patient.name}`);
-        console.log(`Total steps: ${jsonData.timeline.length}`);
+        console.log(`[SimulationPlayer] Starting simulation: ${jsonData.patient.name}`);
+        console.log(`[SimulationPlayer] Total steps: ${jsonData.timeline.length}`);
 
         this.spawnPatient();
 
+        // Notify UI that patient case is loaded (with sprite for glow)
+        try {
+            const event = new CustomEvent('patientCaseLoaded', { 
+                detail: { 
+                    caseData: jsonData,
+                    sprite: this.npc
+                } 
+            });
+            window.dispatchEvent(event);
+            console.log('[SimulationPlayer] Dispatched patientCaseLoaded event');
+        } catch (error) {
+            console.error('[SimulationPlayer] Error dispatching event:', error);
+        }
+
         // Walk to reception (specific desk)
         this.moveToLocation(receptionDesk, 'idle', 'up', () => {
-            console.log('Arrived at reception, starting timeline...');
-            this.scene.time.delayedCall(this.waitTimeMs, () => {
+            console.log('[SimulationPlayer] Arrived at reception, starting timeline...');
+            const adjustedWaitTime = this.waitTimeMs / this.speedMultiplier;
+            this.scene.time.delayedCall(adjustedWaitTime, () => {
                 this.playNextStep();
             });
         });
@@ -118,10 +189,47 @@ export class SimulationPlayer {
             this.scene.physics.add.collider(this.npc, collisionGroup);
         }
 
-        console.log(`Patient spawned at entrance (${this.spritesheet})`);
+        // Make interactive and clickable
+        this.npc.setInteractive({ useHandCursor: true });
+        
+        // Store reference to this SimulationPlayer instance
+        this.npc.simulationPlayer = this;
+        
+        // Add click handler
+        this.npc.on('pointerdown', (pointer) => {
+            // Prevent map click-to-move when clicking on patient
+            pointer.event.stopPropagation();
+            
+            console.log(`[SimulationPlayer] Patient clicked: ${this.simulationData?.patient?.name}`);
+            
+            // Dispatch event to show this patient's timeline AND move glow
+            if (this.simulationData) {
+                try {
+                    const event = new CustomEvent('patientClicked', { 
+                        detail: { 
+                            caseData: this.simulationData,
+                            sprite: this.npc
+                        } 
+                    });
+                    window.dispatchEvent(event);
+                    console.log('[SimulationPlayer] Patient clicked - event dispatched');
+                } catch (error) {
+                    console.error('[SimulationPlayer] Error dispatching click event:', error);
+                }
+            }
+        });
+
+        console.log(`[SimulationPlayer] Patient spawned at entrance (${this.spritesheet})`);
     }
 
     playNextStep() {
+        // Check if paused
+        if (this.isPausedByUI) {
+            // Wait and check again
+            this.scene.time.delayedCall(100, () => this.playNextStep());
+            return;
+        }
+
         if (!this.isPlaying || this.currentStep >= this.simulationData.timeline.length) {
             this.returnToEntrance();
             return;
@@ -146,10 +254,22 @@ export class SimulationPlayer {
             direction = 'down';
         }
 
-        console.log(`Step ${this.currentStep + 1}/${this.simulationData.timeline.length}: ${agent} at ${locationKey}`);
+        console.log(`[SimulationPlayer] Step ${this.currentStep + 1}/${this.simulationData.timeline.length}: ${agent} at ${locationKey}`);
 
         this.moveToLocation(locationKey, animation, direction, () => {
-            this.scene.time.delayedCall(this.waitTimeMs, () => {
+            // Notify UI AFTER arrival at location
+            try {
+                const event = new CustomEvent('simulationStepChanged', { 
+                    detail: { stepIndex: this.currentStep } 
+                });
+                window.dispatchEvent(event);
+                console.log(`[SimulationPlayer] Step ${this.currentStep} highlighted (arrived at ${locationKey})`);
+            } catch (error) {
+                console.error('[SimulationPlayer] Error dispatching step change:', error);
+            }
+
+            const adjustedWaitTime = this.waitTimeMs / this.speedMultiplier;
+            this.scene.time.delayedCall(adjustedWaitTime, () => {
                 this.currentStep++;
                 this.playNextStep();
             });
@@ -170,7 +290,7 @@ export class SimulationPlayer {
             }
         }
 
-        console.log(`Lab test: ${testDescription}`);
+        console.log(`[SimulationPlayer] Lab test: ${testDescription}`);
 
         if (testDescription.includes('mri')) {
             return { location: 'LAB_MRI', animation: 'idle', direction: 'up' };
@@ -182,14 +302,24 @@ export class SimulationPlayer {
             return { location: 'LAB_CT', animation: 'idle', direction: 'up' };
         }
         if (testDescription.includes('blood')) {
-            return { location: 'LAB_BLOOD', animation: 'sit', direction: 'left' };
+            return { location: 'LAB_BLOOD', animation: 'sit', direction: 'down' };
         }
 
         return { location: 'LAB_DEFAULT', animation: 'sit', direction: 'left' };
     }
 
     returnToEntrance() {
-        console.log(`${this.spritesheet} finished ALL steps, returning to entrance...`);
+        console.log(`[SimulationPlayer] ${this.spritesheet} finished ALL steps, returning to entrance...`);
+
+        // Notify UI that simulation is complete
+        try {
+            const event = new CustomEvent('simulationComplete', { 
+                detail: { patientName: this.simulationData.patient.name } 
+            });
+            window.dispatchEvent(event);
+        } catch (error) {
+            console.error('[SimulationPlayer] Error dispatching complete event:', error);
+        }
 
         if (this.onReturnStartCallback) {
             this.onReturnStartCallback();
@@ -206,12 +336,12 @@ export class SimulationPlayer {
         const location = getLocation(locationKey);
 
         if (!location) {
-            console.error(`Location not found: ${locationKey}`);
+            console.error(`[SimulationPlayer] Location not found: ${locationKey}`);
             if (onComplete) onComplete();
             return;
         }
 
-        console.log(`Moving to ${location.name}`);
+        console.log(`[SimulationPlayer] Moving to ${location.name}`);
         this.pathfinding.moveToPoint(
             this.npc,
             location.x,
@@ -230,12 +360,13 @@ export class SimulationPlayer {
             this.npc.destroy();
             this.npc = null;
         }
-        console.log('Simulation stopped');
+        console.log('[SimulationPlayer] Simulation stopped');
     }
 
     finishSimulation() {
         this.isPlaying = false;
-        console.log(`Simulation complete: ${this.simulationData.patient.name}`);
+        console.log(`[SimulationPlayer] Simulation complete: ${this.simulationData.patient.name}`);
+        
         if (this.npc) {
             if (this.npc.pathTween) {
                 this.npc.pathTween.stop();
