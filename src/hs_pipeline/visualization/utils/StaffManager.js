@@ -52,7 +52,7 @@ export class StaffManager {
             },
             {
                 id: 'receptionist_2',
-                spritesheet: 'nurse_2',
+                spritesheet: 'nurse_4',
                 initialPosition: { ...LOCATIONS.RECEPTION.RIGHT_COMPUTER },
                 patrol: false,
                 idleAction: 'idle',

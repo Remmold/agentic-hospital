@@ -123,8 +123,6 @@ export class AnimationManager {
 
     /**
      * Play phone animation sequence (pickup, hold loop, putdown on demand)
-     * Frames: 336-338 (pickup), 339-344 (holding loop), 345-347 (putdown)
-     * All at normal framerate, NO pauses
      */
     static playPhoneAnimation(sprite, sceneInstance) {
         if (!sprite || !sceneInstance) {
@@ -132,73 +130,80 @@ export class AnimationManager {
             return;
         }
 
-        // Stop any running animations
-        sprite.stop();
-
+        // Get the sprite's current texture key
         const textureKey = sprite.texture.key;
 
-        // Create phone_pickup animation (plays once)
-        if (!sceneInstance.anims.exists('phone_pickup')) {
+        // Create animations specific to THIS sprite's texture (if not already created)
+        if (!sceneInstance.anims.exists(`${textureKey}_phone_pickup`)) {
             sceneInstance.anims.create({
-                key: 'phone_pickup',
-                frames: [
-                    { key: textureKey, frame: 336 },
-                    { key: textureKey, frame: 337 },
-                    { key: textureKey, frame: 338 }
-                ],
+                key: `${textureKey}_phone_pickup`,
+                frames: scene.anims.generateFrameNumbers(textureKey, {
+                    start: 336,
+                    end: 338
+                }),
                 frameRate: 6,
                 repeat: 0
             });
         }
 
-        // Create phone_holding animation (loops forever)
-        if (!sceneInstance.anims.exists('phone_holding')) {
+        if (!sceneInstance.anims.exists(`${textureKey}_phone_holding`)) {
             sceneInstance.anims.create({
-                key: 'phone_holding',
-                frames: [
-                    { key: textureKey, frame: 339 },
-                    { key: textureKey, frame: 340 },
-                    { key: textureKey, frame: 341 },
-                    { key: textureKey, frame: 342 },
-                    { key: textureKey, frame: 343 },
-                    { key: textureKey, frame: 344 }
-                ],
+                key: `${textureKey}_phone_holding`,
+                frames: sceneInstance.anims.generateFrameNumbers(textureKey, {
+                    start: 339,
+                    end: 344
+                }),
                 frameRate: 6,
                 repeat: -1
             });
         }
 
-        // Create phone_putdown animation (plays once)
-        if (!sceneInstance.anims.exists('phone_putdown')) {
+        if (!sceneInstance.anims.exists(`${textureKey}_phone_putdown`)) {
             sceneInstance.anims.create({
-                key: 'phone_putdown',
-                frames: [
-                    { key: textureKey, frame: 345 },
-                    { key: textureKey, frame: 346 },
-                    { key: textureKey, frame: 347 }
-                ],
+                key: `${textureKey}_phone_putdown`,
+                frames: sceneInstance.anims.generateFrameNumbers(textureKey, {
+                    start: 345,
+                    end: 347
+                }),
                 frameRate: 6,
                 repeat: 0
             });
         }
 
+        // Stop any running animations
+        sprite.stop();
+
         // Play pickup animation, then automatically start holding loop
-        sprite.play('phone_pickup');
+        sprite.play(`${textureKey}_phone_pickup`);
         sprite.once('animationcomplete', () => {
-            sprite.play('phone_holding');
+            sprite.play(`${textureKey}_phone_holding`);
         });
     }
 
     /**
      * Stop phone animation and play putdown sequence
-     * Call this when patient needs to leave waiting room
      */
     static stopPhoneAnimation(sprite, sceneInstance) {
         if (!sprite || !sceneInstance) return;
 
+        const textureKey = sprite.texture.key;
+
+        // Ensure animation exists for this texture
+        if (!sceneInstance.anims.exists(`${textureKey}_phone_putdown`)) {
+            sceneInstance.anims.create({
+                key: `${textureKey}_phone_putdown`,
+                frames: sceneInstance.anims.generateFrameNumbers(textureKey, {
+                    start: 345,
+                    end: 347
+                }),
+                frameRate: 6,
+                repeat: 0
+            });
+        }
+
         // Stop current animation and play putdown
         sprite.stop();
-        sprite.play('phone_putdown');
+        sprite.play(`${textureKey}_phone_putdown`);
 
         // After putdown completes, return to sitting idle
         sprite.once('animationcomplete', () => {
