@@ -125,6 +125,17 @@ export class HospitalScene extends Phaser.Scene {
                         true, // This is the active patient
                         null  // No current step to highlight yet
                     );
+                    
+                    // Apply current UI pause and speed state to the new active patient
+                    if (e.detail.sprite && e.detail.sprite.simulationPlayer) {
+                        const isPaused = window.simulationUI.getIsPaused();
+                        const speed = window.simulationUI.getCurrentSpeed();
+                        
+                        e.detail.sprite.simulationPlayer.setPaused(isPaused);
+                        e.detail.sprite.simulationPlayer.setSpeedMultiplier(speed);
+                        
+                        console.log(`[HospitalScene] Applied UI state to new patient: paused=${isPaused}, speed=${speed}x`);
+                    }
                 }
                 // Attach glow to the sprite if provided
                 if (e.detail.sprite && this.glowManager) {
