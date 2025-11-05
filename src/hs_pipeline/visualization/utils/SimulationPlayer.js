@@ -43,14 +43,14 @@ export class SimulationPlayer {
     setPaused(paused) {
         this.isPausedByUI = paused;
         console.log(`[SimulationPlayer] ${paused ? 'PAUSED' : 'RESUMED'}`);
-
+        
         if (paused) {
             // Stop movement if patient is moving
-            if (this.npc && this.npc.pathTween) {
+            if (this.npc && this.npc.pathTween && this.npc.pathTween.isPlaying()) {
                 this.npc.pathTween.pause();
                 console.log(`[SimulationPlayer] Movement paused`);
             }
-
+            
             // Switch to idle/sit animation when paused
             if (this.npc && this.npc.lastDirection) {
                 let action = this.npc.lastAction || 'idle';
@@ -62,7 +62,7 @@ export class SimulationPlayer {
                 console.log(`[SimulationPlayer] Playing ${action} animation while paused`);
             }
         } else {
-            // Resume based on current phase
+            // RESUME: Handle all possible states
             if (this.npc && this.npc.pathTween && this.npc.pathTween.isPaused()) {
                 // Resume movement and switch to walk animation
                 this.npc.pathTween.resume();
@@ -71,14 +71,17 @@ export class SimulationPlayer {
                 }
                 console.log(`[SimulationPlayer] Movement and walk animation resumed`);
             } else if (this.isExiting) {
-                // If exiting but not moving, check if we're at entrance waiting to finish
+                // If exiting but not moving, continue exit sequence
+                console.log(`[SimulationPlayer] Resuming exit sequence`);
                 this.checkPauseBeforeFinish();
-            } else if (this.isPlaying) {
-                // Resume normal timeline
+            } else if (this.isPlaying && !this.npc?.pathTween?.isPlaying()) {
+                // Resume timeline if we were between steps
+                console.log(`[SimulationPlayer] Resuming timeline from step ${this.currentStep}`);
                 this.playNextStep();
             }
         }
     }
+
 
     getChairDirection(chairKey) {
         const chairNum = parseInt(chairKey.match(/\d+/)[0]);
@@ -398,15 +401,14 @@ export class SimulationPlayer {
         // Check if paused before starting exit
         if (this.isPausedByUI) {
             console.log(`[SimulationPlayer] Paused before exit, waiting...`);
-            this.scene.time.delayedCall(100, () => this.returnToEntrance());
+            // Don't create infinite loop - just return and let resume handle it
             return;
         }
-
+        
         console.log(`[SimulationPlayer] ${this.spritesheet} starting exit to entrance...`);
-
+        
         // Mark that we're in exit phase
         this.isExiting = true;
-
         this.moveToLocation('ENTRANCE', 'idle', 'down', () => {
             // Arrived at entrance, but check pause before finishing
             this.checkPauseBeforeFinish();
@@ -417,12 +419,12 @@ export class SimulationPlayer {
         // Check if paused after arriving at entrance
         if (this.isPausedByUI) {
             console.log(`[SimulationPlayer] Paused at entrance, waiting before exit...`);
-            this.scene.time.delayedCall(100, () => this.checkPauseBeforeFinish());
+            // Don't create infinite loop - just return and let resume handle it
             return;
         }
-
+        
         console.log(`[SimulationPlayer] Completing exit...`);
-
+        
         // Notify UI that simulation is complete
         try {
             const event = new CustomEvent('simulationComplete', {
@@ -432,15 +434,16 @@ export class SimulationPlayer {
         } catch (error) {
             console.error('[SimulationPlayer] Error dispatching complete event:', error);
         }
-
+        
         if (this.onReturnStartCallback) {
             this.onReturnStartCallback();
         }
-
+        
         this.scene.time.delayedCall(1000, () => {
             this.finishSimulation();
         });
     }
+
 
     moveToLocation(locationKey, action, direction, onComplete) {
         const location = getLocation(locationKey);
