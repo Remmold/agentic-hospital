@@ -179,6 +179,27 @@ export class HospitalScene extends Phaser.Scene {
                 console.log(`[HospitalScene] Patient ${e.detail.patientName} completed simulation`);
             });
             
+            // Listen for patient chip clicks
+            window.addEventListener('patientChipClicked', (e) => {
+                console.log('[HospitalScene] patientChipClicked event received');
+                if (window.simulationUI && e.detail.caseData) {
+                    // Same as patientClicked - just viewing, not making active
+                    const isActivePatient = window.simulationUI.activePatientId === e.detail.patientId;
+                    const currentStep = isActivePatient && e.detail.isPlaying ? e.detail.currentStep : null;
+                    
+                    window.simulationUI.displayPatientCase(
+                        e.detail.caseData,
+                        e.detail.patientId,
+                        false,
+                        currentStep
+                    );
+                }
+                // Move glow to clicked patient if sprite exists
+                if (e.detail.sprite && this.glowManager) {
+                    this.glowManager.attachToSprite(e.detail.sprite);
+                }
+            });
+            
             console.log('[HospitalScene] UI event listeners attached');
         } catch (error) {
             console.error('[HospitalScene] Error setting up UI:', error);
@@ -282,6 +303,11 @@ export class HospitalScene extends Phaser.Scene {
         // Update patient queue
         if (this.patientQueue && this.availableCases) {
             this.patientQueue.update(this.availableCases);
+            
+            // Update patient selector UI
+            if (window.simulationUI) {
+                this.updatePatientSelectorUI();
+            }
         }
 
         // Keyboard movement
@@ -301,5 +327,40 @@ export class HospitalScene extends Phaser.Scene {
         }
 
         this.debugManager.updateDepthPanel(this.player);
+    }
+
+    updatePatientSelectorUI() {
+        if (!this.patientQueue || !window.simulationUI) return;
+        
+        // Get active patient
+        const activePatient = this.patientQueue.activePatient ? {
+            id: this.patientQueue.activePatient.id,
+            name: this.patientQueue.activePatient.player.simulationData?.patient?.name || 'Unknown',
+            caseData: this.patientQueue.activePatient.player.simulationData,
+            sprite: this.patientQueue.activePatient.player.npc,
+            currentStep: this.patientQueue.activePatient.player.lastHighlightedStep,
+            isPlaying: this.patientQueue.activePatient.player.isPlaying
+        } : null;
+        
+        // Get waiting patients
+        const waitingPatients = this.patientQueue.waitingPatients.map(patient => ({
+            id: patient.id,
+            name: patient.caseData?.patient?.name || 'Unknown',
+            caseData: patient.caseData,
+            sprite: patient.player?.npc,
+            currentStep: -1,
+            isPlaying: false
+        }));
+        
+        // Get completed patients (last 2)
+        const completedPatients = this.patientQueue.completedPatients.slice(-2).map(patient => ({
+            id: patient.id,
+            name: patient.player?.simulationData?.patient?.name || 'Unknown',
+            caseData: patient.player?.simulationData,
+            currentStep: -1,
+            isPlaying: false
+        }));
+        
+        window.simulationUI.updatePatientSelector(activePatient, waitingPatients, completedPatients);
     }
 }

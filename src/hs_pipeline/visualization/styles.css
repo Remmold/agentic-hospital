@@ -455,6 +455,87 @@ h1 {
     background: #4a5568;
 }
 
+/* Patient Selector Styles */
+.patient-selector {
+    background: #0f1419;
+    border-bottom: 1px solid #2d3748;
+    padding: 12px 16px;
+}
+
+.selector-header {
+    font-size: 11px;
+    font-weight: 600;
+    color: #a0aec0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.patient-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.patient-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    background: linear-gradient(135deg, #1a202c 0%, #0f1419 100%);
+    border: 1px solid #2d3748;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #cbd5e0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.patient-chip:hover {
+    background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+    border-color: #4a5568;
+    transform: translateY(-1px);
+}
+
+.patient-chip.selected {
+    background: linear-gradient(135deg, #1e3a5f 0%, #1a2332 100%);
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.2);
+}
+
+.patient-chip-active {
+    border-color: #10b981;
+}
+
+.patient-chip-active .chip-icon {
+    color: #10b981;
+}
+
+.patient-chip-waiting .chip-icon {
+    color: #f59e0b;
+}
+
+.patient-chip-completed {
+    opacity: 0.6;
+}
+
+.patient-chip-completed .chip-icon {
+    color: #6b7280;
+}
+
+.chip-icon {
+    font-size: 10px;
+    line-height: 1;
+}
+
+.chip-name {
+    font-weight: 500;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 @media (max-width: 1920px) {
     .side-panel {
         width: 22vw;
