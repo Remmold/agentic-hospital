@@ -118,7 +118,13 @@ export class HospitalScene extends Phaser.Scene {
             window.addEventListener('patientCaseLoaded', (e) => {
                 console.log('[HospitalScene] patientCaseLoaded event received');
                 if (window.simulationUI) {
-                    window.simulationUI.displayPatientCase(e.detail.caseData);
+                    // This patient is becoming active, so isActive = true
+                    window.simulationUI.displayPatientCase(
+                        e.detail.caseData, 
+                        e.detail.patientId, 
+                        true, // This is the active patient
+                        null  // No current step to highlight yet
+                    );
                 }
                 // Attach glow to the sprite if provided
                 if (e.detail.sprite && this.glowManager) {
@@ -130,7 +136,16 @@ export class HospitalScene extends Phaser.Scene {
             window.addEventListener('patientClicked', (e) => {
                 console.log('[HospitalScene] patientClicked event received');
                 if (window.simulationUI) {
-                    window.simulationUI.displayPatientCase(e.detail.caseData);
+                    // Check if clicked patient is the currently active one
+                    const isActivePatient = window.simulationUI.activePatientId === e.detail.patientId;
+                    
+                    // Display patient case, passing currentStep if this is the active patient
+                    window.simulationUI.displayPatientCase(
+                        e.detail.caseData, 
+                        e.detail.patientId, 
+                        false, // Not marking as active, just viewing
+                        isActivePatient && e.detail.isPlaying ? e.detail.currentStep : null
+                    );
                 }
                 // Move glow to clicked patient
                 if (e.detail.sprite && this.glowManager) {
@@ -141,7 +156,10 @@ export class HospitalScene extends Phaser.Scene {
             // Listen for step changes
             window.addEventListener('simulationStepChanged', (e) => {
                 if (window.simulationUI) {
-                    window.simulationUI.highlightCurrentStep(e.detail.stepIndex);
+                    window.simulationUI.highlightCurrentStep(
+                        e.detail.stepIndex,
+                        e.detail.patientId
+                    );
                 }
             });
             

@@ -11,6 +11,7 @@ export class SimulationPlayer {
 
         this.isPlaying = false;
         this.currentStep = 0;
+        this.lastHighlightedStep = -1; // Track the last step that was actually highlighted
         this.simulationData = null;
         this.npc = null;
         this.onCompleteCallback = null;
@@ -99,6 +100,7 @@ export class SimulationPlayer {
     startTimelineFromWaitingRoom(jsonData, waitTimeMs = 2000, receptionDesk = 'RECEPTION.LEFT') {
         this.simulationData = jsonData;
         this.currentStep = 0;
+        this.lastHighlightedStep = -1; // Reset highlighted step
         this.isPlaying = true;
         this.waitTimeMs = waitTimeMs;
 
@@ -109,7 +111,8 @@ export class SimulationPlayer {
             const event = new CustomEvent('patientCaseLoaded', {
                 detail: {
                     caseData: jsonData,
-                    sprite: this.npc
+                    sprite: this.npc,
+                    patientId: this.npc?.uniqueId
                 }
             });
             window.dispatchEvent(event);
@@ -141,6 +144,7 @@ export class SimulationPlayer {
         this.simulationData = jsonData;
         this.spritesheet = spritesheet;
         this.currentStep = 0;
+        this.lastHighlightedStep = -1; // Reset highlighted step
         this.isPlaying = true;
         this.waitTimeMs = waitTimeMs;
 
@@ -154,7 +158,8 @@ export class SimulationPlayer {
             const event = new CustomEvent('patientCaseLoaded', { 
                 detail: { 
                     caseData: jsonData,
-                    sprite: this.npc
+                    sprite: this.npc,
+                    patientId: this.npc?.uniqueId
                 } 
             });
             window.dispatchEvent(event);
@@ -208,7 +213,10 @@ export class SimulationPlayer {
                     const event = new CustomEvent('patientClicked', { 
                         detail: { 
                             caseData: this.simulationData,
-                            sprite: this.npc
+                            sprite: this.npc,
+                            patientId: this.npc?.uniqueId,
+                            currentStep: this.lastHighlightedStep, // Use last highlighted step, not currentStep
+                            isPlaying: this.isPlaying
                         } 
                     });
                     window.dispatchEvent(event);
@@ -259,8 +267,15 @@ export class SimulationPlayer {
         this.moveToLocation(locationKey, animation, direction, () => {
             // Notify UI AFTER arrival at location
             try {
+                // Update last highlighted step (the step we just arrived at)
+                this.lastHighlightedStep = this.currentStep;
+                
                 const event = new CustomEvent('simulationStepChanged', { 
-                    detail: { stepIndex: this.currentStep } 
+                    detail: { 
+                        stepIndex: this.currentStep,
+                        patientId: this.npc?.uniqueId,
+                        patientName: this.simulationData?.patient?.name
+                    } 
                 });
                 window.dispatchEvent(event);
                 console.log(`[SimulationPlayer] Step ${this.currentStep} highlighted (arrived at ${locationKey})`);

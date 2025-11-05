@@ -7,6 +7,8 @@ export class UIManager {
         this.isPaused = false;
         this.speeds = [0.5, 1, 2, 4];
         this.currentSpeedIndex = 1;
+        this.displayedPatientId = null; // Track which patient's timeline is shown
+        this.activePatientId = null; // Track which patient is actively running
         this.setupControls();
         console.log('[UIManager] Initialized');
     }
@@ -118,8 +120,17 @@ export class UIManager {
         console.log(`[UIManager] Speed: ${speed}x`);
     }
 
-    displayPatientCase(patientData) {
+    displayPatientCase(patientData, patientId = null, isActive = false, currentStep = null) {
         console.log('[UIManager] displayPatientCase called with:', patientData);
+        
+        // Store which patient is being displayed
+        this.displayedPatientId = patientId;
+        
+        // Store active patient ID only if this is the active patient
+        if (isActive) {
+            this.activePatientId = patientId;
+            console.log(`[UIManager] Active patient set to: ${patientId}`);
+        }
         
         if (!patientData || !patientData.patient) {
             console.warn('[UIManager] No patient data');
@@ -130,6 +141,7 @@ export class UIManager {
                 </div>
             `;
             this.timelineContainer.innerHTML = '';
+            this.displayedPatientId = null;
             return;
         }
 
@@ -163,7 +175,16 @@ export class UIManager {
                 const stepEl = this.createTimelineStep(step, index);
                 this.timelineContainer.appendChild(stepEl);
             });
-            console.log(`[UIManager] Created ${patientData.timeline.length} timeline steps`);
+            console.log(`[UIManager] Created ${patientData.timeline.length} timeline steps for patient ${patientId}`);
+            
+            // If this is the active patient and we have a current step, highlight it
+            if (patientId === this.activePatientId && currentStep !== null && currentStep >= 0) {
+                // Use setTimeout to ensure DOM is fully updated
+                setTimeout(() => {
+                    this.highlightCurrentStep(currentStep, patientId);
+                    console.log(`[UIManager] Auto-highlighted step ${currentStep} for active patient`);
+                }, 0);
+            }
         } else {
             this.timelineContainer.innerHTML = '<p style="color: #718096; text-align: center; padding: 20px;">No timeline data</p>';
         }
@@ -206,8 +227,23 @@ export class UIManager {
         return div;
     }
 
-    highlightCurrentStep(stepIndex) {
-        console.log(`[UIManager] Highlighting step ${stepIndex}`);
+    highlightCurrentStep(stepIndex, patientId = null) {
+        console.log(`[UIManager] Step change: step ${stepIndex}, patientId: ${patientId}, displayed: ${this.displayedPatientId}, active: ${this.activePatientId}`);
+        
+        // Only highlight if:
+        // 1. This step is for the active patient
+        // 2. The active patient's timeline is currently displayed
+        if (patientId !== this.activePatientId) {
+            console.log(`[UIManager] Ignoring step - not the active patient`);
+            return;
+        }
+        
+        if (this.displayedPatientId !== this.activePatientId) {
+            console.log(`[UIManager] Ignoring step - active patient timeline not displayed`);
+            return;
+        }
+        
+        console.log(`[UIManager] Highlighting step ${stepIndex} for active patient`);
         
         // Remove all current highlights
         document.querySelectorAll('.timeline-step').forEach(el => {
