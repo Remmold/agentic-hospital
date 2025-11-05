@@ -11,6 +11,7 @@ export class SimulationPlayer {
 
         this.isPlaying = false;
         this.currentStep = 0;
+        this.lastHighlightedStep = -1; // Track the last step that was actually highlighted
         this.simulationData = null;
         this.npc = null;
         this.onCompleteCallback = null;
@@ -18,6 +19,7 @@ export class SimulationPlayer {
         this.baseWaitTime = 2000;
         this.speedMultiplier = 1;
         this.isPausedByUI = false;
+        this.isExiting = false; // Track if patient is in exit phase
     }
 
     getRandomPatientSprite() {
@@ -41,9 +43,39 @@ export class SimulationPlayer {
         this.isPausedByUI = paused;
         console.log(`[SimulationPlayer] ${paused ? 'PAUSED' : 'RESUMED'}`);
         
-        if (!paused && this.isPlaying) {
-            // Resume if we were waiting
-            this.playNextStep();
+        if (paused) {
+            // Stop movement if patient is moving
+            if (this.npc && this.npc.pathTween) {
+                this.npc.pathTween.pause();
+                console.log(`[SimulationPlayer] Movement paused`);
+            }
+            
+            // Switch to idle/sit animation when paused
+            if (this.npc && this.npc.lastDirection) {
+                let action = this.npc.lastAction || 'idle';
+                // Convert walk to idle when paused (standing still)
+                if (action === 'walk') {
+                    action = 'idle';
+                }
+                AnimationManager.playAnimation(this.npc, action, this.npc.lastDirection);
+                console.log(`[SimulationPlayer] Playing ${action} animation while paused`);
+            }
+        } else {
+            // Resume based on current phase
+            if (this.npc && this.npc.pathTween && this.npc.pathTween.isPaused()) {
+                // Resume movement and switch to walk animation
+                this.npc.pathTween.resume();
+                if (this.npc.lastDirection) {
+                    AnimationManager.playAnimation(this.npc, 'walk', this.npc.lastDirection);
+                }
+                console.log(`[SimulationPlayer] Movement and walk animation resumed`);
+            } else if (this.isExiting) {
+                // If exiting but not moving, check if we're at entrance waiting to finish
+                this.checkPauseBeforeFinish();
+            } else if (this.isPlaying) {
+                // Resume normal timeline
+                this.playNextStep();
+            }
         }
     }
 
@@ -99,6 +131,7 @@ export class SimulationPlayer {
     startTimelineFromWaitingRoom(jsonData, waitTimeMs = 2000, receptionDesk = 'RECEPTION.LEFT') {
         this.simulationData = jsonData;
         this.currentStep = 0;
+        this.lastHighlightedStep = -1; // Reset highlighted step
         this.isPlaying = true;
         this.waitTimeMs = waitTimeMs;
 
@@ -109,7 +142,8 @@ export class SimulationPlayer {
             const event = new CustomEvent('patientCaseLoaded', {
                 detail: {
                     caseData: jsonData,
-                    sprite: this.npc
+                    sprite: this.npc,
+                    patientId: this.npc?.uniqueId
                 }
             });
             window.dispatchEvent(event);
@@ -141,6 +175,7 @@ export class SimulationPlayer {
         this.simulationData = jsonData;
         this.spritesheet = spritesheet;
         this.currentStep = 0;
+        this.lastHighlightedStep = -1; // Reset highlighted step
         this.isPlaying = true;
         this.waitTimeMs = waitTimeMs;
 
@@ -154,7 +189,8 @@ export class SimulationPlayer {
             const event = new CustomEvent('patientCaseLoaded', { 
                 detail: { 
                     caseData: jsonData,
-                    sprite: this.npc
+                    sprite: this.npc,
+                    patientId: this.npc?.uniqueId
                 } 
             });
             window.dispatchEvent(event);
@@ -208,7 +244,10 @@ export class SimulationPlayer {
                     const event = new CustomEvent('patientClicked', { 
                         detail: { 
                             caseData: this.simulationData,
-                            sprite: this.npc
+                            sprite: this.npc,
+                            patientId: this.npc?.uniqueId,
+                            currentStep: this.lastHighlightedStep, // Use last highlighted step, not currentStep
+                            isPlaying: this.isPlaying
                         } 
                     });
                     window.dispatchEvent(event);
@@ -231,7 +270,8 @@ export class SimulationPlayer {
         }
 
         if (!this.isPlaying || this.currentStep >= this.simulationData.timeline.length) {
-            this.returnToEntrance();
+            // All timeline steps complete, now show reflection and return to entrance
+            this.showReflectionAndReturn();
             return;
         }
 
@@ -259,8 +299,15 @@ export class SimulationPlayer {
         this.moveToLocation(locationKey, animation, direction, () => {
             // Notify UI AFTER arrival at location
             try {
+                // Update last highlighted step (the step we just arrived at)
+                this.lastHighlightedStep = this.currentStep;
+                
                 const event = new CustomEvent('simulationStepChanged', { 
-                    detail: { stepIndex: this.currentStep } 
+                    detail: { 
+                        stepIndex: this.currentStep,
+                        patientId: this.npc?.uniqueId,
+                        patientName: this.simulationData?.patient?.name
+                    } 
                 });
                 window.dispatchEvent(event);
                 console.log(`[SimulationPlayer] Step ${this.currentStep} highlighted (arrived at ${locationKey})`);
@@ -305,12 +352,67 @@ export class SimulationPlayer {
             return { location: 'LAB_BLOOD', animation: 'sit', direction: 'down' };
         }
 
-        return { location: 'LAB_DEFAULT', animation: 'sit', direction: 'left' };
+        return { location: 'LAB_DEFAULT', animation: 'sit', direction: 'down' };
+    }
+
+    showReflectionAndReturn() {
+        console.log(`[SimulationPlayer] All steps complete, showing reflection step`);
+        
+        // Highlight the last step as the "reflection" step
+        const lastStepIndex = this.simulationData.timeline.length - 1;
+        this.lastHighlightedStep = lastStepIndex;
+        
+        try {
+            const event = new CustomEvent('simulationStepChanged', { 
+                detail: { 
+                    stepIndex: lastStepIndex,
+                    patientId: this.npc?.uniqueId,
+                    patientName: this.simulationData?.patient?.name,
+                    isReflection: true
+                } 
+            });
+            window.dispatchEvent(event);
+            console.log(`[SimulationPlayer] Reflection step highlighted (step ${lastStepIndex})`);
+        } catch (error) {
+            console.error('[SimulationPlayer] Error dispatching reflection step:', error);
+        }
+        
+        // Wait a bit, then start moving to entrance (with pause check)
+        const adjustedWaitTime = this.waitTimeMs / this.speedMultiplier;
+        this.scene.time.delayedCall(adjustedWaitTime, () => {
+            this.returnToEntrance();
+        });
     }
 
     returnToEntrance() {
-        console.log(`[SimulationPlayer] ${this.spritesheet} finished ALL steps, returning to entrance...`);
+        // Check if paused before starting exit
+        if (this.isPausedByUI) {
+            console.log(`[SimulationPlayer] Paused before exit, waiting...`);
+            this.scene.time.delayedCall(100, () => this.returnToEntrance());
+            return;
+        }
+        
+        console.log(`[SimulationPlayer] ${this.spritesheet} starting exit to entrance...`);
 
+        // Mark that we're in exit phase
+        this.isExiting = true;
+
+        this.moveToLocation('ENTRANCE', 'idle', 'down', () => {
+            // Arrived at entrance, but check pause before finishing
+            this.checkPauseBeforeFinish();
+        });
+    }
+
+    checkPauseBeforeFinish() {
+        // Check if paused after arriving at entrance
+        if (this.isPausedByUI) {
+            console.log(`[SimulationPlayer] Paused at entrance, waiting before exit...`);
+            this.scene.time.delayedCall(100, () => this.checkPauseBeforeFinish());
+            return;
+        }
+
+        console.log(`[SimulationPlayer] Completing exit...`);
+        
         // Notify UI that simulation is complete
         try {
             const event = new CustomEvent('simulationComplete', { 
@@ -325,10 +427,8 @@ export class SimulationPlayer {
             this.onReturnStartCallback();
         }
 
-        this.moveToLocation('ENTRANCE', 'idle', 'down', () => {
-            this.scene.time.delayedCall(1000, () => {
-                this.finishSimulation();
-            });
+        this.scene.time.delayedCall(1000, () => {
+            this.finishSimulation();
         });
     }
 

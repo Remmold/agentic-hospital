@@ -7,6 +7,16 @@ export class UIManager {
         this.isPaused = false;
         this.speeds = [0.5, 1, 2, 4];
         this.currentSpeedIndex = 1;
+        this.displayedPatientId = null; // Track which patient's timeline is shown
+        this.activePatientId = null; // Track which patient is actively running
+        
+        // Track all patients for selector
+        this.patients = {
+            active: null,
+            waiting: [],
+            completed: []
+        };
+        
         this.setupControls();
         console.log('[UIManager] Initialized');
     }
@@ -32,6 +42,13 @@ export class UIManager {
                     </div>
                 </div>
                 
+                <div id="patient-selector" class="patient-selector">
+                    <div class="selector-header">Patients</div>
+                    <div id="patient-chips" class="patient-chips">
+                        <!-- Patient chips will be added here -->
+                    </div>
+                </div>
+                
                 <div id="patient-info" class="patient-info">
                     <div class="no-patient">
                         <div class="waiting-icon">⏳</div>
@@ -54,6 +71,30 @@ export class UIManager {
         this.timelineContainer = document.getElementById('timeline-container');
         this.playPauseBtn = document.getElementById('playPauseBtn');
         this.speedBtn = document.getElementById('speedBtn');
+        this.patientChips = document.getElementById('patient-chips');
+        
+        // If patient selector doesn't exist, add it (for existing panels)
+        if (!this.patientChips) {
+            this.addPatientSelectorToExistingPanel();
+            this.patientChips = document.getElementById('patient-chips');
+        }
+    }
+
+    addPatientSelectorToExistingPanel() {
+        const patientInfo = document.getElementById('patient-info');
+        if (!patientInfo) return;
+        
+        const selectorHTML = `
+            <div id="patient-selector" class="patient-selector">
+                <div class="selector-header">Patients</div>
+                <div id="patient-chips" class="patient-chips">
+                    <!-- Patient chips will be added here -->
+                </div>
+            </div>
+        `;
+        
+        patientInfo.insertAdjacentHTML('beforebegin', selectorHTML);
+        console.log('[UIManager] Patient selector added to existing panel');
     }
 
     addStyles() {
@@ -118,8 +159,17 @@ export class UIManager {
         console.log(`[UIManager] Speed: ${speed}x`);
     }
 
-    displayPatientCase(patientData) {
+    displayPatientCase(patientData, patientId = null, isActive = false, currentStep = null) {
         console.log('[UIManager] displayPatientCase called with:', patientData);
+        
+        // Store which patient is being displayed
+        this.displayedPatientId = patientId;
+        
+        // Store active patient ID only if this is the active patient
+        if (isActive) {
+            this.activePatientId = patientId;
+            console.log(`[UIManager] Active patient set to: ${patientId}`);
+        }
         
         if (!patientData || !patientData.patient) {
             console.warn('[UIManager] No patient data');
@@ -130,6 +180,7 @@ export class UIManager {
                 </div>
             `;
             this.timelineContainer.innerHTML = '';
+            this.displayedPatientId = null;
             return;
         }
 
@@ -163,10 +214,22 @@ export class UIManager {
                 const stepEl = this.createTimelineStep(step, index);
                 this.timelineContainer.appendChild(stepEl);
             });
-            console.log(`[UIManager] Created ${patientData.timeline.length} timeline steps`);
+            console.log(`[UIManager] Created ${patientData.timeline.length} timeline steps for patient ${patientId}`);
+            
+            // If this is the active patient and we have a current step, highlight it
+            if (patientId === this.activePatientId && currentStep !== null && currentStep >= 0) {
+                // Use setTimeout to ensure DOM is fully updated
+                setTimeout(() => {
+                    this.highlightCurrentStep(currentStep, patientId);
+                    console.log(`[UIManager] Auto-highlighted step ${currentStep} for active patient`);
+                }, 0);
+            }
         } else {
             this.timelineContainer.innerHTML = '<p style="color: #718096; text-align: center; padding: 20px;">No timeline data</p>';
         }
+        
+        // Update chip selection highlight (don't re-render, just update selection)
+        this.updateChipSelection();
     }
 
     createTimelineStep(step, index) {
@@ -206,8 +269,23 @@ export class UIManager {
         return div;
     }
 
-    highlightCurrentStep(stepIndex) {
-        console.log(`[UIManager] Highlighting step ${stepIndex}`);
+    highlightCurrentStep(stepIndex, patientId = null) {
+        console.log(`[UIManager] Step change: step ${stepIndex}, patientId: ${patientId}, displayed: ${this.displayedPatientId}, active: ${this.activePatientId}`);
+        
+        // Only highlight if:
+        // 1. This step is for the active patient
+        // 2. The active patient's timeline is currently displayed
+        if (patientId !== this.activePatientId) {
+            console.log(`[UIManager] Ignoring step - not the active patient`);
+            return;
+        }
+        
+        if (this.displayedPatientId !== this.activePatientId) {
+            console.log(`[UIManager] Ignoring step - active patient timeline not displayed`);
+            return;
+        }
+        
+        console.log(`[UIManager] Highlighting step ${stepIndex} for active patient`);
         
         // Remove all current highlights
         document.querySelectorAll('.timeline-step').forEach(el => {
@@ -234,5 +312,154 @@ export class UIManager {
 
     getCurrentSpeed() {
         return this.speeds[this.currentSpeedIndex];
+    }
+
+    /**
+     * Update the patient selector with current patients
+     * @param {Object} activePatient - {id, name, caseData, sprite, currentStep, isPlaying}
+     * @param {Array} waitingPatients - [{id, name, caseData, sprite, currentStep, isPlaying}, ...]
+     * @param {Array} completedPatients - [{id, name, caseData, currentStep, isPlaying}, ...] (last 2)
+     */
+    updatePatientSelector(activePatient, waitingPatients, completedPatients) {
+        const oldActive = this.patients.active?.id;
+        const oldWaiting = this.patients.waiting.map(p => p.id).join(',');
+        const oldCompleted = this.patients.completed.map(p => p.id).join(',');
+        
+        this.patients.active = activePatient;
+        this.patients.waiting = waitingPatients || [];
+        this.patients.completed = completedPatients || [];
+        
+        // Check if patient list changed
+        const newActive = this.patients.active?.id;
+        const newWaiting = this.patients.waiting.map(p => p.id).join(',');
+        const newCompleted = this.patients.completed.map(p => p.id).join(',');
+        
+        // Only re-render if patient list actually changed
+        if (oldActive !== newActive || oldWaiting !== newWaiting || oldCompleted !== newCompleted) {
+            this.renderPatientChips();
+        } else {
+            // Just update selection highlight if displayed patient changed
+            this.updateChipSelection();
+        }
+    }
+
+    /**
+     * Render patient chips in the selector
+     */
+    renderPatientChips() {
+        if (!this.patientChips) return;
+        
+        this.patientChips.innerHTML = '';
+        
+        // Active patient
+        if (this.patients.active) {
+            const chip = this.createPatientChip(
+                this.patients.active.id,
+                this.patients.active.name,
+                'active',
+                this.patients.active.caseData,
+                this.patients.active.sprite,
+                this.patients.active.currentStep,
+                this.patients.active.isPlaying
+            );
+            this.patientChips.appendChild(chip);
+        }
+        
+        // Waiting patients
+        this.patients.waiting.forEach(patient => {
+            const chip = this.createPatientChip(
+                patient.id,
+                patient.name,
+                'waiting',
+                patient.caseData,
+                patient.sprite,
+                patient.currentStep,
+                patient.isPlaying
+            );
+            this.patientChips.appendChild(chip);
+        });
+        
+        // Recently completed patients
+        this.patients.completed.forEach(patient => {
+            const chip = this.createPatientChip(
+                patient.id,
+                patient.name,
+                'completed',
+                patient.caseData,
+                null,
+                patient.currentStep,
+                patient.isPlaying
+            );
+            this.patientChips.appendChild(chip);
+        });
+    }
+
+    /**
+     * Create a patient chip element
+     */
+    createPatientChip(patientId, patientName, status, caseData, sprite, currentStep = -1, isPlaying = false) {
+        const chip = document.createElement('button');
+        chip.className = `patient-chip patient-chip-${status}`;
+        chip.dataset.patientId = patientId;
+        
+        // Highlight if this is the displayed patient
+        if (patientId === this.displayedPatientId) {
+            chip.classList.add('selected');
+        }
+        
+        // Status indicator
+        const statusIcon = {
+            'active': '▶',
+            'waiting': '⏳',
+            'completed': '✓'
+        }[status] || '';
+        
+        chip.innerHTML = `
+            <span class="chip-icon">${statusIcon}</span>
+            <span class="chip-name">${patientName}</span>
+        `;
+        
+        // Click handler
+        chip.addEventListener('click', () => {
+            console.log(`[UIManager] Patient chip clicked: ${patientName}, patientId: ${patientId}`);
+            
+            if (!caseData) {
+                console.warn('[UIManager] No case data for patient:', patientId);
+                return;
+            }
+            
+            console.log(`[UIManager] Dispatching patientChipClicked event with currentStep: ${currentStep}`);
+            
+            // Dispatch event to show this patient's timeline
+            const event = new CustomEvent('patientChipClicked', {
+                detail: {
+                    caseData: caseData,
+                    patientId: patientId,
+                    sprite: sprite,
+                    currentStep: currentStep,
+                    isPlaying: isPlaying
+                }
+            });
+            window.dispatchEvent(event);
+        });
+        
+        return chip;
+    }
+
+    /**
+     * Update chip selection highlights without re-creating elements
+     */
+    updateChipSelection() {
+        if (!this.patientChips) return;
+        
+        const chips = this.patientChips.querySelectorAll('.patient-chip');
+        chips.forEach(chip => {
+            const chipId = chip.dataset.patientId;
+            if (chipId === this.displayedPatientId) {
+                chip.classList.add('selected');
+            } else {
+                chip.classList.remove('selected');
+            }
+        });
     }
 }
