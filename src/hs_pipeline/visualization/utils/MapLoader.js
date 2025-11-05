@@ -17,19 +17,23 @@ export class MapLoader {
             { type: 'spritesheet', key: 'walls', path: './assets/props/hospital_walls_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
             { type: 'spritesheet', key: 'borders', path: './assets/props/hospital_borders_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
             { type: 'spritesheet', key: 'hospital_props', path: './assets/props/hospital_props_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
+            { type: 'spritesheet', key: 'hospital_windows', path: './assets/props/hospital_windows_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
             { type: 'spritesheet', key: 'generic_props', path: './assets/props/generic_props_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
+            { type: 'spritesheet', key: 'grocery_props', path: './assets/props/grocery_props_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
             { type: 'spritesheet', key: 'wooden_door', path: './assets/doors/animated_door_big_5_32x32.png', config: { frameWidth: 32, frameHeight: 96 } },
             { type: 'spritesheet', key: 'surgery_door', path: './assets/doors/animated_hospital_surgery_door_32x32.png', config: { frameWidth: 64, frameHeight: 96 } },
+            { type: 'spritesheet', key: 'room_labels', path: './assets/labels/room_labels_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
         ];
 
         // Generate patient sprites dynamically (pat_1.png through pat_29.png)
-        const patientAssets = MapLoader.generatePatientAssets(1, 29);
+        const patientAssets = MapLoader.generatePatientAssets(1, 44);
 
         // Staff sprites
         const staffAssets = [
             { type: 'spritesheet', key: 'nurse_1', path: './assets/characters/nurse_1.png', config: { frameWidth: 32, frameHeight: 64 } },
             { type: 'spritesheet', key: 'nurse_2', path: './assets/characters/nurse_2.png', config: { frameWidth: 32, frameHeight: 64 } },
             { type: 'spritesheet', key: 'nurse_3', path: './assets/characters/nurse_3.png', config: { frameWidth: 32, frameHeight: 64 } },
+            { type: 'spritesheet', key: 'nurse_4', path: './assets/characters/nurse_4.png', config: { frameWidth: 32, frameHeight: 64 } },
             { type: 'spritesheet', key: 'doctor_1', path: './assets/characters/doctor_1.png', config: { frameWidth: 32, frameHeight: 64 } },
             { type: 'spritesheet', key: 'doctor_2', path: './assets/characters/doctor_2.png', config: { frameWidth: 32, frameHeight: 64 } },
             { type: 'spritesheet', key: 'mri_1', path: './assets/characters/mri_1.png', config: { frameWidth: 32, frameHeight: 64 } },
@@ -60,7 +64,7 @@ export class MapLoader {
     /**
      * Generate patient sprite assets dynamically
      * @param {number} startNum - Starting patient number (e.g., 1)
-     * @param {number} endNum - Ending patient number (e.g., 29)
+     * @param {number} endNum - Ending patient number (e.g., 44 (current max))
      */
     static generatePatientAssets(startNum, endNum) {
         const patients = [];
@@ -100,8 +104,10 @@ export class MapLoader {
             map.addTilesetImage('walls', 'walls'),
             map.addTilesetImage('borders', 'borders'),
             map.addTilesetImage('hospital_props', 'hospital_props'),
+            map.addTilesetImage('hospital_windows', 'hospital_windows'),
             map.addTilesetImage('generic_props', 'generic_props'),
-            map.addTilesetImage('doors', 'wooden_door'),
+            map.addTilesetImage('grocery_props', 'grocery_props'),
+            map.addTilesetImage('room_labels', 'room_labels'),
         ];
     }
 
@@ -119,8 +125,9 @@ export class MapLoader {
             { name: 'props_dynamic_in_front', key: 'propsDynamicInFront', depth: 70 },
             { name: 'props_in_front', key: 'propsInFront', depth: 10000 },
             { name: 'wall_inside', key: 'wallInside', depth: 30000 },
+            { name: 'labels', key: 'room_labels', depth: 30000 },
             { name: 'wall_in_front', key: 'wallInFront', depth: 30001 },
-            { name: 'glass_outside', key: 'glassOutside', depth: 30002, optional: true },
+            { name: 'glass_outside', key: 'glassOutside', depth: 30002 },
             { name: 'collision', key: 'collision', depth: 0, hidden: true }
         ];
 

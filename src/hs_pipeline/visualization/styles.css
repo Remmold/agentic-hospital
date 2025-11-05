@@ -33,6 +33,7 @@ body {
     align-items: center;
     padding: 25px;
     overflow: hidden;
+    position: relative;
 }
 
 canvas {

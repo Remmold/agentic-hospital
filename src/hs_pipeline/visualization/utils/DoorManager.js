@@ -41,7 +41,7 @@ export default class DoorManager {
             const spritesheetKey = doorType === 'surgery' ? 'surgery_door' : 'wooden_door';
             const door = this.scene.add.sprite(triggerX, doorY - 16, spritesheetKey, 0);
             door.setOrigin(0.5, 0.5);
-            door.setDepth(50);
+            door.setDepth(40);
 
             // Store door type for animation selection
             this.doors[doorId] = {
