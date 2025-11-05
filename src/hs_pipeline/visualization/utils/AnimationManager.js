@@ -1,5 +1,3 @@
-import { PHONE_ANIMATION } from './Constants.js';
-
 /**
  * Animation frame configuration for all character types
  * All spritesheets follow the same layout
@@ -137,7 +135,7 @@ export class AnimationManager {
         if (!sceneInstance.anims.exists(`${textureKey}_phone_pickup`)) {
             sceneInstance.anims.create({
                 key: `${textureKey}_phone_pickup`,
-                frames: scene.anims.generateFrameNumbers(textureKey, {
+                frames: sceneInstance.anims.generateFrameNumbers(textureKey, {
                     start: 336,
                     end: 338
                 }),
