@@ -143,22 +143,39 @@ export class HospitalScene extends Phaser.Scene {
                 }
             });
             
-            // Listen for patient clicked event (user clicks a different patient)
+            // Listen for patient clicked event (sprite clicks)
             window.addEventListener('patientClicked', (e) => {
                 console.log('[HospitalScene] patientClicked event received');
                 if (window.simulationUI) {
-                    // Check if clicked patient is the currently active one
                     const isActivePatient = window.simulationUI.activePatientId === e.detail.patientId;
                     
-                    // Display patient case, passing currentStep if this is the active patient
                     window.simulationUI.displayPatientCase(
                         e.detail.caseData, 
                         e.detail.patientId, 
-                        false, // Not marking as active, just viewing
-                        isActivePatient && e.detail.isPlaying ? e.detail.currentStep : null
+                        false,
+                        isActivePatient ? e.detail.currentStep : null
                     );
                 }
-                // Move glow to clicked patient
+                if (e.detail.sprite && this.glowManager) {
+                    this.glowManager.attachToSprite(e.detail.sprite);
+                }
+            });
+            
+            // Listen for patient chip clicks (SINGLE LISTENER - NO DUPLICATE)
+            window.addEventListener('patientChipClicked', (e) => {
+                console.log('[HospitalScene] patientChipClicked event received');
+                if (window.simulationUI && e.detail.caseData) {
+                    // Pass through currentStep directly from chip
+                    const isActivePatient = window.simulationUI.activePatientId === e.detail.patientId;
+                    
+                    window.simulationUI.displayPatientCase(
+                        e.detail.caseData,
+                        e.detail.patientId,
+                        false,
+                        isActivePatient ? e.detail.currentStep : null
+                    );
+                }
+                // Move glow to clicked patient if sprite exists
                 if (e.detail.sprite && this.glowManager) {
                     this.glowManager.attachToSprite(e.detail.sprite);
                 }
@@ -177,27 +194,6 @@ export class HospitalScene extends Phaser.Scene {
             // Listen for simulation complete
             window.addEventListener('simulationComplete', (e) => {
                 console.log(`[HospitalScene] Patient ${e.detail.patientName} completed simulation`);
-            });
-            
-            // Listen for patient chip clicks
-            window.addEventListener('patientChipClicked', (e) => {
-                console.log('[HospitalScene] patientChipClicked event received');
-                if (window.simulationUI && e.detail.caseData) {
-                    // Same as patientClicked - just viewing, not making active
-                    const isActivePatient = window.simulationUI.activePatientId === e.detail.patientId;
-                    const currentStep = isActivePatient && e.detail.isPlaying ? e.detail.currentStep : null;
-                    
-                    window.simulationUI.displayPatientCase(
-                        e.detail.caseData,
-                        e.detail.patientId,
-                        false,
-                        currentStep
-                    );
-                }
-                // Move glow to clicked patient if sprite exists
-                if (e.detail.sprite && this.glowManager) {
-                    this.glowManager.attachToSprite(e.detail.sprite);
-                }
             });
             
             console.log('[HospitalScene] UI event listeners attached');
@@ -332,9 +328,9 @@ export class HospitalScene extends Phaser.Scene {
     updatePatientSelectorUI() {
         if (!this.patientQueue || !window.simulationUI) return;
         
-        // Get active patient
+        // Get active patient - USE SPRITE'S UNIQUEID
         const activePatient = this.patientQueue.activePatient ? {
-            id: this.patientQueue.activePatient.id,
+            id: this.patientQueue.activePatient.player.npc?.uniqueId || this.patientQueue.activePatient.id,
             name: this.patientQueue.activePatient.player.simulationData?.patient?.name || 'Unknown',
             caseData: this.patientQueue.activePatient.player.simulationData,
             sprite: this.patientQueue.activePatient.player.npc,
@@ -342,9 +338,9 @@ export class HospitalScene extends Phaser.Scene {
             isPlaying: this.patientQueue.activePatient.player.isPlaying
         } : null;
         
-        // Get waiting patients
+        // Get waiting patients - USE SPRITE'S UNIQUEID
         const waitingPatients = this.patientQueue.waitingPatients.map(patient => ({
-            id: patient.id,
+            id: patient.player.npc?.uniqueId || patient.id,
             name: patient.caseData?.patient?.name || 'Unknown',
             caseData: patient.caseData,
             sprite: patient.player?.npc,
