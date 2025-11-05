@@ -406,20 +406,15 @@ export class UIManager {
         });
     }
 
-    /**
-     * Create a patient chip element
-     */
     createPatientChip(patientId, patientName, status, caseData, sprite, currentStep = -1, isPlaying = false) {
         const chip = document.createElement('button');
         chip.className = `patient-chip patient-chip-${status}`;
         chip.dataset.patientId = patientId;
         
-        // Highlight if this is the displayed patient
         if (patientId === this.displayedPatientId) {
             chip.classList.add('selected');
         }
         
-        // Status indicator
         const statusIcon = {
             'active': '▶',
             'waiting': '⏳',
@@ -431,25 +426,29 @@ export class UIManager {
             <span class="chip-name">${patientName}</span>
         `;
         
-        // Click handler
+        // Store sprite reference on the chip element itself
+        chip._sprite = sprite;
+        
+        // Click handler - ALWAYS fetch fresh values at click time
         chip.addEventListener('click', () => {
-            console.log(`[UIManager] Patient chip clicked: ${patientName}, patientId: ${patientId}`);
-            
             if (!caseData) {
                 console.warn('[UIManager] No case data for patient:', patientId);
                 return;
             }
             
-            console.log(`[UIManager] Dispatching patientChipClicked event with currentStep: ${currentStep}`);
+            // Fetch absolutely fresh values from the sprite's simulationPlayer at click time
+            const freshCurrentStep = chip._sprite?.simulationPlayer?.lastHighlightedStep ?? -1;
+            const freshIsPlaying = chip._sprite?.simulationPlayer?.isPlaying ?? false;
             
-            // Dispatch event to show this patient's timeline
+            console.log(`[UIManager] Chip clicked: ${patientName}, FRESH currentStep: ${freshCurrentStep}`);
+            
             const event = new CustomEvent('patientChipClicked', {
                 detail: {
                     caseData: caseData,
                     patientId: patientId,
-                    sprite: sprite,
-                    currentStep: currentStep,
-                    isPlaying: isPlaying
+                    sprite: chip._sprite,
+                    currentStep: freshCurrentStep,  // Always fresh
+                    isPlaying: freshIsPlaying
                 }
             });
             window.dispatchEvent(event);
