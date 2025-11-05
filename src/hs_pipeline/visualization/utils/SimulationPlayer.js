@@ -4,7 +4,7 @@ import { AnimationManager } from './AnimationManager.js';
 import { PatientSpriteRegistry } from './PatientSpriteRegistry.js';
 
 export class SimulationPlayer {
-    constructor(scene, pathfindingManager, depthManager) {
+    constructor(scene, pathfindingManager, depthManager, onCompleteCallback) {
         this.scene = scene;
         this.pathfinding = pathfindingManager;
         this.depthManager = depthManager;
@@ -15,6 +15,7 @@ export class SimulationPlayer {
         this.simulationData = null;
         this.npc = null;
         this.onCompleteCallback = null;
+        this.eventHandlers = [];
         this.spritesheet = null; // Will be set when patient is spawned
         this.baseWaitTime = 2000;
         this.speedMultiplier = 1;
@@ -42,14 +43,14 @@ export class SimulationPlayer {
     setPaused(paused) {
         this.isPausedByUI = paused;
         console.log(`[SimulationPlayer] ${paused ? 'PAUSED' : 'RESUMED'}`);
-        
+
         if (paused) {
             // Stop movement if patient is moving
             if (this.npc && this.npc.pathTween) {
                 this.npc.pathTween.pause();
                 console.log(`[SimulationPlayer] Movement paused`);
             }
-            
+
             // Switch to idle/sit animation when paused
             if (this.npc && this.npc.lastDirection) {
                 let action = this.npc.lastAction || 'idle';
@@ -95,12 +96,12 @@ export class SimulationPlayer {
     goToWaitingRoom(spritesheet, chairKey = 'WAITING_ROOM.CHAIR_1', caseData = null) {
         this.spritesheet = spritesheet;
         this.spawnPatient();
-        
+
         // Store simulation data so clicking works even in waiting room
         if (caseData) {
             this.simulationData = caseData;
         }
-        
+
         console.log(`[GoToWaitingRoom] ${spritesheet} starting: entrance → reception → ${chairKey}`);
 
         this.moveToLocation('RECEPTION', 'idle', 'up', () => {
@@ -112,7 +113,7 @@ export class SimulationPlayer {
                 const chairDirection = this.getChairDirection(chairKey);
 
                 const sittingAnim = AnimationManager.getRandomSittingAnimation(chairDirection);
-                
+
                 this.moveToLocation(chairKey, sittingAnim, chairDirection, () => {
                     console.log(`[GoToWaitingRoom] ${spritesheet} sitting in ${chairKey} with animation: ${sittingAnim}`);
 
@@ -186,12 +187,12 @@ export class SimulationPlayer {
 
         // Notify UI that patient case is loaded (with sprite for glow)
         try {
-            const event = new CustomEvent('patientCaseLoaded', { 
-                detail: { 
+            const event = new CustomEvent('patientCaseLoaded', {
+                detail: {
                     caseData: jsonData,
                     sprite: this.npc,
                     patientId: this.npc?.uniqueId
-                } 
+                }
             });
             window.dispatchEvent(event);
             console.log('[SimulationPlayer] Dispatched patientCaseLoaded event');
@@ -227,28 +228,25 @@ export class SimulationPlayer {
 
         // Make interactive and clickable
         this.npc.setInteractive({ useHandCursor: true });
-        
+
         // Store reference to this SimulationPlayer instance
         this.npc.simulationPlayer = this;
-        
-        // Add click handler
-        this.npc.on('pointerdown', (pointer) => {
-            // Prevent map click-to-move when clicking on patient
+
+        const clickHandler = (pointer) => {
             pointer.event.stopPropagation();
-            
+
             console.log(`[SimulationPlayer] Patient clicked: ${this.simulationData?.patient?.name}`);
-            
-            // Dispatch event to show this patient's timeline AND move glow
+
             if (this.simulationData) {
                 try {
-                    const event = new CustomEvent('patientClicked', { 
-                        detail: { 
+                    const event = new CustomEvent('patientClicked', {
+                        detail: {
                             caseData: this.simulationData,
                             sprite: this.npc,
                             patientId: this.npc?.uniqueId,
-                            currentStep: this.lastHighlightedStep, // Use last highlighted step, not currentStep
+                            currentStep: this.lastHighlightedStep,
                             isPlaying: this.isPlaying
-                        } 
+                        }
                     });
                     window.dispatchEvent(event);
                     console.log('[SimulationPlayer] Patient clicked - event dispatched');
@@ -256,21 +254,33 @@ export class SimulationPlayer {
                     console.error('[SimulationPlayer] Error dispatching click event:', error);
                 }
             }
+        };
+
+        // Register handler and track it for cleanup
+        this.npc.on('pointerdown', clickHandler);
+        this.eventHandlers.push({
+            sprite: this.npc,
+            event: 'pointerdown',
+            handler: clickHandler
         });
 
-        console.log(`[SimulationPlayer] Patient spawned at entrance (${this.spritesheet})`);
+        console.log('[SimulationPlayer] Patient spawned with click tracking');
     }
 
     playNextStep() {
         // Check if paused
         if (this.isPausedByUI) {
-            // Wait and check again
-            this.scene.time.delayedCall(100, () => this.playNextStep());
+            console.log(`[SimulationPlayer] Paused, waiting to continue from step ${this.currentStep}...`);
             return;
         }
 
-        if (!this.isPlaying || this.currentStep >= this.simulationData.timeline.length) {
-            // All timeline steps complete, now show reflection and return to entrance
+        if (!this.isPlaying) {
+            console.log('[SimulationPlayer] Not playing, stopping');
+            return;
+        }
+
+        if (this.currentStep >= this.simulationData.timeline.length) {
+            console.log('[SimulationPlayer] Timeline complete, showing reflection');
             this.showReflectionAndReturn();
             return;
         }
@@ -281,7 +291,7 @@ export class SimulationPlayer {
         let animation = 'idle';
         let direction = 'down';
 
-        if (agent === 'Lab') {
+        if (agent === 'Lab Tech') {
             const labLocation = this.getLabLocation(step);
             locationKey = labLocation.location;
             animation = labLocation.animation;
@@ -301,13 +311,13 @@ export class SimulationPlayer {
             try {
                 // Update last highlighted step (the step we just arrived at)
                 this.lastHighlightedStep = this.currentStep;
-                
-                const event = new CustomEvent('simulationStepChanged', { 
-                    detail: { 
+
+                const event = new CustomEvent('simulationStepChanged', {
+                    detail: {
                         stepIndex: this.currentStep,
                         patientId: this.npc?.uniqueId,
                         patientName: this.simulationData?.patient?.name
-                    } 
+                    }
                 });
                 window.dispatchEvent(event);
                 console.log(`[SimulationPlayer] Step ${this.currentStep} highlighted (arrived at ${locationKey})`);
@@ -357,26 +367,26 @@ export class SimulationPlayer {
 
     showReflectionAndReturn() {
         console.log(`[SimulationPlayer] All steps complete, showing reflection step`);
-        
+
         // Highlight the last step as the "reflection" step
         const lastStepIndex = this.simulationData.timeline.length - 1;
         this.lastHighlightedStep = lastStepIndex;
-        
+
         try {
-            const event = new CustomEvent('simulationStepChanged', { 
-                detail: { 
+            const event = new CustomEvent('simulationStepChanged', {
+                detail: {
                     stepIndex: lastStepIndex,
                     patientId: this.npc?.uniqueId,
                     patientName: this.simulationData?.patient?.name,
                     isReflection: true
-                } 
+                }
             });
             window.dispatchEvent(event);
             console.log(`[SimulationPlayer] Reflection step highlighted (step ${lastStepIndex})`);
         } catch (error) {
             console.error('[SimulationPlayer] Error dispatching reflection step:', error);
         }
-        
+
         // Wait a bit, then start moving to entrance (with pause check)
         const adjustedWaitTime = this.waitTimeMs / this.speedMultiplier;
         this.scene.time.delayedCall(adjustedWaitTime, () => {
@@ -391,7 +401,7 @@ export class SimulationPlayer {
             this.scene.time.delayedCall(100, () => this.returnToEntrance());
             return;
         }
-        
+
         console.log(`[SimulationPlayer] ${this.spritesheet} starting exit to entrance...`);
 
         // Mark that we're in exit phase
@@ -412,11 +422,11 @@ export class SimulationPlayer {
         }
 
         console.log(`[SimulationPlayer] Completing exit...`);
-        
+
         // Notify UI that simulation is complete
         try {
-            const event = new CustomEvent('simulationComplete', { 
-                detail: { patientName: this.simulationData.patient.name } 
+            const event = new CustomEvent('simulationComplete', {
+                detail: { patientName: this.simulationData.patient.name }
             });
             window.dispatchEvent(event);
         } catch (error) {
@@ -457,6 +467,7 @@ export class SimulationPlayer {
     stopSimulation() {
         this.isPlaying = false;
         if (this.npc) {
+            this.cleanupEventHandlers();
             this.npc.destroy();
             this.npc = null;
         }
@@ -466,7 +477,7 @@ export class SimulationPlayer {
     finishSimulation() {
         this.isPlaying = false;
         console.log(`[SimulationPlayer] Simulation complete: ${this.simulationData.patient.name}`);
-        
+
         if (this.npc) {
             if (this.npc.pathTween) {
                 this.npc.pathTween.stop();
@@ -474,6 +485,9 @@ export class SimulationPlayer {
             if (this.npc.body) {
                 this.npc.body.setVelocity(0, 0);
             }
+
+            this.cleanupEventHandlers();
+
             this.npc.destroy();
             this.npc = null;
         }
@@ -481,6 +495,19 @@ export class SimulationPlayer {
         if (this.onCompleteCallback) {
             this.onCompleteCallback();
         }
+    }
+
+    /**
+     * Clean up all event handlers to prevent memory leaks
+     */
+    cleanupEventHandlers() {
+        this.eventHandlers.forEach(({ sprite, event, handler }) => {
+            if (sprite && !sprite.destroyed) {
+                sprite.off(event, handler);
+            }
+        });
+        this.eventHandlers = [];
+        console.log('[SimulationPlayer] Event handlers cleaned up');
     }
 
     update() {
