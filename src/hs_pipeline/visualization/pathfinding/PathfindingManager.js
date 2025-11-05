@@ -52,6 +52,9 @@ export class PathfindingManager {
                 // Fallback for old system
                 sprite.play(`patient_walk_${sprite.lastDirection}`, true);
             }
+            
+            // Mark that sprite is currently walking
+            sprite.lastAction = 'walk';
 
             sprite.pathTween = this.scene.tweens.add({
                 targets: sprite,
