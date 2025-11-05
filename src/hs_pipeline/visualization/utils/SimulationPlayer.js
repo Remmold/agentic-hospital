@@ -305,7 +305,7 @@ export class SimulationPlayer {
             return { location: 'LAB_BLOOD', animation: 'sit', direction: 'down' };
         }
 
-        return { location: 'LAB_DEFAULT', animation: 'sit', direction: 'left' };
+        return { location: 'LAB_DEFAULT', animation: 'sit', direction: 'down' };
     }
 
     returnToEntrance() {
