@@ -230,40 +230,29 @@ export class PatientSimulation {
      * @param {string} chairKey - Waiting room chair location key
      * @param {Object} caseData - Patient case data (for clickability)
      */
-    goToWaitingRoom(spritesheet, chairKey, caseData) {
+    goToWaitingRoom(spritesheet, chairKey, caseData, receptionDesk = 'RECEPTION.LEFT') {
         this.spritesheet = spritesheet;
         this.simulationData = caseData;
         this.isPlaying = false;
 
         this.spawnPatient();
 
-        console.log('[DEBUG] goToWaitingRoom - sprite uniqueId:', this.npc?.uniqueId);
-        console.log('[DEBUG] goToWaitingRoom - sprite lastDirection:', this.npc?.lastDirection);
+        console.log(`[PatientSimulation] Going to ${receptionDesk} then to waiting room`);
 
-        // First, go to reception desk
-        this.movement.moveToLocation(this.npc, 'RECEPTION', 'idle', 'up', () => {
+        // First, go to assigned reception desk
+        this.movement.moveToLocation(this.npc, receptionDesk, 'idle', 'up', () => {
             console.log('[PatientSimulation] At reception, moving to waiting room...');
 
             // Wait at reception for 2 seconds
             this.scene.time.delayedCall(2000, () => {
-                // Determine chair direction
                 const chairDirection = this.getChairDirection(chairKey);
-
-                // Get appropriate sitting animation based on direction
                 const sittingAnim = this.animations.getRandomSittingAnimation(chairDirection);
 
                 console.log(`[PatientSimulation] Patient going to ${chairKey}`);
-                console.log(`[DEBUG] chairDirection: ${chairDirection}`);
-                console.log(`[DEBUG] sittingAnim: ${sittingAnim}`);
-                console.log(`[DEBUG] sprite uniqueId: ${this.npc?.uniqueId}`);
 
-                // Move to chair
                 this.movement.moveToLocation(this.npc, chairKey, sittingAnim, chairDirection, () => {
                     console.log('[PatientSimulation] Patient seated in waiting room');
-                    console.log(`[DEBUG] After seating - sprite lastDirection: ${this.npc?.lastDirection}`);
-                    console.log(`[DEBUG] After seating - sprite lastAction: ${this.npc?.lastAction}`);
 
-                    // Start phone animation if sitting with phone
                     if (sittingAnim === 'sit_phone') {
                         this.animations.playPhoneAnimation(this.npc);
                     }
@@ -274,14 +263,14 @@ export class PatientSimulation {
 
     /**
      * Start timeline from waiting room (when patient becomes active)
-     * Patient stays in chair and timeline starts immediately
+     * Patient walks to reception desk first, then timeline starts
      * 
      * @param {Object} caseData - Patient case data
-     * @param {number} waitTimeMs - Wait time before starting timeline
-     * @param {string} receptionDesk - Reception desk (not used, kept for compatibility)
+     * @param {number} waitTimeMs - Wait time at reception before starting timeline
+     * @param {string} receptionDesk - Reception desk location key
      */
     startTimelineFromWaitingRoom(caseData, waitTimeMs, receptionDesk) {
-        console.log('[PatientSimulation] Starting timeline from waiting room');
+        console.log(`[PatientSimulation] Starting timeline from waiting room - going directly to first step`);
 
         this.simulationData = caseData;
         this.currentStep = 0;
@@ -299,13 +288,8 @@ export class PatientSimulation {
             patientId: this.npc?.uniqueId
         });
 
-        // Start timeline directly from waiting room after wait time
-        this.scene.time.delayedCall(waitTimeMs, () => {
-            if (this.npc) {
-                this.animations.stopPhoneAnimation(this.npc);
-            }
-            this.playNextStep();
-        });
+        // Go directly to first timeline step (skip reception)
+        this.playNextStep();
     }
 
     /**

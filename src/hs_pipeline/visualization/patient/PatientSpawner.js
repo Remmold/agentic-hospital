@@ -85,6 +85,10 @@ export class PatientSpawner {
      * Spawn a new patient (active or waiting)
      * @param {string[]} availableCases - Array of available case filenames
      */
+    /**
+     * Spawn a new patient (active or waiting)
+     * @param {string[]} availableCases - Array of available case filenames
+     */
     spawnPatient(availableCases) {
         if (!this.queue.canSpawnNextPatient()) {
             return;
@@ -137,7 +141,8 @@ export class PatientSpawner {
                 
                 simulationPlayer.onComplete(() => this.handlePatientComplete());
 
-            } else {
+            }
+            else {
                 // Spawn as waiting patient
                 const waitingChair = this.queue.getRandomAvailableWaitingChair();
 
@@ -145,21 +150,24 @@ export class PatientSpawner {
                     return; // No available chairs
                 }
 
+                // Get a reception desk for when they go to waiting room
+                const receptionDesk = this.queue.getRandomAvailableReceptionDesk() || this.queue.receptionDesks[0];
+
                 const patientData = {
                     id: patientId,
                     player: simulationPlayer,
                     caseData: caseData,
                     spritesheet: spritesheet,
                     spawnTime: Date.now(),
-                    waitingChair: waitingChair
+                    waitingChair: waitingChair,
+                    receptionDesk: receptionDesk  // Store which desk they'll use
                 };
 
                 this.queue.addWaitingPatient(patientData);
 
-                // Send patient to waiting room
-                simulationPlayer.goToWaitingRoom(spritesheet, waitingChair, caseData);
+                // Send patient to waiting room with their assigned desk
+                simulationPlayer.goToWaitingRoom(spritesheet, waitingChair, caseData, receptionDesk);
                 
-                // Register door triggers after sprite is created
                 this.scene.time.delayedCall(100, () => {
                     if (patientData.player?.npc) {
                         this.scene.doorManager.activateTriggers(patientData.player.npc);
@@ -190,7 +198,7 @@ export class PatientSpawner {
             );
             nextPatientData.patient.player.onComplete(() => this.handlePatientComplete());
             
-            // Ensure door triggers are registered for promoted patient
+            // ✅ ADDED: Ensure door triggers are registered for promoted patient
             this.scene.time.delayedCall(100, () => {
                 if (nextPatientData.patient?.player?.npc) {
                     this.scene.doorManager.activateTriggers(nextPatientData.patient.player.npc);
