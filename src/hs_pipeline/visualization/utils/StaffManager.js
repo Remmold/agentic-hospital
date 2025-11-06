@@ -309,7 +309,7 @@ export class StaffManager {
             );
 
             // Threshold increased from 20 to 30 to handle floating-point coordinates better
-            if (distance < 30) {
+            if (distance < 20) { // Leave at 20, putting it at 30 causes animation/character sprite sliding
                 // Arrived at waypoint - start idling
                 staffData.isIdling = true;
                 staffData.idleTimer = 0;
