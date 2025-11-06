@@ -41,9 +41,13 @@ export class MapLoader {
         // Combine all assets
         const allAssets = [...propAssets, ...patientAssets, ...doctorAssets, ...nurseAssets, ...otherCharacterAssets];
 
-        // Clear cache for all keys
+        // Clear cache for all keys (only if they exist)
         const keysToRemove = allAssets.map(a => a.key);
-        keysToRemove.forEach(key => scene.textures.remove(key));
+        keysToRemove.forEach(key => {
+            if (scene.textures.exists(key)) {
+                scene.textures.remove(key);
+            }
+        });
 
         // Load all assets
         allAssets.forEach(asset => {
