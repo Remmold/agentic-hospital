@@ -1,4 +1,17 @@
-// Static locations in the hospital (in pixels)
+/**
+ * @fileoverview Game-wide constants including locations, agent mappings, and configuration
+ * Central configuration file for all static game data
+ * 
+ * @module utils/Constants
+ * @author Hospital Simulation Team
+ */
+
+/**
+ * Static locations in the hospital (in pixels)
+ * All coordinates are based on 32x32 pixel tiles
+ * 
+ * @constant {Object} LOCATIONS
+ */
 export const LOCATIONS = {
     // Hospital entrance/exit
     ENTRANCE: { x: 21 * 32, y: 33 * 32, name: 'Hospital Entrance' },
@@ -27,16 +40,16 @@ export const LOCATIONS = {
         CHAIR_6: { x: 33 * 32, y: 29 * 32, name: 'Waiting Room Chair 6' },
         CHAIR_7: { x: 36 * 32, y: 29 * 32, name: 'Waiting Room Chair 7' },
         CHAIR_8: { x: 37 * 32, y: 29 * 32, name: 'Waiting Room Chair 8' },
-        // // Right wall chairs
+        // Right wall chairs
         CHAIR_9: { x: 38 * 32, y: 25 * 32, name: 'Waiting Room Chair 9' },
         CHAIR_10: { x: 38 * 32, y: 26 * 32, name: 'Waiting Room Chair 10' },
         CHAIR_11: { x: 38 * 32, y: 27 * 32, name: 'Waiting Room Chair 11' },
     },
-    
+
     // Pharmacy
     PHARMACY: {
         base: { x: 5 * 32, y: 26 * 32, name: 'base' },
-        PHARMACIST_BEHIND_COUNTER_1: {  x: 2 * 32, y: 20 * 32, name: 'Pharmacist Behind Counter 1' },
+        PHARMACIST_BEHIND_COUNTER_1: { x: 2 * 32, y: 20 * 32, name: 'Pharmacist Behind Counter 1' },
         PHARMACIST_BEHIND_COUNTER_2: { x: 5 * 32, y: 20 * 32, name: 'Pharmacist Behind Counter 2' },
         PATIENT_IN_FRONT_OF_COUNTER_1: { x: 5 * 32, y: 27 * 32, name: 'Patient In Front Of Counter 1' },
         PATIENT_IN_FRONT_OF_COUNTER_2: { x: 6 * 32, y: 27 * 32, name: 'Patient In Front Of Counter 2' }
@@ -94,12 +107,11 @@ export const LOCATIONS = {
         TOP_CHAIR_5: { x: 20.5 * 32, y: 7.5 * 32, name: 'Conference Room Chair 12' },
         TOP_CHAIR_6: { x: 21.5 * 32, y: 7.5 * 32, name: 'Conference Room Chair 13' },
         TOP_CHAIR_7: { x: 22.5 * 32, y: 7.5 * 32, name: 'Conference Room Chair 14' },
-
     },
 
     // Labs
     LAB_DEFAULT: { x: 23 * 32, y: 16 * 32, name: 'Lab (Blood Test)' },
-    LAB_NURSE_POSITION: { x: 20 * 32, y: 20 * 32, name: 'Lab Nurse Position' },     
+    LAB_NURSE_POSITION: { x: 20 * 32, y: 20 * 32, name: 'Lab Nurse Position' },
     XRAY_TECH_POSITION: { x: 34 * 32, y: 6.8 * 32, name: 'X-Ray Tech Position' },
     XRAY_VIEW_WINDOW_POSITION: { x: 37 * 32, y: 6.8 * 32, name: 'X-Ray View Window Position' },
     LAB_MRI: { x: 2 * 32, y: 7 * 32, name: 'MRI Room' },
@@ -108,14 +120,25 @@ export const LOCATIONS = {
     LAB_CT: { x: 38 * 32, y: 18 * 32, name: 'CT Scan Room' },
 };
 
-// Map agent types to locations
+/**
+ * Map agent types to their default locations
+ * Used by patient simulation to determine where agents work
+ * 
+ * @constant {Object} AGENT_LOCATIONS
+ */
 export const AGENT_LOCATIONS = {
     'Nurse': 'NURSE_OFFICE',
     'Doctor': 'DOCTORS_OFFICE',
-    'Lab': 'LAB_DEFAULT'
+    'Lab': 'LAB_DEFAULT',
+    'Reflection': 'DOCTORS_OFFICE' // Reflection step happens at doctor's office
 };
 
-// Map test types to lab locations
+/**
+ * Map test types to their corresponding lab locations
+ * Used to route patients to correct lab based on test type
+ * 
+ * @constant {Object} LAB_TEST_LOCATIONS
+ */
 export const LAB_TEST_LOCATIONS = {
     'mri': 'LAB_MRI',
     'xray': 'LAB_XRAY',
@@ -125,26 +148,11 @@ export const LAB_TEST_LOCATIONS = {
     'ct scan': 'LAB_MRI'
 };
 
-// Helper to get random location
-export function getRandomLocation() {
-    const keys = Object.keys(LOCATIONS);
-    const randomKey = keys[Math.floor(Math.random() * keys.length)];
-    return LOCATIONS[randomKey];
-}
-
-// Helper to get a random waiting room chair
-export function getRandomWaitingRoomChair() {
-    const chairs = [
-        LOCATIONS.WAITING_ROOM_1,
-        LOCATIONS.WAITING_ROOM_2,
-        LOCATIONS.WAITING_ROOM_3,
-        LOCATIONS.WAITING_ROOM_4
-    ];
-    return chairs[Math.floor(Math.random() * chairs.length)];
-}
-
 /**
  * Phone animation timing configuration
+ * Controls how long characters hold phones and wait between calls
+ * 
+ * @constant {Object} PHONE_ANIMATION
  */
 export const PHONE_ANIMATION = {
     HOLD_MIN: 5000,      // Minimum hold time (ms)
@@ -154,30 +162,65 @@ export const PHONE_ANIMATION = {
 };
 
 /**
+ * Get a random location from all available locations
+ * Useful for testing or random NPC placement
+ * 
+ * @returns {Object} Random location with x, y, and name properties
+ * 
+ * @example
+ * const randomLoc = getRandomLocation();
+ * sprite.setPosition(randomLoc.x, randomLoc.y);
+ */
+export function getRandomLocation() {
+    const keys = Object.keys(LOCATIONS);
+    const randomKey = keys[Math.floor(Math.random() * keys.length)];
+    return LOCATIONS[randomKey];
+}
+
+/**
  * Get location coordinates - handles both flat and nested locations
+ * Supports string keys like 'ENTRANCE' or 'RECEPTION.LEFT'
+ * Also accepts location objects directly
+ * 
+ * @param {string|Object} locationKey - Location key or location object
+ * @returns {Object|null} Location object with x, y coordinates, or null if not found
+ * 
+ * @example
+ * // Flat location
+ * const entrance = getLocation('ENTRANCE'); // { x: 672, y: 1056, name: 'Hospital Entrance' }
+ * 
+ * // Nested location
+ * const leftDesk = getLocation('RECEPTION.LEFT'); // { x: 544, y: 832, name: 'Reception Desk Left' }
+ * 
+ * // Pass through object
+ * const loc = getLocation({ x: 100, y: 200 }); // Returns { x: 100, y: 200 }
  */
 export function getLocation(locationKey) {
+    // If already an object with x and y, return it
     if (typeof locationKey === 'object' && locationKey.x && locationKey.y) {
         return locationKey;
     }
 
+    // Must be a string key
     if (typeof locationKey !== 'string') {
         console.error('[getLocation] Invalid location key:', locationKey);
         return null;
     }
 
-    // Handle flat locations
+    // Handle flat locations (e.g., 'ENTRANCE')
     if (LOCATIONS[locationKey]) {
         const loc = LOCATIONS[locationKey];
+        // If location has x and y directly, return it
         if (loc.x !== undefined && loc.y !== undefined) {
             return loc;
         }
+        // If location has a 'base' property, return that
         if (loc.base) {
             return loc.base;
         }
     }
 
-    // Handle nested locations (RECEPTION.LEFT, WAITING_ROOM.CHAIR_1, etc)
+    // Handle nested locations (e.g., 'RECEPTION.LEFT', 'WAITING_ROOM.CHAIR_1')
     const parts = locationKey.split('.');
     if (parts.length === 2) {
         const room = LOCATIONS[parts[0]];
