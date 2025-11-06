@@ -12,11 +12,12 @@ import { StaffManager } from '../utils/StaffManager.js';
 import { CharacterFactory } from '../utils/CharacterFactory.js';
 import { UIManager } from '../ui/UIManager.js';
 import { GlowManager } from '../utils/GlowManager.js';
+import { EventBus, EVENT_NAMES } from '../utils/EventBus.js';
 
 export class HospitalScene extends Phaser.Scene {
     constructor() {
         super({ key: 'HospitalScene' });
-        this.DEV_MODE = false;
+        this.DEV_MODE = true;
         this.DEPTH_PANEL = false;
     }
 
