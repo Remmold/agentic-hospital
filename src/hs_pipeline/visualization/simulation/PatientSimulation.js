@@ -230,17 +230,23 @@ export class PatientSimulation {
      * @param {string} chairKey - Waiting room chair location key
      * @param {Object} caseData - Patient case data (for clickability)
      */
-    goToWaitingRoom(spritesheet, chairKey, caseData, receptionDesk = 'RECEPTION.LEFT') {
+    goToWaitingRoom(spritesheet, chairKey, caseData) {
         this.spritesheet = spritesheet;
         this.simulationData = caseData;
         this.isPlaying = false;
 
         this.spawnPatient();
 
-        console.log(`[PatientSimulation] Going to ${receptionDesk} then to waiting room`);
+        console.log('[DEBUG] goToWaitingRoom - sprite uniqueId:', this.npc?.uniqueId);
 
-        // First, go to assigned reception desk
-        this.movement.moveToLocation(this.npc, receptionDesk, 'idle', 'up', () => {
+        // Pick a random reception desk (don't worry about availability - they're just checking in)
+        const receptionDesks = ['RECEPTION.LEFT', 'RECEPTION.RIGHT'];
+        const randomDesk = receptionDesks[Math.floor(Math.random() * receptionDesks.length)];
+
+        console.log(`[PatientSimulation] Going to ${randomDesk} then to waiting room`);
+
+        // First, go to random reception desk
+        this.movement.moveToLocation(this.npc, randomDesk, 'idle', 'up', () => {
             console.log('[PatientSimulation] At reception, moving to waiting room...');
 
             // Wait at reception for 2 seconds

@@ -143,39 +143,35 @@ export class PatientSpawner {
 
             }
             else {
-                // Spawn as waiting patient
-                const waitingChair = this.queue.getRandomAvailableWaitingChair();
+            // Spawn as waiting patient
+            const waitingChair = this.queue.getRandomAvailableWaitingChair();
 
-                if (waitingChair === null) {
-                    return; // No available chairs
-                }
-
-                // Get a reception desk for when they go to waiting room
-                const receptionDesk = this.queue.getRandomAvailableReceptionDesk() || this.queue.receptionDesks[0];
-
-                const patientData = {
-                    id: patientId,
-                    player: simulationPlayer,
-                    caseData: caseData,
-                    spritesheet: spritesheet,
-                    spawnTime: Date.now(),
-                    waitingChair: waitingChair,
-                    receptionDesk: receptionDesk  // Store which desk they'll use
-                };
-
-                this.queue.addWaitingPatient(patientData);
-
-                // Send patient to waiting room with their assigned desk
-                simulationPlayer.goToWaitingRoom(spritesheet, waitingChair, caseData, receptionDesk);
-                
-                this.scene.time.delayedCall(100, () => {
-                    if (patientData.player?.npc) {
-                        this.scene.doorManager.activateTriggers(patientData.player.npc);
-                        console.log('[DoorManager] Waiting patient registered for door triggers');
-                    }
-                });
+            if (waitingChair === null) {
+                return; // No available chairs
             }
 
+            const patientData = {
+                id: patientId,
+                player: simulationPlayer,
+                caseData: caseData,
+                spritesheet: spritesheet,
+                spawnTime: Date.now(),
+                waitingChair: waitingChair
+                // Don't assign receptionDesk here - will be assigned when promoted
+            };
+
+            this.queue.addWaitingPatient(patientData);
+
+            // Send patient to waiting room - they'll pick a random desk when they arrive
+            simulationPlayer.goToWaitingRoom(spritesheet, waitingChair, caseData);
+            
+            this.scene.time.delayedCall(100, () => {
+                if (patientData.player?.npc) {
+                    this.scene.doorManager.activateTriggers(patientData.player.npc);
+                    console.log('[DoorManager] Waiting patient registered for door triggers');
+                }
+            });
+        }
             this.patientCounter++;
         }).catch(error => {
             console.error(`[PatientSpawner] Error spawning patient:`, error);
