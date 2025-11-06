@@ -218,8 +218,4 @@ export class PatientQueueManager {
             spawned: this.patientCounter
         };
     }
-
-    startAutoPatientGeneration(availableCases) {
-        console.log('[PatientQueue] Auto-generation started');
-    }
 }
