@@ -17,17 +17,37 @@ export class StaffManager {
                 idleAction: 'sit',
                 idleDirection: 'down',
                 idleMs: 3000
+            },          
+            {
+                id: 'doctor_xray',
+                spritesheet: 'xray_1',
+                initialPosition: { ...LOCATIONS.XRAY_TECH_POSITION },
+                patrol: [
+                    { ...LOCATIONS.XRAY_VIEW_WINDOW_POSITION, idleMs: 7000 },
+                    { ...LOCATIONS.XRAY_TECH_POSITION, idleMs: 6000 },
+                ],
+                idleAction: 'sit',
+                idleDirection: 'up',
+                idleMs: 3000
             },
+            // Lab nurses
             {
                 id: 'lab_nurse',
                 spritesheet: 'nurse_1',
                 initialPosition: { ...LOCATIONS.LAB.NURSE_POSITION },
                 patrol: [
-                    { ...LOCATIONS.LAB.BIG_MACHINE, idleMs: 2000 },
-                    { ...LOCATIONS.LAB.SMALL_MACHINE, idleMs: 4000 }
+                    { ...LOCATIONS.LAB.BIG_MACHINE, idleMs: 5000 },
+                    { ...LOCATIONS.LAB.SMALL_MACHINE, idleMs: 5000 }
                 ],
                 idleAction: 'idle',
                 idleDirection: 'right'
+            },            {
+                id: 'examination_nurse',
+                spritesheet: 'nurse_1',
+                initialPosition: { ...LOCATIONS.NURSE_OFFICE.NURSE_BY_PATIENT_SEAT },
+                patrol: false,
+                idleAction: 'idle',
+                idleDirection: 'left'
             },
             {
                 id: 'mri_nurse',
@@ -41,6 +61,7 @@ export class StaffManager {
                 idleAction: 'idle',
                 idleDirection: 'right'
             },
+            // Receptionists
             {
                 id: 'receptionist_1',
                 spritesheet: 'nurse_2',
@@ -52,13 +73,99 @@ export class StaffManager {
             },
             {
                 id: 'receptionist_2',
-                spritesheet: 'nurse_4',
+                spritesheet: 'nurse_3',
                 initialPosition: { ...LOCATIONS.RECEPTION.RIGHT_COMPUTER },
                 patrol: false,
                 idleAction: 'idle',
                 idleDirection: 'down',
                 idleMs: 3000
+            },
+            // Pharmacy staff
+            {
+                id: 'pharmacist_1',
+                spritesheet: 'doctor_9',
+                initialPosition: { ...LOCATIONS.PHARMACY.PHARMACIST_BEHIND_COUNTER_1 },
+                patrol: false,
+                idleAction: 'idle',
+                idleDirection: 'down',
+                idleMs: 3000
+            },
+            {
+                id: 'pharmacist_2',
+                spritesheet: 'doctor_10',
+                initialPosition: { ...LOCATIONS.PHARMACY.PHARMACIST_BEHIND_COUNTER_2 },
+                patrol: false,
+                idleAction: 'idle',
+                idleDirection: 'down',
+                idleMs: 3000
+            },
+            // Conference room staff
+            {
+                id: 'conference_2',
+                spritesheet: 'doctor_7',
+                initialPosition: { ...LOCATIONS.CONFERENCE_ROOM.BOTTOM_CHAIR_2 },
+                patrol: false,
+                idleAction: 'idle',
+                idleDirection: 'up',
+                idleMs: 3000
+            },
+            {
+                id: 'conference_3',
+                spritesheet: 'doctor_6',
+                initialPosition: { ...LOCATIONS.CONFERENCE_ROOM.BOTTOM_CHAIR_3 },
+                patrol: false,
+                idleAction: 'idle',
+                idleDirection: 'up',
+                idleMs: 3000
+            },
+            {
+                id: 'conference_4',
+                spritesheet: 'doctor_5',
+                initialPosition: { ...LOCATIONS.CONFERENCE_ROOM.BOTTOM_CHAIR_4 },
+                patrol: false,
+                idleAction: 'idle',
+                idleDirection: 'up',
+                idleMs: 3000
+            },
+            {
+                id: 'conference_5',
+                spritesheet: 'nurse_10',
+                initialPosition: { ...LOCATIONS.CONFERENCE_ROOM.BOTTOM_CHAIR_6 },
+                patrol: false,
+                idleAction: 'idle',
+                idleDirection: 'up',
+                idleMs: 3000
+            },
+            {
+                id: 'conference_6',
+                spritesheet: 'nurse_9',
+                initialPosition: { ...LOCATIONS.CONFERENCE_ROOM.TOP_CHAIR_2 },
+                patrol: false,
+                idleAction: 'sit',
+                idleDirection: 'down',
+                idleMs: 3000
             }
+            ,
+            {
+                id: 'conference_6',
+                spritesheet: 'nurse_8',
+                initialPosition: { ...LOCATIONS.CONFERENCE_ROOM.TOP_CHAIR_4 },
+                patrol: false,  
+                idleAction: 'idle',
+                idleDirection: 'down',
+                idleMs: 3000
+            }
+            ,
+            {
+                id: 'conference_6',
+                spritesheet: 'nurse_7',
+                initialPosition: { ...LOCATIONS.CONFERENCE_ROOM.TOP_CHAIR_6 },
+                patrol: false,
+                idleAction: 'idle',
+                idleDirection: 'down',
+                idleMs: 3000
+            }
+
         ];
     }
 
@@ -159,9 +266,9 @@ export class StaffManager {
         }
     }
 
-    moveToWaypoint(staffData, waypoint) {
+    moveToWaypoint(staffData, waypoint, speed = 150) {
         const npc = staffData.npc;
-        const speed = 80;
+
 
         try {
             if (this.scene.pathfinding) {

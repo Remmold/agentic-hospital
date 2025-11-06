@@ -25,24 +25,21 @@ export class MapLoader {
             { type: 'spritesheet', key: 'room_labels', path: './assets/labels/room_labels_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
         ];
 
-        // Generate patient sprites dynamically (pat_1.png through pat_29.png)
-        const patientAssets = MapLoader.generatePatientAssets(1, 44);
+        // Generate character sprites dynamically (pat, doctor, nurse)
+        const patientAssets = MapLoader.generateCharacterAssets(1, 44, "pat");
+        const doctorAssets = MapLoader.generateCharacterAssets(1, 10, "doctor");
+        const nurseAssets = MapLoader.generateCharacterAssets(1, 10, "nurse");
 
         // Staff sprites
-        const staffAssets = [
-            { type: 'spritesheet', key: 'nurse_1', path: './assets/characters/nurse_1.png', config: { frameWidth: 32, frameHeight: 64 } },
-            { type: 'spritesheet', key: 'nurse_2', path: './assets/characters/nurse_2.png', config: { frameWidth: 32, frameHeight: 64 } },
-            { type: 'spritesheet', key: 'nurse_3', path: './assets/characters/nurse_3.png', config: { frameWidth: 32, frameHeight: 64 } },
-            { type: 'spritesheet', key: 'nurse_4', path: './assets/characters/nurse_4.png', config: { frameWidth: 32, frameHeight: 64 } },
-            { type: 'spritesheet', key: 'doctor_1', path: './assets/characters/doctor_1.png', config: { frameWidth: 32, frameHeight: 64 } },
-            { type: 'spritesheet', key: 'doctor_2', path: './assets/characters/doctor_2.png', config: { frameWidth: 32, frameHeight: 64 } },
+        const otherCharacterAssets = [
             { type: 'spritesheet', key: 'mri_1', path: './assets/characters/mri_1.png', config: { frameWidth: 32, frameHeight: 64 } },
             { type: 'spritesheet', key: 'xray_1', path: './assets/characters/xray_1.png', config: { frameWidth: 32, frameHeight: 64 } },
+            { type: 'spritesheet', key: 'janitor_1', path: './assets/characters/janitor_1.png', config: { frameWidth: 32, frameHeight: 64 } },
             { type: 'spritesheet', key: 'player', path: './assets/characters/pat_player.png', config: { frameWidth: 32, frameHeight: 64 } },
         ];
 
         // Combine all assets
-        const allAssets = [...propAssets, ...patientAssets, ...staffAssets];
+        const allAssets = [...propAssets, ...patientAssets, ...doctorAssets, ...nurseAssets, ...otherCharacterAssets];
 
         // Clear cache for all keys
         const keysToRemove = allAssets.map(a => a.key);
@@ -62,22 +59,23 @@ export class MapLoader {
     }
 
     /**
-     * Generate patient sprite assets dynamically
-     * @param {number} startNum - Starting patient number (e.g., 1)
-     * @param {number} endNum - Ending patient number (e.g., 44 (current max))
+     * Generate character sprite assets dynamically
+     * @param {number} startNum - Starting character number (e.g., 1)
+     * @param {number} endNum - Ending character number (e.g., 44)
+     * @param {string} characterType - Character type: pat, doctor or nurse
      */
-    static generatePatientAssets(startNum, endNum) {
-        const patients = [];
+    static generateCharacterAssets(startNum, endNum, characterType) {
+        const characterList = [];
         for (let i = startNum; i <= endNum; i++) {
-            const key = `pat_${i}`;
-            patients.push({
+            const key = `${characterType}_${i}`;
+            characterList.push({
                 type: 'spritesheet',
                 key: key,
                 path: `./assets/characters/${key}.png`,
                 config: { frameWidth: 32, frameHeight: 64 }
             });
         }
-        return patients;
+        return characterList;
     }
 
     /**
