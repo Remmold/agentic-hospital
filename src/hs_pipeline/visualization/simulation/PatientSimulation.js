@@ -415,6 +415,9 @@ export class PatientSimulation {
         } else if (agent === 'Nurse') {
             animation = 'sit';
             direction = 'down';
+        }else if (agent === 'Reflection') {
+            animation = 'sit';
+            direction = 'up';
         }
 
         // Move to location and wait
