@@ -468,14 +468,6 @@ export class PatientSimulation {
     showReflectionAndReturn() {
         console.log('[PatientSimulation] Timeline complete, showing reflection...');
 
-        this.lastHighlightedStep = this.currentStep;
-
-        EventBus.emit(EVENT_NAMES.SIMULATION_STEP_CHANGED, {
-            stepIndex: this.currentStep,
-            patientId: this.npc?.uniqueId,
-            patientName: this.simulationData?.patient?.name
-        });
-
         const adjustedWaitTime = this.waitTimeMs / this.speedMultiplier;
         this.scene.time.delayedCall(adjustedWaitTime, () => {
             this.isExiting = true;
