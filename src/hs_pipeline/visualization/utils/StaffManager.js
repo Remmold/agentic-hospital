@@ -1,13 +1,40 @@
+/**
+ * @fileoverview Manages all staff NPCs including doctors, nurses, and support staff
+ * Handles staff spawning, patrol routes, and idle behaviors
+ * 
+ * @module utils/StaffManager
+ * @requires ./CharacterFactory
+ * @requires ./Constants
+ * @requires ./AnimationUtils
+ * @author Hospital Simulation Team
+ */
+
 import { CharacterFactory } from './CharacterFactory.js';
 import { LOCATIONS } from './Constants.js';
+import { AnimationUtils } from './AnimationUtils.js';
 
+/**
+ * StaffManager - Manages all staff NPCs in the hospital
+ * 
+ * Responsibilities:
+ * - Spawning staff at configured positions
+ * - Managing patrol routes
+ * - Handling idle animations at waypoints
+ * - Updating staff depth for proper rendering
+ */
 export class StaffManager {
+    /**
+     * Creates a new StaffManager
+     * 
+     * @param {Phaser.Scene} scene - The game scene
+     * @param {DepthManager} depthManager - Manages sprite rendering depth
+     */
     constructor(scene, depthManager) {
         this.scene = scene;
         this.depthManager = depthManager;
         this.staff = [];
 
-        // Staff configuration
+        // Staff configuration with positions, patrols, and behaviors
         this.staffConfig = [
             {
                 id: 'doctor_1',
@@ -17,20 +44,19 @@ export class StaffManager {
                 idleAction: 'sit',
                 idleDirection: 'down',
                 idleMs: 3000
-            },          
+            },
             {
                 id: 'doctor_xray',
                 spritesheet: 'xray_1',
                 initialPosition: { ...LOCATIONS.XRAY_TECH_POSITION },
                 patrol: [
-                    { ...LOCATIONS.XRAY_VIEW_WINDOW_POSITION, idleMs: 7000 },
-                    { ...LOCATIONS.XRAY_TECH_POSITION, idleMs: 6000 },
+                    { ...LOCATIONS.XRAY_VIEW_WINDOW_POSITION, idleMs: 7000, idleDirection: 'up' },
+                    { ...LOCATIONS.XRAY_TECH_POSITION, idleMs: 6000, idleDirection: 'up' },
                 ],
                 idleAction: 'sit',
                 idleDirection: 'up',
                 idleMs: 3000
             },
-            // Lab nurses
             {
                 id: 'lab_nurse',
                 spritesheet: 'nurse_1',
@@ -41,7 +67,8 @@ export class StaffManager {
                 ],
                 idleAction: 'idle',
                 idleDirection: 'right'
-            },            {
+            },
+            {
                 id: 'examination_nurse',
                 spritesheet: 'nurse_1',
                 initialPosition: { ...LOCATIONS.NURSE_OFFICE.NURSE_BY_PATIENT_SEAT },
@@ -54,14 +81,9 @@ export class StaffManager {
                 spritesheet: 'mri_1',
                 initialPosition: { ...LOCATIONS.MRI.STAFF_CHAIR },
                 patrol: false,
-                // patrol: [
-                //     { ...LOCATIONS.LAB.BIG_MACHINE, idleMs: 2000 },
-                //     { ...LOCATIONS.LAB.SMALL_MACHINE, idleMs: 4000 }
-                // ],
                 idleAction: 'idle',
                 idleDirection: 'right'
             },
-            // Receptionists
             {
                 id: 'receptionist_1',
                 spritesheet: 'nurse_2',
@@ -80,7 +102,6 @@ export class StaffManager {
                 idleDirection: 'down',
                 idleMs: 3000
             },
-            // Pharmacy staff
             {
                 id: 'pharmacist_1',
                 spritesheet: 'doctor_9',
@@ -99,7 +120,6 @@ export class StaffManager {
                 idleDirection: 'down',
                 idleMs: 3000
             },
-            // Conference room staff
             {
                 id: 'conference_2',
                 spritesheet: 'doctor_7',
@@ -144,20 +164,18 @@ export class StaffManager {
                 idleAction: 'sit',
                 idleDirection: 'down',
                 idleMs: 3000
-            }
-            ,
+            },
             {
-                id: 'conference_6',
+                id: 'conference_7',
                 spritesheet: 'nurse_8',
                 initialPosition: { ...LOCATIONS.CONFERENCE_ROOM.TOP_CHAIR_4 },
-                patrol: false,  
+                patrol: false,
                 idleAction: 'idle',
                 idleDirection: 'down',
                 idleMs: 3000
-            }
-            ,
+            },
             {
-                id: 'conference_6',
+                id: 'conference_8',
                 spritesheet: 'nurse_7',
                 initialPosition: { ...LOCATIONS.CONFERENCE_ROOM.TOP_CHAIR_6 },
                 patrol: false,
@@ -165,10 +183,13 @@ export class StaffManager {
                 idleDirection: 'down',
                 idleMs: 3000
             }
-
         ];
     }
 
+    /**
+     * Spawn all configured staff NPCs
+     * Iterates through staffConfig and creates each staff member
+     */
     spawnAllStaff() {
         try {
             this.staffConfig.forEach(config => {
@@ -180,8 +201,20 @@ export class StaffManager {
         }
     }
 
+    /**
+     * Spawn a single staff member
+     * 
+     * @param {Object} config - Staff configuration object
+     * @param {string} config.id - Unique staff identifier
+     * @param {string} config.spritesheet - Sprite sheet key
+     * @param {Object} config.initialPosition - Starting position {x, y}
+     * @param {string} config.idleAction - Initial animation action ('idle', 'sit')
+     * @param {string} config.idleDirection - Initial facing direction
+     * @param {Array|boolean} config.patrol - Patrol waypoints or false if stationary
+     */
     spawnStaff(config) {
         try {
+            // Create the NPC sprite
             const npc = CharacterFactory.createCharacter(
                 this.scene,
                 config.id,
@@ -190,6 +223,7 @@ export class StaffManager {
                 config.initialPosition.y,
             );
 
+            // Create staff data tracking object
             const staffData = {
                 id: config.id,
                 npc: npc,
@@ -199,15 +233,19 @@ export class StaffManager {
                 idleTimer: 0
             };
 
+            // Play initial idle animation
             CharacterFactory.playAnimation(
                 npc,
                 config.idleAction,
                 config.idleDirection
             );
+
+            // If staff has patrol route, start moving to first waypoint
             if (config.patrol && Array.isArray(config.patrol)) {
                 const firstWaypoint = config.patrol[0];
                 this.moveToWaypoint(staffData, firstWaypoint);
             }
+
             this.staff.push(staffData);
             console.log(`[StaffManager] Spawned ${config.id} at (${config.initialPosition.x}, ${config.initialPosition.y})`);
         } catch (error) {
@@ -215,11 +253,17 @@ export class StaffManager {
         }
     }
 
+    /**
+     * Update all staff members (called every frame)
+     * Updates depth and processes patrol routes
+     */
     update() {
         this.staff.forEach(staffData => {
             try {
+                // Update sprite depth for proper rendering
                 this.depthManager.updateSpriteDepth(staffData.npc);
 
+                // Process patrol if staff member is patrolling
                 if (staffData.config.patrol && Array.isArray(staffData.config.patrol)) {
                     this.updatePatrol(staffData);
                 }
@@ -229,6 +273,13 @@ export class StaffManager {
         });
     }
 
+    /**
+     * Update patrol state for a staff member
+     * Handles waypoint arrival, idle timing, and moving to next waypoint
+     * 
+     * @param {Object} staffData - Staff tracking data
+     * @private
+     */
     updatePatrol(staffData) {
         const patrol = staffData.config.patrol;
         const currentWaypoint = patrol[staffData.currentPatrolIndex];
@@ -237,43 +288,56 @@ export class StaffManager {
         if (!currentWaypoint) return;
 
         if (staffData.isIdling) {
-            staffData.idleTimer += 1000 / 60;
+            // Staff is idling at current waypoint - update timer
+            staffData.idleTimer += 1000 / 60; // Assuming 60 FPS
 
+            // Check if idle time is complete
             if (staffData.idleTimer >= currentWaypoint.idleMs) {
                 staffData.isIdling = false;
                 staffData.idleTimer = 0;
-                staffData.currentPatrolIndex = (staffData.currentPatrolIndex + 1) % patrol.length;
 
+                // Move to next waypoint (loop back to start if at end)
+                staffData.currentPatrolIndex = (staffData.currentPatrolIndex + 1) % patrol.length;
                 const nextWaypoint = patrol[staffData.currentPatrolIndex];
                 this.moveToWaypoint(staffData, nextWaypoint);
             }
         } else {
+            // Staff is moving - check if they've arrived at waypoint
             const distance = Phaser.Math.Distance.Between(
                 npc.x, npc.y,
                 currentWaypoint.x, currentWaypoint.y
             );
 
-            if (distance < 20) {
+            // Threshold increased from 20 to 30 to handle floating-point coordinates better
+            if (distance < 30) {
+                // Arrived at waypoint - start idling
                 staffData.isIdling = true;
                 staffData.idleTimer = 0;
 
-                CharacterFactory.playAnimation(
-                    npc,
-                    staffData.config.idleAction,
-                    staffData.config.idleDirection
-                );
+                // Use waypoint-specific idle settings if provided, otherwise use default
+                const idleAction = currentWaypoint.idleAction || staffData.config.idleAction;
+                const idleDirection = currentWaypoint.idleDirection || staffData.config.idleDirection;
+
+                CharacterFactory.playAnimation(npc, idleAction, idleDirection);
             }
         }
     }
 
+    /**
+     * Move a staff member to a waypoint
+     * 
+     * @param {Object} staffData - Staff tracking data
+     * @param {Object} waypoint - Target waypoint {x, y, idleMs}
+     * @param {number} [speed=150] - Movement speed in pixels per second
+     * @private
+     */
     moveToWaypoint(staffData, waypoint, speed = 150) {
         const npc = staffData.npc;
-
 
         try {
             if (this.scene.pathfinding) {
                 this.scene.pathfinding.moveToPoint(npc, waypoint.x, waypoint.y, speed, () => {
-                    // Arrived
+                    // Callback when arrival complete (if needed)
                 });
             }
         } catch (error) {
@@ -281,11 +345,27 @@ export class StaffManager {
         }
     }
 
+    /**
+     * Get a staff NPC by their ID
+     * 
+     * @param {string} id - Staff member ID
+     * @returns {Phaser.Physics.Arcade.Sprite|null} Staff sprite or null if not found
+     * 
+     * @example
+     * const doctor = staffManager.getStaffById('doctor_1');
+     * if (doctor) {
+     *   console.log(`Doctor at: ${doctor.x}, ${doctor.y}`);
+     * }
+     */
     getStaffById(id) {
         const staffData = this.staff.find(s => s.id === id);
         return staffData ? staffData.npc : null;
     }
 
+    /**
+     * Destroy all staff members and clear the staff list
+     * Useful for scene cleanup or restart
+     */
     destroyAllStaff() {
         this.staff.forEach(staffData => {
             if (staffData.npc) {
@@ -293,5 +373,6 @@ export class StaffManager {
             }
         });
         this.staff = [];
+        console.log('[StaffManager] All staff destroyed');
     }
 }
