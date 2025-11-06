@@ -63,26 +63,6 @@ export class HospitalScene extends Phaser.Scene {
 
         // Activate doors for player
         this.doorManager.activateTriggers(this.player);
-
-        // Hook into patient spawning to automatically add new patients to door triggers
-        const originalSpawnPatient = this.patientQueue.spawner.spawnPatient.bind(this.patientQueue.spawner);
-        this.patientQueue.spawner.spawnPatient = function (availableCases) {
-            const result = originalSpawnPatient(availableCases);
-
-            // After patient spawns, add them to door triggers
-            if (this.queue.activePatient?.player?.npc) {
-                this.scene.doorManager.activateTriggers(this.queue.activePatient.player.npc);
-                console.log('[DoorManager] Active patient registered for door triggers');
-            }
-
-            this.queue.waitingPatients.forEach(patient => {
-                if (patient.player?.npc) {
-                    this.scene.doorManager.activateTriggers(patient.player.npc);
-                }
-            });
-
-            return result;
-        };
     }
 
     setupUI() {

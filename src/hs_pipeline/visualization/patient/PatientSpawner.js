@@ -126,6 +126,15 @@ export class PatientSpawner {
 
                 // Start simulation at reception desk
                 simulationPlayer.playSimulation(caseData, 2000, spritesheet, receptionDesk);
+                
+                // Register door triggers after sprite is created
+                this.scene.time.delayedCall(100, () => {
+                    if (this.queue.activePatient?.player?.npc) {
+                        this.scene.doorManager.activateTriggers(this.queue.activePatient.player.npc);
+                        console.log('[DoorManager] Active patient registered for door triggers');
+                    }
+                });
+                
                 simulationPlayer.onComplete(() => this.handlePatientComplete());
 
             } else {
@@ -149,6 +158,14 @@ export class PatientSpawner {
 
                 // Send patient to waiting room
                 simulationPlayer.goToWaitingRoom(spritesheet, waitingChair, caseData);
+                
+                // Register door triggers after sprite is created
+                this.scene.time.delayedCall(100, () => {
+                    if (patientData.player?.npc) {
+                        this.scene.doorManager.activateTriggers(patientData.player.npc);
+                        console.log('[DoorManager] Waiting patient registered for door triggers');
+                    }
+                });
             }
 
             this.patientCounter++;
@@ -172,11 +189,19 @@ export class PatientSpawner {
                 nextPatientData.receptionDesk
             );
             nextPatientData.patient.player.onComplete(() => this.handlePatientComplete());
+            
+            // Ensure door triggers are registered for promoted patient
+            this.scene.time.delayedCall(100, () => {
+                if (nextPatientData.patient?.player?.npc) {
+                    this.scene.doorManager.activateTriggers(nextPatientData.patient.player.npc);
+                    console.log('[DoorManager] Promoted patient registered for door triggers');
+                }
+            });
         }
     }
 
     /**
-     * Update spawn timing
+     * Update spawn timings
      * @param {string[]} availableCases - Array of available case filenames
      */
     update(availableCases) {
