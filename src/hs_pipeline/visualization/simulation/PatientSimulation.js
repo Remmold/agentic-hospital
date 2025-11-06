@@ -193,7 +193,38 @@ export class PatientSimulation {
     }
 
     /**
+     * Determine chair direction based on chair key
+     * 
+     * @param {string} chairKey - Chair location key (e.g., 'WAITING_ROOM.CHAIR_1')
+     * @returns {string} Direction ('down', 'up', 'left')
+     * @private
+     */
+    getChairDirection(chairKey) {
+        // Extract chair number from key (e.g., 'WAITING_ROOM.CHAIR_5' -> 5)
+        const match = chairKey.match(/CHAIR_(\d+)/);
+        if (!match) return 'down'; // Default fallback
+
+        const chairNum = parseInt(match[1]);
+
+        // Chair 1-4: face down (can do sit/sit_phone/sit_book)
+        if (chairNum >= 1 && chairNum <= 4) {
+            return 'down';
+        }
+        // Chair 5-8: face up (sit only)
+        else if (chairNum >= 5 && chairNum <= 8) {
+            return 'up';
+        }
+        // Chair 9-11: face left (sit only)
+        else if (chairNum >= 9 && chairNum <= 11) {
+            return 'left';
+        }
+
+        return 'down'; // Default fallback
+    }
+
+    /**
      * Send patient to waiting room without starting timeline
+     * Goes to reception FIRST, then to chair
      * 
      * @param {string} spritesheet - Sprite sheet key
      * @param {string} chairKey - Waiting room chair location key
@@ -206,26 +237,48 @@ export class PatientSimulation {
 
         this.spawnPatient();
 
-        // Walk to waiting room and sit
-        const sittingAnim = this.animations.getRandomSittingAnimation('down');
-        const chairDirection = 'down';
+        console.log('[DEBUG] goToWaitingRoom - sprite uniqueId:', this.npc?.uniqueId);
+        console.log('[DEBUG] goToWaitingRoom - sprite lastDirection:', this.npc?.lastDirection);
 
-        this.movement.moveToLocation(this.npc, chairKey, sittingAnim, chairDirection, () => {
-            console.log('[PatientSimulation] Patient seated in waiting room');
+        // First, go to reception desk
+        this.movement.moveToLocation(this.npc, 'RECEPTION', 'idle', 'up', () => {
+            console.log('[PatientSimulation] At reception, moving to waiting room...');
 
-            // Start phone animation if sitting with phone
-            if (sittingAnim === 'sit_phone') {
-                this.animations.playPhoneAnimation(this.npc);
-            }
+            // Wait at reception for 2 seconds
+            this.scene.time.delayedCall(2000, () => {
+                // Determine chair direction
+                const chairDirection = this.getChairDirection(chairKey);
+
+                // Get appropriate sitting animation based on direction
+                const sittingAnim = this.animations.getRandomSittingAnimation(chairDirection);
+
+                console.log(`[PatientSimulation] Patient going to ${chairKey}`);
+                console.log(`[DEBUG] chairDirection: ${chairDirection}`);
+                console.log(`[DEBUG] sittingAnim: ${sittingAnim}`);
+                console.log(`[DEBUG] sprite uniqueId: ${this.npc?.uniqueId}`);
+
+                // Move to chair
+                this.movement.moveToLocation(this.npc, chairKey, sittingAnim, chairDirection, () => {
+                    console.log('[PatientSimulation] Patient seated in waiting room');
+                    console.log(`[DEBUG] After seating - sprite lastDirection: ${this.npc?.lastDirection}`);
+                    console.log(`[DEBUG] After seating - sprite lastAction: ${this.npc?.lastAction}`);
+
+                    // Start phone animation if sitting with phone
+                    if (sittingAnim === 'sit_phone') {
+                        this.animations.playPhoneAnimation(this.npc);
+                    }
+                });
+            });
         });
     }
 
     /**
      * Start timeline from waiting room (when patient becomes active)
+     * Patient stays in chair and timeline starts immediately
      * 
      * @param {Object} caseData - Patient case data
-     * @param {number} waitTimeMs - Wait time at reception
-     * @param {string} receptionDesk - Reception desk to use
+     * @param {number} waitTimeMs - Wait time before starting timeline
+     * @param {string} receptionDesk - Reception desk (not used, kept for compatibility)
      */
     startTimelineFromWaitingRoom(caseData, waitTimeMs, receptionDesk) {
         console.log('[PatientSimulation] Starting timeline from waiting room');
@@ -236,53 +289,80 @@ export class PatientSimulation {
         this.isPlaying = true;
         this.waitTimeMs = waitTimeMs;
 
-        // Notify UI
+        // Stop any phone animations
+        this.animations.stopPhoneAnimation(this.npc);
+
+        // Notify UI that patient case is loaded (now active)
         EventBus.emit(EVENT_NAMES.PATIENT_CASE_LOADED, {
             caseData: caseData,
             sprite: this.npc,
             patientId: this.npc?.uniqueId
         });
 
-        // Walk to reception and start timeline
-        this.movement.moveToLocation(this.npc, receptionDesk, 'idle', 'up', () => {
-            console.log('[PatientSimulation] At reception from waiting room, starting timeline...');
-            const adjustedWaitTime = this.waitTimeMs / this.speedMultiplier;
-            this.scene.time.delayedCall(adjustedWaitTime, () => {
-                this.playNextStep();
-            });
+        // Start timeline directly from waiting room after wait time
+        this.scene.time.delayedCall(waitTimeMs, () => {
+            if (this.npc) {
+                this.animations.stopPhoneAnimation(this.npc);
+            }
+            this.playNextStep();
         });
     }
 
     /**
-     * Spawn the patient sprite at hospital entrance
+     * Spawn the patient sprite at the entrance
      * @private
      */
     spawnPatient() {
         const entrance = getLocation('ENTRANCE');
+        if (!entrance) {
+            console.error('[PatientSimulation] Could not find entrance location');
+            return;
+        }
 
         this.npc = CharacterFactory.createCharacter(
             this.scene,
             'patient',
             this.spritesheet,
             entrance.x,
-            entrance.y
+            entrance.y,
+            {
+                bodyWidth: 24,
+                bodyHeight: 24,
+                offsetX: 6,
+                offsetY: 40,
+                initialDirection: 'up'  // Patients start facing UP at entrance
+            }
         );
 
-        // Setup physics collisions
+        // Add collision physics
         this.scene.physics.add.collider(this.npc, this.scene.layers.collision);
         const collisionGroup = this.scene.collisionManager?.getCollisionGroup();
         if (collisionGroup) {
             this.scene.physics.add.collider(this.npc, collisionGroup);
         }
 
-        // Make clickable
-        this.npc.setInteractive({ useHandCursor: true });
+        this.npc.setDepth(entrance.y);
         this.npc.simulationPlayer = this;
 
-        // Setup click handler
+        this.setupClickHandler();
+
+        console.log(`[PatientSimulation] Patient spawned: ${this.npc.uniqueId}`);
+    }
+
+    /**
+     * Setup click handler for patient sprite
+     * @private
+     */
+    setupClickHandler() {
+        if (!this.npc) return;
+
+        this.npc.setInteractive({ useHandCursor: true });
+
         const clickHandler = (pointer) => {
             pointer.event.stopPropagation();
+            console.log('[PatientSimulation] Patient clicked');
 
+            // Emit patient clicked event
             if (this.simulationData) {
                 EventBus.emit(EVENT_NAMES.PATIENT_CLICKED, {
                     caseData: this.simulationData,

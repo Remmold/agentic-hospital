@@ -3,7 +3,7 @@
  * Handles patient spawning, case loading, and simulation initialization
  */
 
-import { SimulationPlayer } from '../utils/SimulationPlayer.js';
+import { PatientSimulation } from '../simulation/PatientSimulation.js';
 import { PatientSpriteRegistry } from '../utils/PatientSpriteRegistry.js';
 
 export class PatientSpawner {
@@ -101,7 +101,7 @@ export class PatientSpawner {
             }
 
             // Create simulation player
-            const simulationPlayer = new SimulationPlayer(
+            const simulationPlayer = new PatientSimulation(
                 this.scene,
                 this.pathfinding,
                 this.queue.depthManager
