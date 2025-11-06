@@ -7,7 +7,7 @@ import { MovementController } from '../utils/MovementController.js';
 import { DebugManager } from '../utils/DebugManager.js';
 import { MapLoader } from '../utils/MapLoader.js';
 import { PathfindingManager } from '../pathfinding/PathfindingManager.js';
-import { PatientQueueManager } from '../utils/PatientQueueManager.js';
+import { PatientQueueManager } from '../patient/PatientQueueManager.js'; 
 import { StaffManager } from '../utils/StaffManager.js';
 import { CharacterFactory } from '../utils/CharacterFactory.js';
 import { UIManager } from '../ui/UIManager.js';
@@ -65,17 +65,17 @@ export class HospitalScene extends Phaser.Scene {
         this.doorManager.activateTriggers(this.player);
 
         // Hook into patient spawning to automatically add new patients to door triggers
-        const originalSpawnPatient = this.patientQueue.spawnPatient.bind(this.patientQueue);
-        this.patientQueue.spawnPatient = function (availableCases) {
+        const originalSpawnPatient = this.patientQueue.spawner.spawnPatient.bind(this.patientQueue.spawner);
+        this.patientQueue.spawner.spawnPatient = function (availableCases) {
             const result = originalSpawnPatient(availableCases);
 
             // After patient spawns, add them to door triggers
-            if (this.activePatient?.player?.npc) {
-                this.scene.doorManager.activateTriggers(this.activePatient.player.npc);
+            if (this.queue.activePatient?.player?.npc) {
+                this.scene.doorManager.activateTriggers(this.queue.activePatient.player.npc);
                 console.log('[DoorManager] Active patient registered for door triggers');
             }
 
-            this.waitingPatients.forEach(patient => {
+            this.queue.waitingPatients.forEach(patient => {
                 if (patient.player?.npc) {
                     this.scene.doorManager.activateTriggers(patient.player.npc);
                 }
