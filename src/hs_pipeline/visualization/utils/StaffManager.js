@@ -5,13 +5,11 @@
  * @module utils/StaffManager
  * @requires ./CharacterFactory
  * @requires ./Constants
- * @requires ./AnimationUtils
  * @author Hospital Simulation Team
  */
 
 import { CharacterFactory } from './CharacterFactory.js';
 import { LOCATIONS } from './Constants.js';
-import { AnimationUtils } from './AnimationUtils.js';
 
 /**
  * StaffManager - Manages all staff NPCs in the hospital
