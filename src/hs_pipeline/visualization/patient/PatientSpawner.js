@@ -4,7 +4,7 @@
  */
 
 import { PatientSimulation } from '../simulation/PatientSimulation.js';
-import { PatientSpriteRegistry } from '../utils/PatientSpriteRegistry.js';
+import { PatientSpriteRegistry } from './PatientSpriteRegistry.js';
 
 export class PatientSpawner {
     constructor(scene, pathfinding, queue) {

@@ -12,10 +12,10 @@
  * @author Hospital Simulation Team
  */
 
-import { AGENT_LOCATIONS, getLocation } from '../utils/Constants.js';
-import { CharacterFactory } from '../utils/CharacterFactory.js';
-import { PatientSpriteRegistry } from '../utils/PatientSpriteRegistry.js';
-import { EventBus, EVENT_NAMES } from '../utils/EventBus.js';
+import { AGENT_LOCATIONS, getLocation } from '../core/Constants.js';
+import { EventBus, EVENT_NAMES } from '../core/EventBus.js';
+import { CharacterFactory } from '../animation/CharacterFactory.js';
+import { PatientSpriteRegistry } from '../patient/PatientSpriteRegistry.js';
 import { PatientMovement } from './PatientMovement.js';
 import { PatientAnimations } from './PatientAnimations.js';
 

@@ -7,7 +7,7 @@
  * @requires utils/Constants
  */
 
-import { LOCATIONS } from '../utils/Constants.js';
+import { LOCATIONS } from '../core/Constants.js';
 
 /**
  * Staff configuration array

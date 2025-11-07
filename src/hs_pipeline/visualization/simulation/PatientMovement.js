@@ -9,8 +9,8 @@
  * @author Hospital Simulation Team
  */
 
-import { getLocation } from '../utils/Constants.js';
-import { AnimationUtils } from '../utils/AnimationUtils.js';
+import { getLocation } from '../core/Constants.js';
+import { AnimationUtils } from '../animation/AnimationUtils.js';
 import { PatientAnimations } from './PatientAnimations.js';
 
 /**

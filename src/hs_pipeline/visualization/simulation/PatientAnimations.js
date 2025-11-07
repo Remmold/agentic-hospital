@@ -8,8 +8,8 @@
  * @author Hospital Simulation Team
  */
 
-import { AnimationManager } from '../utils/AnimationManager.js';
-import { AnimationUtils } from '../utils/AnimationUtils.js';
+import { AnimationManager } from '../animation/AnimationManager.js';
+import { AnimationUtils } from '../animation/AnimationUtils.js';
 
 /**
  * PatientAnimations - Manages all patient animation behaviors

@@ -1,4 +1,4 @@
-import { CharacterFactory } from './CharacterFactory.js';
+import { CharacterFactory } from '../animation/CharacterFactory.js';
 
 /**
  * Handles character movement and animations

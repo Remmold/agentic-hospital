@@ -5,7 +5,7 @@
  */
 export class PatientSpriteRegistry {
     static SPRITE_MIN = 1;
-    static SPRITE_MAX = 29;
+    static SPRITE_MAX = 44;
 
     // Track recently used sprites to avoid repetition
     static lastThreeSprites = [];

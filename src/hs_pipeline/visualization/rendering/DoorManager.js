@@ -1,4 +1,4 @@
-import { AnimationManager } from './AnimationManager.js';
+import { AnimationManager } from '../animation/AnimationManager.js';
 
 export default class DoorManager {
     constructor(scene) {

@@ -4,16 +4,16 @@
  * Sets up managers, player, pathfinding, and input handlers
  */
 
-import { MapLoader } from '../utils/MapLoader.js';
-import { ZoneManager } from '../utils/ZoneManager.js';
-import { CollisionManager } from '../utils/CollisionManager.js';
-import { DepthManager } from '../utils/DepthManager.js';
-import DoorManager from '../utils/DoorManager.js';
-import { InputManager } from '../utils/InputManager.js';
-import { DebugManager } from '../utils/DebugManager.js';
+import { MapLoader } from '../core/MapLoader.js';
+import { DebugManager } from '../core/DebugManager.js';
+import { ZoneManager } from '../physics/ZoneManager.js';
+import { CollisionManager } from '../physics/CollisionManager.js';
+import { DepthManager } from '../rendering/DepthManager.js';
+import DoorManager from '../rendering/DoorManager.js';
+import { InputManager } from '../input/InputManager.js';
+import { MovementController } from '../input/MovementController.js';
 import { PathfindingManager } from '../pathfinding/PathfindingManager.js';
-import { CharacterFactory } from '../utils/CharacterFactory.js';
-import { MovementController } from '../utils/MovementController.js';
+import { CharacterFactory } from '../animation/CharacterFactory.js';
 
 export class SceneInitializer {
     /**

@@ -4,11 +4,11 @@
  * Coordinates scene lifecycle, managers, and game systems
  */
 
-import { MapLoader } from '../utils/MapLoader.js';
+import { MapLoader } from '../core/MapLoader.js';
 import { PatientQueueManager } from '../patient/PatientQueueManager.js';
 import { StaffManager } from '../staff/StaffManager.js';
 import { UIManager } from '../ui/UIManager.js';
-import { GlowManager } from '../utils/GlowManager.js';
+import { GlowManager } from '../rendering/GlowManager.js';
 import { SceneEventHandlers } from './SceneEventHandlers.js';
 import { SceneInitializer } from './SceneInitializer.js';
 

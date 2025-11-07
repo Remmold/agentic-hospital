@@ -4,7 +4,7 @@
  * Handles UI events, patient events, and simulation state changes
  */
 
-import { EventBus, EVENT_NAMES } from '../utils/EventBus.js';
+import { EventBus, EVENT_NAMES } from '../core/EventBus.js';
 
 export class SceneEventHandlers {
     /**

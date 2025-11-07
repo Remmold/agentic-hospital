@@ -8,7 +8,7 @@
  * @author Hospital Simulation Team
  */
 
-import { CharacterFactory } from '../utils/CharacterFactory.js';
+import { CharacterFactory } from '../animation/CharacterFactory.js';
 import { STAFF_CONFIG } from './StaffConfig.js';
 
 /**
