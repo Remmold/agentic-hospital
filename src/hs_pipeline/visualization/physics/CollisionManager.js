@@ -114,29 +114,17 @@ export class CollisionManager {
         return false; // Not blocked
     }
 
-    // Enable debug visualization of collision shapes (only if DEV_MODE is enabled)
-    enableDebug() {
+    // Enable/disable visualization of collision shapes
+    setCollisionOverlay() {
         if (!this.collisionGroup) return;
 
-        // Only show debug visuals if DEV_MODE is true
-        if (this.scene.DEV_MODE) {
+        // Only show debug visuals if COLLISION_OVERLAY is true
+        if (this.scene.COLLISION_OVERLAY) {
             this.collisionGroup.getChildren().forEach(body => {
                 body.setAlpha(0.3); // Make visible with transparency
                 body.setFillStyle(0xff0000); // Red color
             });
-            console.log('[CollisionManager] Debug visualization enabled');
-        } else {
-            // Keep invisible in production
-            this.disableDebug();
-        }
-    }
-
-    // Disable debug visualization
-    disableDebug() {
-        if (!this.collisionGroup) return;
-
-        this.collisionGroup.getChildren().forEach(body => {
-            body.setAlpha(0); // Make invisible
-        });
+            console.log('[CollisionManager] Collision visualization enabled');
+        } 
     }
 }

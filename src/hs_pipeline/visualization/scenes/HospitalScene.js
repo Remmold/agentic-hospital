@@ -15,8 +15,9 @@ import { SceneInitializer } from './SceneInitializer.js';
 export class HospitalScene extends Phaser.Scene {
     constructor() {
         super({ key: 'HospitalScene' });
-        this.DEV_MODE = false;
-        this.DEPTH_PANEL = false;
+        this.DEV_MODE = true; // Cache busting on
+        this.COLLISION_OVERLAY = false; // Red collision overlay
+        this.DEPTH_PANEL = false; // Depth panel with z-index info
     }
 
     /**

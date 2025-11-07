@@ -46,6 +46,7 @@ export class SceneInitializer {
         // Debug manager
         this.scene.debugManager = new DebugManager(this.scene, {
             devMode: this.scene.DEV_MODE,
+            collisionOverlay: this.scene.COLLISION_OVERLAY,
             depthPanel: this.scene.DEPTH_PANEL
         });
 
