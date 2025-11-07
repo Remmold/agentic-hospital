@@ -60,7 +60,7 @@ export class StaffManager {
                 spritesheet: 'nurse_1',
                 initialPosition: { ...LOCATIONS.LAB.NURSE_POSITION },
                 patrol: [
-                    { ...LOCATIONS.LAB.BIG_MACHINE, idleMs: 5000 },
+                    { ...LOCATIONS.LAB.BIG_MACHINE, idleMs: 5000, idleDirection: 'up' },
                     { ...LOCATIONS.LAB.SMALL_MACHINE, idleMs: 5000 }
                 ],
                 idleAction: 'idle',
@@ -287,7 +287,7 @@ export class StaffManager {
 
         if (staffData.isIdling) {
             // Staff is idling at current waypoint - update timer
-            staffData.idleTimer += 1000 / 60; // Assuming 60 FPS
+            staffData.idleTimer += 1000 / 120; // Assuming 60 FPS
 
             // Check if idle time is complete
             if (staffData.idleTimer >= currentWaypoint.idleMs) {
