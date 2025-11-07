@@ -5,6 +5,7 @@ export class DebugManager {
     constructor(scene, config = {}) {
         this.scene = scene;
         this.devMode = config.devMode || false;
+        this.collisionOverlay = config.collisionOverlay || false;
         this.depthPanel = config.depthPanel || false;
         this.debugText = null;
     }
@@ -16,21 +17,18 @@ export class DebugManager {
         this.managers = managers;
 
         if (this.devMode) {
-            this.enableCollisionDebug();
-            this.logLayerDepths();
+            console.log("DevMode ENABLED")
+        }
+
+        if (this.collisionOverlay) {
+            if (this.managers.collision) {
+                this.managers.collision.setCollisionOverlay();
+            }
         }
 
         if (this.depthPanel) {
             this.createDepthPanel();
-        }
-    }
-
-    /**
-     * Enable collision shape visualization
-     */
-    enableCollisionDebug() {
-        if (this.managers.collision) {
-            this.managers.collision.enableDebug();
+            this.logLayerDepths();
         }
     }
 
