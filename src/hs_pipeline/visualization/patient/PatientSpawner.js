@@ -1,5 +1,5 @@
 /**
- * PatientSpawner.js
+ * PatientSpawner
  * Handles patient spawning, case loading, and simulation initialization
  */
 
@@ -35,7 +35,7 @@ export class PatientSpawner {
             const matches = html.match(regex);
             return matches ? [...new Set(matches)] : [];
         } catch (error) {
-            console.error('[PatientSpawner] Failed to load case list:', error);
+            console.error('[loadAvailableCases]: Failed to load case list:', error);
             return [];
         }
     }
@@ -51,7 +51,7 @@ export class PatientSpawner {
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             return await response.json();
         } catch (error) {
-            console.error(`[PatientSpawner] Failed to load case ${filename}:`, error);
+            console.error(`[loadCaseFile]: Failed to load case ${filename}:`, error);
             return null;
         }
     }
@@ -100,7 +100,7 @@ export class PatientSpawner {
 
         this.loadCaseFile(caseFile).then(caseData => {
             if (!caseData) {
-                console.error(`[PatientSpawner] Failed to load case: ${caseFile}`);
+                console.error(`[spawnPatient]: Failed to load case: ${caseFile}`);
                 return;
             }
 
@@ -135,7 +135,6 @@ export class PatientSpawner {
                 this.scene.time.delayedCall(100, () => {
                     if (this.queue.activePatient?.player?.npc) {
                         this.scene.doorManager.activateTriggers(this.queue.activePatient.player.npc);
-                        console.log('[DoorManager] Active patient registered for door triggers');
                     }
                 });
                 
@@ -168,13 +167,12 @@ export class PatientSpawner {
             this.scene.time.delayedCall(100, () => {
                 if (patientData.player?.npc) {
                     this.scene.doorManager.activateTriggers(patientData.player.npc);
-                    console.log('[DoorManager] Waiting patient registered for door triggers');
                 }
             });
         }
             this.patientCounter++;
         }).catch(error => {
-            console.error(`[PatientSpawner] Error spawning patient:`, error);
+            console.error(`[spawnPatient]: Error spawning patient:`, error);
         });
     }
 
@@ -194,11 +192,10 @@ export class PatientSpawner {
             );
             nextPatientData.patient.player.onComplete(() => this.handlePatientComplete());
             
-            // ✅ ADDED: Ensure door triggers are registered for promoted patient
+            // Ensure door triggers are registered for promoted patient
             this.scene.time.delayedCall(100, () => {
                 if (nextPatientData.patient?.player?.npc) {
                     this.scene.doorManager.activateTriggers(nextPatientData.patient.player.npc);
-                    console.log('[DoorManager] Promoted patient registered for door triggers');
                 }
             });
         }
@@ -213,14 +210,5 @@ export class PatientSpawner {
             this.spawnPatient(availableCases);
             this.nextPatientTime = Date.now() + Phaser.Math.Between(this.minSpawnDelay, this.maxSpawnDelay);
         }
-    }
-
-    /**
-     * Start automatic patient generation
-     * @param {string[]} availableCases - Array of available case filenames
-     */
-    startAutoPatientGeneration(availableCases) {
-        console.log('[PatientSpawner] Auto-generation started');
-        // The update() method will handle the timed spawning
     }
 }

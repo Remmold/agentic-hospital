@@ -1,17 +1,3 @@
-/**
- * @fileoverview Main patient simulation coordinator
- * Manages patient lifecycle from spawn to completion including timeline progression
- * 
- * @module simulation/PatientSimulation
- * @requires ../utils/Constants
- * @requires ../utils/CharacterFactory
- * @requires ../utils/PatientSpriteRegistry
- * @requires ../utils/EventBus
- * @requires ./PatientMovement
- * @requires ./PatientAnimations
- * @author Hospital Simulation Team
- */
-
 import { AGENT_LOCATIONS, getLocation } from '../core/Constants.js';
 import { EventBus, EVENT_NAMES } from '../core/EventBus.js';
 import { CharacterFactory } from '../animation/CharacterFactory.js';
@@ -21,13 +7,6 @@ import { PatientAnimations } from './PatientAnimations.js';
 
 /**
  * PatientSimulation - Coordinates a patient's journey through the hospital
- * 
- * Responsibilities:
- * - Timeline management and progression
- * - Patient state tracking (playing, paused, exiting)
- * - Event coordination
- * - Speed control
- * - Cleanup and resource management
  */
 export class PatientSimulation {
     /**
@@ -43,7 +22,6 @@ export class PatientSimulation {
         this.pathfinding = pathfindingManager;
         this.depthManager = depthManager;
 
-        // Core state
         this.isPlaying = false;
         this.currentStep = 0;
         this.lastHighlightedStep = -1; // For UI highlighting
@@ -51,31 +29,25 @@ export class PatientSimulation {
         this.npc = null;
         this.spritesheet = null;
 
-        // Control state
         this.speedMultiplier = 1;
         this.isPausedByUI = false;
         this.isExiting = false;
 
-        // Timing
         this.baseWaitTime = 2000;
         this.waitTimeMs = 2000;
 
-        // Callbacks
         this.onCompleteCallback = onCompleteCallback;
         this.onReturnStartCallback = null;
 
-        // Event management
         this.eventHandlers = [];
         this.eventBusSubscriptions = [];
 
-        // Helper modules
         this.movement = new PatientMovement(scene, pathfindingManager);
         this.animations = new PatientAnimations(scene);
     }
 
     /**
      * Get next random patient sprite from registry
-     * 
      * @returns {string} Sprite sheet key (e.g., 'pat_5')
      */
     getRandomPatientSprite() {
@@ -100,11 +72,7 @@ export class PatientSimulation {
         this.onReturnStartCallback = callback;
     }
 
-    /**
-     * Set simulation speed multiplier
-     * 
-     * @param {number} speed - Speed multiplier (0.5 = half speed, 2 = double speed)
-     */
+
     setSpeedMultiplier(speed) {
         this.speedMultiplier = speed;
         console.log(`[PatientSimulation] Speed set to ${speed}x`);
@@ -120,7 +88,6 @@ export class PatientSimulation {
         console.log(`[PatientSimulation] ${paused ? 'PAUSED' : 'RESUMED'}`);
 
         if (paused) {
-            // Pause movement if active
             if (this.npc && this.npc.pathTween && this.npc.pathTween.isPlaying()) {
                 this.movement.pauseMovement(this.npc);
             }
@@ -169,10 +136,6 @@ export class PatientSimulation {
         this.isPlaying = true;
         this.waitTimeMs = waitTimeMs;
 
-        console.log(`[PatientSimulation] Starting simulation: ${jsonData.patient.name}`);
-        console.log(`[PatientSimulation] Total steps: ${jsonData.timeline.length}`);
-
-        // Spawn the patient sprite
         this.spawnPatient();
 
         // Notify UI that patient case is loaded
@@ -237,27 +200,18 @@ export class PatientSimulation {
 
         this.spawnPatient();
 
-        console.log('[DEBUG] goToWaitingRoom - sprite uniqueId:', this.npc?.uniqueId);
-
         // Pick a random reception desk (don't worry about availability - they're just checking in)
         const receptionDesks = ['RECEPTION.LEFT', 'RECEPTION.RIGHT'];
         const randomDesk = receptionDesks[Math.floor(Math.random() * receptionDesks.length)];
 
-        console.log(`[PatientSimulation] Going to ${randomDesk} then to waiting room`);
-
-        // First, go to random reception desk
         this.movement.moveToLocation(this.npc, randomDesk, 'idle', 'up', () => {
-            console.log('[PatientSimulation] At reception, moving to waiting room...');
 
             // Wait at reception for 2 seconds
             this.scene.time.delayedCall(2000, () => {
                 const chairDirection = this.getChairDirection(chairKey);
                 const sittingAnim = this.animations.getRandomSittingAnimation(chairDirection);
 
-                console.log(`[PatientSimulation] Patient going to ${chairKey}`);
-
                 this.movement.moveToLocation(this.npc, chairKey, sittingAnim, chairDirection, () => {
-                    console.log('[PatientSimulation] Patient seated in waiting room');
 
                     if (sittingAnim === 'sit_phone') {
                         this.animations.playPhoneAnimation(this.npc);
@@ -269,14 +223,11 @@ export class PatientSimulation {
 
     /**
      * Start timeline from waiting room (when patient becomes active)
-     * Patient walks to reception desk first, then timeline starts
-     * 
      * @param {Object} caseData - Patient case data
      * @param {number} waitTimeMs - Wait time at reception before starting timeline
      * @param {string} receptionDesk - Reception desk location key
      */
     startTimelineFromWaitingRoom(caseData, waitTimeMs, receptionDesk) {
-        console.log(`[PatientSimulation] Starting timeline from waiting room - going directly to first step`);
 
         this.simulationData = caseData;
         this.currentStep = 0;
@@ -284,7 +235,6 @@ export class PatientSimulation {
         this.isPlaying = true;
         this.waitTimeMs = waitTimeMs;
 
-        // Stop any phone animations
         this.animations.stopPhoneAnimation(this.npc);
 
         // Notify UI that patient case is loaded (now active)
@@ -294,14 +244,9 @@ export class PatientSimulation {
             patientId: this.npc?.uniqueId
         });
 
-        // Go directly to first timeline step (skip reception)
         this.playNextStep();
     }
 
-    /**
-     * Spawn the patient sprite at the entrance
-     * @private
-     */
     spawnPatient() {
         const entrance = getLocation('ENTRANCE');
         if (!entrance) {
@@ -336,7 +281,6 @@ export class PatientSimulation {
 
         this.setupClickHandler();
 
-        console.log(`[PatientSimulation] Patient spawned: ${this.npc.uniqueId}`);
     }
 
     /**
@@ -350,9 +294,7 @@ export class PatientSimulation {
 
         const clickHandler = (pointer) => {
             pointer.event.stopPropagation();
-            console.log('[PatientSimulation] Patient clicked');
 
-            // Emit patient clicked event
             if (this.simulationData) {
                 EventBus.emit(EVENT_NAMES.PATIENT_CLICKED, {
                     caseData: this.simulationData,
@@ -372,12 +314,9 @@ export class PatientSimulation {
         });
     }
 
-    /**
-     * Play next step in the simulation timeline
-     * @private
-     */
+
     playNextStep() {
-        // Check if paused
+
         if (this.isPausedByUI) {
             console.log(`[PatientSimulation] Paused, waiting to continue from step ${this.currentStep}...`);
             return;
@@ -396,7 +335,6 @@ export class PatientSimulation {
         }
 
         const step = this.simulationData.timeline[this.currentStep];
-        console.log(`[PatientSimulation] Step ${this.currentStep + 1}/${this.simulationData.timeline.length}: ${step.agent}`);
 
         const agent = step.agent;
         let locationKey = AGENT_LOCATIONS[agent];
@@ -420,7 +358,7 @@ export class PatientSimulation {
             direction = 'up';
         }
 
-        // Move to location and wait
+
         this.movement.moveToLocation(this.npc, locationKey, animation, direction, () => {
             // Update UI highlight
             this.lastHighlightedStep = this.currentStep;
@@ -461,12 +399,8 @@ export class PatientSimulation {
         }
     }
 
-    /**
-     * Show reflection step and initiate return journey
-     * @private
-     */
+
     showReflectionAndReturn() {
-        console.log('[PatientSimulation] Timeline complete, showing reflection...');
 
         const adjustedWaitTime = this.waitTimeMs / this.speedMultiplier;
         this.scene.time.delayedCall(adjustedWaitTime, () => {
@@ -486,7 +420,6 @@ export class PatientSimulation {
      */
     checkPauseBeforeFinish() {
         if (this.isPausedByUI) {
-            console.log('[PatientSimulation] Paused before exit, waiting...');
             return;
         }
 
@@ -497,10 +430,7 @@ export class PatientSimulation {
             return;
         }
 
-        console.log('[PatientSimulation] Patient returning to entrance...');
-
         this.movement.moveToLocation(this.npc, entrance, 'idle', 'down', () => {
-            console.log('[PatientSimulation] Patient reached entrance');
             this.completeSimulation();
         });
     }
@@ -510,8 +440,6 @@ export class PatientSimulation {
      * @private
      */
     completeSimulation() {
-        console.log('[PatientSimulation] Simulation complete!');
-
         EventBus.emit(EVENT_NAMES.SIMULATION_COMPLETE, {
             patientName: this.simulationData.patient.name,
             patientId: this.npc?.uniqueId
@@ -548,26 +476,20 @@ export class PatientSimulation {
                 this.npc.body.setVelocity(0, 0);
             }
 
-            // Cleanup event handlers
             this.cleanupEventHandlers();
             this.eventBusSubscriptions.forEach(unsubscribe => unsubscribe());
             this.eventBusSubscriptions = [];
 
-            // Destroy sprite
             this.npc.destroy();
             this.npc = null;
         }
 
-        // Trigger completion callback
         if (this.onCompleteCallback) {
             this.onCompleteCallback();
         }
     }
 
-    /**
-     * Clean up all sprite event handlers to prevent memory leaks
-     * @private
-     */
+
     cleanupEventHandlers() {
         this.eventHandlers.forEach(({ sprite, event, handler }) => {
             if (sprite && !sprite.destroyed) {
@@ -575,7 +497,6 @@ export class PatientSimulation {
             }
         });
         this.eventHandlers = [];
-        console.log('[PatientSimulation] Event handlers cleaned up');
     }
 
     /**

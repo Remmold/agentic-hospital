@@ -1,5 +1,5 @@
 /**
- * PatientQueue.js
+ * PatientQueue
  * Manages the queue of patients (active, waiting, completed)
  * Handles patient state transitions and queue capacity
  */
@@ -67,7 +67,6 @@ export class PatientQueue {
         if (patientData.receptionDesk) {
             this.occupiedReceptionDesks.add(patientData.receptionDesk);
         }
-        console.log(`[PatientQueue] ✅ ${patientData.id} ACTIVE at ${patientData.receptionDesk}`);
     }
 
     /**
@@ -79,7 +78,6 @@ export class PatientQueue {
         if (patientData.waitingChair) {
             this.occupiedChairs.add(patientData.waitingChair);
         }
-        console.log(`[PatientQueue] ⏳ ${patientData.id} WAITING at ${patientData.waitingChair} - Queue: ${this.waitingPatients.length}/${this.maxWaitingCapacity}`);
     }
 
     /**
@@ -89,9 +87,6 @@ export class PatientQueue {
      */
     handlePatientComplete() {
         if (!this.activePatient) return null;
-
-        const elapsed = (Date.now() - this.activePatient.spawnTime) / 1000;
-        console.log(`[PatientQueue] ✔️ ${this.activePatient.id} COMPLETED (${elapsed.toFixed(1)}s)`);
 
         // Free up the reception desk
         if (this.activePatient.receptionDesk) {
@@ -113,8 +108,6 @@ export class PatientQueue {
             const receptionDesk = this.getRandomAvailableReceptionDesk() || this.receptionDesks[0];
             this.occupiedReceptionDesks.add(receptionDesk);
 
-            console.log(`[PatientQueue] Starting: ${nextPatient.id} from waiting room`);
-
             // Update patient data
             this.activePatient = {
                 id: nextPatient.id,
@@ -125,8 +118,6 @@ export class PatientQueue {
                 waitingChair: null,
                 receptionDesk: receptionDesk
             };
-
-            console.log(`[PatientQueue] ✅ ${nextPatient.id} NOW ACTIVE at ${receptionDesk}`);
 
             // Return the next patient data so spawner can start their timeline
             return {

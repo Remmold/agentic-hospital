@@ -1,4 +1,5 @@
 /**
+ * ZoneManager
  * Manages depth zones for room-based depth sorting
  */
 export class ZoneManager {
@@ -14,7 +15,7 @@ export class ZoneManager {
         const zoneLayer = this.map.getObjectLayer('depth_zones');
         
         if (!zoneLayer) {
-            console.warn('No depth_zones layer found in tilemap');
+            console.warn('No depth zone layer found in tilemap');
             return;
         }
 
@@ -28,12 +29,8 @@ export class ZoneManager {
                 zoneType: obj.properties?.find(p => p.name === 'zoneType')?.value || 'behindWall',
                 name: obj.name || 'unnamed_zone'
             };
-            
             this.zones.push(zone);
-            console.log(`Loaded zone: ${zone.name}, type: ${zone.zoneType}`);
         });
-
-        console.log(`Total zones loaded: ${this.zones.length}`);
     }
 
     /**
@@ -54,12 +51,5 @@ export class ZoneManager {
         }
         
         return null;
-    }
-
-    /**
-     * Legacy method - check if inside ANY zone
-     */
-    isInsideRoom(x, y) {
-        return this.getZoneAt(x, y) !== null;
     }
 }

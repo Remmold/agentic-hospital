@@ -17,18 +17,18 @@ export class DebugManager {
         this.managers = managers;
 
         if (this.devMode) {
-            console.log("DevMode ENABLED")
+            console.log("Cache-busting enabled")
         }
 
         if (this.collisionOverlay) {
             if (this.managers.collision) {
                 this.managers.collision.setCollisionOverlay();
+                console.log('[DebugManager] Collision overlay enabled');
             }
         }
 
         if (this.depthPanel) {
             this.createDepthPanel();
-            this.logLayerDepths();
         }
     }
 
@@ -54,12 +54,10 @@ export class DebugManager {
         if (!this.depthPanel || !this.debugText || !player) return;
 
         const zone = this.managers.zone?.getZoneAt(player.x, player.y);
-        const inZone = this.managers.zone?.isInsideRoom(player.x, player.y) || false;
 
         this.debugText.setText([
             `Position: (${player.x.toFixed(0)}, ${player.y.toFixed(0)})`,
             `Depth: ${player.depth.toFixed(2)}`,
-            `In Zone: ${inZone}`,
             `Zone Type: ${zone?.zoneType || 'none'}`,
             `Zone Name: ${zone?.name || 'none'}`,
             '',
@@ -72,21 +70,5 @@ export class DebugManager {
             'props_dynamic_in_front: 70',
             'props_in_front: 10000'
         ]);
-    }
-
-    /**
-     * Log layer depths to console
-     */
-    logLayerDepths() {
-        if (!this.scene.layers) return;
-
-        console.log('Layer depths set:', {
-            floor: this.scene.layers.floor?.depth,
-            wallBehind: this.scene.layers.wallBehind?.depth,
-            propsOnWall: this.scene.layers.propsOnWall?.depth,
-            propsBehind: this.scene.layers.propsBehind?.depth,
-            propsDynamic: this.scene.layers.propsDynamic?.depth,
-            props: this.scene.layers.props?.depth
-        });
     }
 }

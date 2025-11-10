@@ -1,12 +1,4 @@
 /**
- * @fileoverview Centralized event bus for all game events
- * Eliminates duplication of CustomEvent creation and error handling
- * 
- * @module utils/EventBus
- * @author Hospital Simulation Team
- */
-
-/**
  * EventBus - Centralized event management system
  * Provides consistent event dispatching with automatic error handling
  * 

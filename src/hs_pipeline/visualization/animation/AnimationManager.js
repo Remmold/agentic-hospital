@@ -1,4 +1,5 @@
 /**
+ * AnimationManager
  * Animation frame configuration for all character types
  * All spritesheets follow the same layout
  */
@@ -69,7 +70,7 @@ export class AnimationManager {
      */
     static playAnimation(sprite, action, direction) {
         if (!sprite || !sprite.uniqueId) {
-            console.warn('Sprite missing uniqueId');
+            console.warn('[playAnimation]: Sprite missing uniqueId');
             return;
         }
 
@@ -124,7 +125,7 @@ export class AnimationManager {
      */
     static playPhoneAnimation(sprite, sceneInstance) {
         if (!sprite || !sceneInstance) {
-            console.warn('playPhoneAnimation: sprite or sceneInstance missing');
+            console.warn('[playPhoneAnimation]: sprite or sceneInstance missing');
             return;
         }
 

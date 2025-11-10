@@ -1,6 +1,7 @@
 import { CharacterFactory } from '../animation/CharacterFactory.js';
 
 /**
+ * MovementController
  * Handles character movement and animations
  */
 export class MovementController {

@@ -1,12 +1,3 @@
-/**
- * @fileoverview Shared animation utility functions
- * Provides helper methods to reduce animation code duplication
- * 
- * @module utils/AnimationUtils
- * @requires ./AnimationManager
- * @author Hospital Simulation Team
- */
-
 import { AnimationManager } from './AnimationManager.js';
 
 /**
@@ -32,7 +23,7 @@ export class AnimationUtils {
      */
     static playLastAnimation(sprite, action = 'idle') {
         if (!sprite || !sprite.lastDirection) {
-            console.warn('[AnimationUtils] Sprite missing or no lastDirection set');
+            console.warn('[playLastAnimation]: Sprite missing or no lastDirection set');
             return false;
         }
 
@@ -68,11 +59,6 @@ export class AnimationUtils {
      * @param {string} action - Action type to check
      * @param {string} [direction] - Optional direction to check
      * @returns {boolean} True if sprite is playing the specified animation
-     * 
-     * @example
-     * if (AnimationUtils.isPlaying(sprite, 'walk')) {
-     *   console.log('Sprite is walking');
-     * }
      */
     static isPlaying(sprite, action, direction = null) {
         if (!sprite || !sprite.anims || !sprite.anims.currentAnim) {

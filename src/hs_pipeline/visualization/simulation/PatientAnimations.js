@@ -1,13 +1,3 @@
-/**
- * @fileoverview Patient animation management including phone animations and sitting variations
- * Handles animation state, timing, and selection logic
- * 
- * @module simulation/PatientAnimations
- * @requires ../utils/AnimationManager
- * @requires ../utils/AnimationUtils
- * @author Hospital Simulation Team
- */
-
 import { AnimationManager } from '../animation/AnimationManager.js';
 import { AnimationUtils } from '../animation/AnimationUtils.js';
 
@@ -20,11 +10,6 @@ import { AnimationUtils } from '../animation/AnimationUtils.js';
  * - Animation timing and state
  */
 export class PatientAnimations {
-    /**
-     * Creates a new PatientAnimations manager
-     * 
-     * @param {Phaser.Scene} scene - The game scene
-     */
     constructor(scene) {
         this.scene = scene;
     }
@@ -34,9 +19,6 @@ export class PatientAnimations {
      * Handles the pickup sequence and automatic transition to holding loop
      * 
      * @param {Phaser.Physics.Arcade.Sprite} sprite - The patient sprite
-     * 
-     * @example
-     * animations.playPhoneAnimation(patientSprite);
      */
     playPhoneAnimation(sprite) {
         if (!sprite) {
@@ -45,7 +27,6 @@ export class PatientAnimations {
         }
 
         AnimationManager.playPhoneAnimation(sprite, this.scene);
-        console.log('[PatientAnimations] Phone animation started');
     }
 
     /**
@@ -53,9 +34,6 @@ export class PatientAnimations {
      * Plays the putdown sequence and returns to sitting idle
      * 
      * @param {Phaser.Physics.Arcade.Sprite} sprite - The patient sprite
-     * 
-     * @example
-     * animations.stopPhoneAnimation(patientSprite);
      */
     stopPhoneAnimation(sprite) {
         if (!sprite) {
@@ -64,7 +42,7 @@ export class PatientAnimations {
         }
 
         AnimationManager.stopPhoneAnimation(sprite, this.scene);
-        console.log('[PatientAnimations] Phone animation stopped');
+        console.log('[PatientAnimations] Phone animation stopped'); // Leave until fixed
     }
 
     /**
@@ -73,10 +51,6 @@ export class PatientAnimations {
      * 
      * @param {string} [chairDirection='down'] - Direction the chair faces
      * @returns {string} Animation action name
-     * 
-     * @example
-     * const sitAction = animations.getRandomSittingAnimation('down');
-     * // Returns: 'sit', 'sit_phone', or 'sit_book'
      */
     getRandomSittingAnimation(chairDirection = 'down') {
         return AnimationManager.getRandomSittingAnimation(chairDirection);
@@ -87,9 +61,6 @@ export class PatientAnimations {
      * 
      * @param {Phaser.Physics.Arcade.Sprite} sprite - The patient sprite
      * @param {string} direction - Direction to walk ('up', 'down', 'left', 'right')
-     * 
-     * @example
-     * animations.playWalkAnimation(sprite, 'right');
      */
     playWalkAnimation(sprite, direction) {
         if (!sprite || !direction) {
@@ -104,9 +75,6 @@ export class PatientAnimations {
      * Play an idle animation in the sprite's last direction
      * 
      * @param {Phaser.Physics.Arcade.Sprite} sprite - The patient sprite
-     * 
-     * @example
-     * animations.playIdleAnimation(sprite);
      */
     playIdleAnimation(sprite) {
         if (!sprite) {
@@ -124,9 +92,6 @@ export class PatientAnimations {
      * @param {Phaser.Physics.Arcade.Sprite} sprite - The patient sprite
      * @param {string} action - Action type ('idle', 'walk', 'sit')
      * @param {string} direction - Direction ('up', 'down', 'left', 'right')
-     * 
-     * @example
-     * animations.stopAndPlay(sprite, 'sit', 'down');
      */
     stopAndPlay(sprite, action, direction) {
         if (!sprite || !action || !direction) {

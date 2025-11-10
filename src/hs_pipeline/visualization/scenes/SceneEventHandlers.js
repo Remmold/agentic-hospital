@@ -1,5 +1,5 @@
 /**
- * SceneEventHandlers.js
+ * SceneEventHandlers
  * Manages all EventBus subscriptions for HospitalScene
  * Handles UI events, patient events, and simulation state changes
  */
@@ -71,8 +71,7 @@ export class SceneEventHandlers {
      */
     setupPatientCaseLoadedHandler() {
         const unsubscribe = EventBus.on(EVENT_NAMES.PATIENT_CASE_LOADED, (e) => {
-            console.log('[HospitalScene] patientCaseLoaded event received');
-
+            // PatientCaseLoaded Event
             if (window.simulationUI) {
                 window.simulationUI.displayPatientCase(
                     e.detail.caseData,
@@ -91,12 +90,11 @@ export class SceneEventHandlers {
                 }
             }
 
-            // Attach glow to the sprite if provided
+            // Attach glow to the sprite
             if (e.detail.sprite && this.scene.glowManager) {
                 this.scene.glowManager.attachToSprite(e.detail.sprite);
             }
         });
-
         this.eventUnsubscribers.push(unsubscribe);
     }
 
@@ -122,7 +120,6 @@ export class SceneEventHandlers {
                 this.scene.glowManager.attachToSprite(e.detail.sprite);
             }
         });
-
         this.eventUnsubscribers.push(unsubscribe);
     }
 
@@ -149,7 +146,6 @@ export class SceneEventHandlers {
                 this.scene.glowManager.attachToSprite(e.detail.sprite);
             }
         });
-
         this.eventUnsubscribers.push(unsubscribe);
     }
 
@@ -167,7 +163,6 @@ export class SceneEventHandlers {
                 );
             }
         });
-
         this.eventUnsubscribers.push(unsubscribe);
     }
 
@@ -177,10 +172,7 @@ export class SceneEventHandlers {
      * @private
      */
     setupSimulationCompleteHandler() {
-        const unsubscribe = EventBus.on(EVENT_NAMES.SIMULATION_COMPLETE, (e) => {
-            console.log(`[HospitalScene] Patient ${e.detail.patientName} completed simulation`);
-        });
-
+        const unsubscribe = EventBus.on(EVENT_NAMES.SIMULATION_COMPLETE);
         this.eventUnsubscribers.push(unsubscribe);
     }
 
@@ -189,8 +181,7 @@ export class SceneEventHandlers {
      * Called when scene shuts down
      */
     cleanup() {
-        console.log('[SceneEventHandlers] Cleaning up event listeners...');
-
+        console.log('[SceneEventHandlers:cleanup] Cleaning up event listeners...');
         this.eventUnsubscribers.forEach(unsubscribe => unsubscribe());
         this.eventUnsubscribers = [];
     }

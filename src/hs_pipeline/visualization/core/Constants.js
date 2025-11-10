@@ -1,9 +1,6 @@
 /**
- * @fileoverview Game-wide constants including locations, agent mappings, and configuration
+ * Game-wide constants including locations, agent mappings, and configuration
  * Central configuration file for all static game data
- * 
- * @module utils/Constants
- * @author Hospital Simulation Team
  */
 
 /**

@@ -1,5 +1,9 @@
 import { AnimationManager } from '../animation/AnimationManager.js';
 
+/**
+ * DoorManager
+ * Manages door sprite animations and animation trigger zones
+ */
 export default class DoorManager {
     constructor(scene) {
         this.scene = scene;
@@ -52,10 +56,7 @@ export default class DoorManager {
                 closeTimer: null,
                 overlappingSprites: new Set()
             };
-            console.log(`[DoorManager] Loaded ${doorType} door: ${doorId}`);
         });
-
-        console.log(`[DoorManager] Total doors loaded: ${Object.keys(this.doors).length}`);
     }
 
     activateTriggers(spritesOrGroup) {
@@ -76,7 +77,7 @@ export default class DoorManager {
                     this
                 );
 
-                // Overlap end is trickier - we use a separate check in update
+                // Overlap end - we use a separate check in update
                 // Store reference to check later
                 sprite._doorZones = sprite._doorZones || [];
                 sprite._doorZones.push(doorObj);
@@ -92,7 +93,6 @@ export default class DoorManager {
             const animKey = doorObj.doorType === 'surgery' ? 'surgery_door_open' : 'wooden_door_open';
             doorObj.door.play(animKey);
             doorObj.isOpen = true;
-            console.log(`[DoorManager] Door ${doorObj.doorType} opened`);
 
             if (doorObj.closeTimer) {
                 this.scene.time.removeEvent(doorObj.closeTimer);
@@ -125,7 +125,6 @@ export default class DoorManager {
                         doorObj.door.play(animKey);
                         doorObj.isOpen = false;
                         doorObj.closeTimer = null;
-                        console.log(`[DoorManager] Door closed`);
                     });
                 }
             }

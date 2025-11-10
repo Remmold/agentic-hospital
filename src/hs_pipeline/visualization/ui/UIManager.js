@@ -94,7 +94,6 @@ export class UIManager {
         `;
         
         patientInfo.insertAdjacentHTML('beforebegin', selectorHTML);
-        console.log('[UIManager] Patient selector added to existing panel');
     }
 
     addStyles() {
@@ -160,7 +159,6 @@ export class UIManager {
     }
 
     displayPatientCase(patientData, patientId = null, isActive = false, currentStep = null) {
-        console.log('[UIManager] displayPatientCase called with:', patientData);
         
         // Store which patient is being displayed
         const wasDisplayingSamePatient = this.displayedPatientId === patientId;
@@ -169,7 +167,6 @@ export class UIManager {
         // Store active patient ID only if this is the active patient
         if (isActive) {
             this.activePatientId = patientId;
-            console.log(`[UIManager] Active patient set to: ${patientId}`);
         }
         
         if (!patientData || !patientData.patient) {
@@ -279,26 +276,15 @@ export class UIManager {
     }
 
    highlightCurrentStep(stepIndex, patientId = null) {
-        console.log(`[UIManager] highlightCurrentStep called`);
-        console.log(`  - stepIndex: ${stepIndex}`);
-        console.log(`  - patientId: ${patientId}`);
-        console.log(`  - this.displayedPatientId: ${this.displayedPatientId}`);
-        console.log(`  - this.activePatientId: ${this.activePatientId}`);
-        
         // Only highlight if this step is for the active patient
         if (patientId !== this.activePatientId) {
-            console.log(`[UIManager] ❌ Ignoring step - not the active patient`);
             return;
         }
         
         // Only highlight if active patient's timeline is displayed
         if (this.displayedPatientId !== this.activePatientId) {
-            console.log(`[UIManager] ❌ Ignoring step - active patient timeline not displayed`);
             return;
         }
-        
-        console.log(`[UIManager] ✅ Highlighting step ${stepIndex}`);
-        
         // Remove all current highlights
         document.querySelectorAll('.timeline-step').forEach(el => {
             el.classList.remove('current');
@@ -355,9 +341,6 @@ export class UIManager {
         }
     }
 
-    /**
-     * Render patient chips in the selector
-     */
     renderPatientChips() {
         if (!this.patientChips) return;
         
@@ -439,9 +422,7 @@ export class UIManager {
             // Fetch absolutely fresh values from the sprite's simulationPlayer at click time
             const freshCurrentStep = chip._sprite?.simulationPlayer?.lastHighlightedStep ?? -1;
             const freshIsPlaying = chip._sprite?.simulationPlayer?.isPlaying ?? false;
-            
-            console.log(`[UIManager] Chip clicked: ${patientName}, FRESH currentStep: ${freshCurrentStep}`);
-            
+
             const event = new CustomEvent('patientChipClicked', {
                 detail: {
                     caseData: caseData,

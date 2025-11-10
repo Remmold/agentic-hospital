@@ -1,5 +1,5 @@
 /**
- * SceneInitializer.js
+ * SceneInitializer
  * Handles initialization of all scene components
  * Sets up managers, player, pathfinding, and input handlers
  */
@@ -16,10 +16,6 @@ import { PathfindingManager } from '../pathfinding/PathfindingManager.js';
 import { CharacterFactory } from '../animation/CharacterFactory.js';
 
 export class SceneInitializer {
-    /**
-     * Create scene initializer
-     * @param {Phaser.Scene} scene - The hospital scene
-     */
     constructor(scene) {
         this.scene = scene;
     }
@@ -28,22 +24,15 @@ export class SceneInitializer {
      * Setup all core managers (map, zones, collision, depth, doors, input, debug)
      */
     setupManagers() {
-        // Map and zones
         const mapLoader = new MapLoader(this.scene);
         mapLoader.setupMap();
 
-        // Core managers
         this.scene.zoneManager = new ZoneManager(this.scene, this.scene.map);
         this.scene.collisionManager = new CollisionManager(this.scene, this.scene.map);
         this.scene.depthManager = new DepthManager(this.scene, this.scene.zoneManager);
-
-        // Door zones + sprites
         this.scene.doorManager = new DoorManager(this.scene);
-
-        // Input manager
         this.scene.inputManager = new InputManager(this.scene);
 
-        // Debug manager
         this.scene.debugManager = new DebugManager(this.scene, {
             devMode: this.scene.DEV_MODE,
             collisionOverlay: this.scene.COLLISION_OVERLAY,

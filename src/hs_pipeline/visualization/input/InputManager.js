@@ -1,5 +1,6 @@
 /**
- * Manages keyboard input for player movement (for testing)
+ * InputManager
+ * Manages keyboard input for player movement
  */
 export class InputManager {
     constructor(scene) {

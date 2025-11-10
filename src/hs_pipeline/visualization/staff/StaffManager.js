@@ -1,13 +1,3 @@
-/**
- * @fileoverview Manages all staff NPCs including doctors, nurses, and support staff
- * Handles staff spawning, patrol routes, and idle behaviors
- * 
- * @module ./StaffManager
- * @requires utils/CharacterFactory
- * @requires ./StaffConfig
- * @author Hospital Simulation Team
- */
-
 import { CharacterFactory } from '../animation/CharacterFactory.js';
 import { STAFF_CONFIG } from './StaffConfig.js';
 
@@ -21,31 +11,19 @@ import { STAFF_CONFIG } from './StaffConfig.js';
  * - Updating staff depth for proper rendering
  */
 export class StaffManager {
-    /**
-     * Creates a new StaffManager
-     * 
-     * @param {Phaser.Scene} scene - The game scene
-     * @param {DepthManager} depthManager - Manages sprite rendering depth
-     */
     constructor(scene, depthManager) {
         this.scene = scene;
         this.depthManager = depthManager;
         this.staff = [];
 
-        // Import staff configuration from external file
         this.staffConfig = STAFF_CONFIG;
     }
 
-    /**
-     * Spawn all configured staff NPCs
-     * Iterates through staffConfig and creates each staff member
-     */
     spawnAllStaff() {
         try {
             this.staffConfig.forEach(config => {
                 this.spawnStaff(config);
             });
-            console.log(`[StaffManager] Spawned ${this.staff.length} NPCs`);
         } catch (error) {
             console.error('[StaffManager] Error spawning staff:', error);
         }
@@ -64,7 +42,6 @@ export class StaffManager {
      */
     spawnStaff(config) {
         try {
-            // Create the NPC sprite
             const npc = CharacterFactory.createCharacter(
                 this.scene,
                 config.id,
@@ -83,14 +60,12 @@ export class StaffManager {
                 idleTimer: 0
             };
 
-            // Play initial idle animation
             CharacterFactory.playAnimation(
                 npc,
                 config.idleAction,
                 config.idleDirection
             );
 
-            // If staff has patrol route, start moving to first waypoint
             if (config.patrol && Array.isArray(config.patrol)) {
                 const firstWaypoint = config.patrol[0];
                 this.moveToWaypoint(staffData, firstWaypoint);
@@ -110,10 +85,8 @@ export class StaffManager {
     update() {
         this.staff.forEach(staffData => {
             try {
-                // Update sprite depth for proper rendering
                 this.depthManager.updateSpriteDepth(staffData.npc);
 
-                // Process patrol if staff member is patrolling
                 if (staffData.config.patrol && Array.isArray(staffData.config.patrol)) {
                     this.updatePatrol(staffData);
                 }
@@ -138,8 +111,8 @@ export class StaffManager {
         if (!currentWaypoint) return;
 
         if (staffData.isIdling) {
-            // Staff is idling at current waypoint - update timer
-            staffData.idleTimer += 1000 / 120; // Assuming 60 FPS
+            // Increment idle timer
+            staffData.idleTimer += 1000 / 120; // Assuming 120 FPS update rate
 
             // Check if idle time is complete
             if (staffData.idleTimer >= currentWaypoint.idleMs) {
@@ -152,7 +125,6 @@ export class StaffManager {
                 this.moveToWaypoint(staffData, nextWaypoint);
             }
         } else {
-            // Staff is moving - check if they've arrived at waypoint
             const distance = Phaser.Math.Distance.Between(
                 npc.x, npc.y,
                 currentWaypoint.x, currentWaypoint.y
@@ -160,7 +132,6 @@ export class StaffManager {
 
             // Threshold at 20 pixels for waypoint arrival detection
             if (distance < 20) {
-                // Arrived at waypoint - start idling
                 staffData.isIdling = true;
                 staffData.idleTimer = 0;
 
@@ -195,27 +166,11 @@ export class StaffManager {
         }
     }
 
-    /**
-     * Get a staff NPC by their ID
-     * 
-     * @param {string} id - Staff member ID
-     * @returns {Phaser.Physics.Arcade.Sprite|null} Staff sprite or null if not found
-     * 
-     * @example
-     * const doctor = staffManager.getStaffById('doctor_1');
-     * if (doctor) {
-     *   console.log(`Doctor at: ${doctor.x}, ${doctor.y}`);
-     * }
-     */
     getStaffById(id) {
         const staffData = this.staff.find(s => s.id === id);
         return staffData ? staffData.npc : null;
     }
 
-    /**
-     * Destroy all staff members and clear the staff list
-     * Useful for scene cleanup or restart
-     */
     destroyAllStaff() {
         this.staff.forEach(staffData => {
             if (staffData.npc) {

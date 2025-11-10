@@ -7,8 +7,8 @@ export class MapLoader {
     }
 
     /**
- * Load all required assets
- */
+     * Load all required assets
+     */
     static loadAssets(scene, cacheBuster = '') {
         // Tilemap and props
         const propAssets = [
@@ -93,7 +93,6 @@ export class MapLoader {
         this.scene.map = map;
         this.scene.layers = layers;
 
-        console.log('Map loaded successfully!');
         return { map, layers };
     }
 

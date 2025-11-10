@@ -1,4 +1,5 @@
 /**
+ * GlowManager
  * Manages the glowing circle indicator that shows which patient's timeline is being viewed
  */
 export class GlowManager {
@@ -39,8 +40,6 @@ export class GlowManager {
         
         // Start invisible
         this.glowGraphics.setVisible(false);
-        
-        console.log('[GlowManager] Glow created');
     }
 
     startPulsing() {
@@ -83,8 +82,6 @@ export class GlowManager {
         this.glowGraphics.setVisible(true);
         this.startPulsing();
         this.updatePosition();
-        
-        console.log('[GlowManager] Attached to sprite');
     }
 
     /**
@@ -107,7 +104,6 @@ export class GlowManager {
         this.glowGraphics.setVisible(false);
         this.stopPulsing();
         this.targetSprite = null;
-        console.log('[GlowManager] Hidden');
     }
 
     /**

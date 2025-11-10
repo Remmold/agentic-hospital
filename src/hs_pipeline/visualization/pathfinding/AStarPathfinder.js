@@ -7,7 +7,6 @@ export class AStarPathfinder {
         const start = this.grid.worldToTile(startX, startY);
         const end = this.grid.worldToTile(endX, endY);
 
-        // CHECK IF END TILE IS WALKABLE
         if (!this.grid.isWalkable(end.x, end.y)) {
             console.warn('Target tile is not walkable!');
             return [];

@@ -1,12 +1,3 @@
-/**
- * StaffConfig.js
- * Configuration data for all hospital staff NPCs
- * Defines positions, patrol routes, and idle behaviors
- * 
- * @module ./StaffConfig
- * @requires utils/Constants
- */
-
 import { LOCATIONS } from '../core/Constants.js';
 
 /**
