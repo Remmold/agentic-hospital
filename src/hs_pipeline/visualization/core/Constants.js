@@ -10,14 +10,17 @@
  * @constant {Object} LOCATIONS
  */
 export const LOCATIONS = {
+    // Patient House (bottom of extended map - rows 31-50)
+    HOUSE: { x: 34.5 * 32, y: 45.5 * 32, name: 'Patient House' },
+    
     // Hospital entrance/exit
     ENTRANCE: { x: 21 * 32, y: 33 * 32, name: 'Hospital Entrance' },
 
     // Reception & Waiting Area - TWO DESKS
     RECEPTION: {
         base: { x: 17 * 32, y: 26 * 32, name: 'Reception Desk' },
-        LEFT_COMPUTER: { x: 18 * 32, y: 792, name: 'Reception Desk' },
-        RIGHT_COMPUTER: { x: 21 * 32, y: 792, name: 'Reception Desk' },
+        LEFT_COMPUTER: { x: 18 * 32, y: 24.7 * 32, name: 'Reception Desk' },
+        RIGHT_COMPUTER: { x: 21 * 32, y: 24.7 * 32, name: 'Reception Desk' },
         LEFT: { x: 17 * 32, y: 26 * 32, name: 'Reception Desk Left' },
         RIGHT: { x: 20 * 32, y: 26 * 32, name: 'Reception Desk Right' },
         QUEUE_1: { x: 17 * 32, y: 27 * 32, name: 'Reception Queue 1' },
@@ -27,16 +30,17 @@ export const LOCATIONS = {
     // Waiting room with 11 chair positions (nested)
     WAITING_ROOM: {
         base: { x: 34 * 32, y: 26 * 32, name: 'Waiting Room' },
+        NURSE_GREETING_SPOT: { x: 29.8 * 32, y: 25.8 * 32, name: 'Nurse Greeting Spot' },
         // Top wall chairs
         CHAIR_1: { x: 32 * 32, y: 24 * 32, name: 'Waiting Room Chair 1' },
         CHAIR_2: { x: 34 * 32, y: 24 * 32, name: 'Waiting Room Chair 2' },
         CHAIR_3: { x: 35 * 32, y: 24 * 32, name: 'Waiting Room Chair 3' },
         CHAIR_4: { x: 37 * 32, y: 24 * 32, name: 'Waiting Room Chair 4' },
         // Bottom wall chairs
-        CHAIR_5: { x: 32 * 32, y: 29 * 32, name: 'Waiting Room Chair 5' },
-        CHAIR_6: { x: 33 * 32, y: 29 * 32, name: 'Waiting Room Chair 6' },
-        CHAIR_7: { x: 36 * 32, y: 29 * 32, name: 'Waiting Room Chair 7' },
-        CHAIR_8: { x: 37 * 32, y: 29 * 32, name: 'Waiting Room Chair 8' },
+        CHAIR_5: { x: 32 * 32, y: 28 * 32, name: 'Waiting Room Chair 5' },
+        CHAIR_6: { x: 33 * 32, y: 28 * 32, name: 'Waiting Room Chair 6' },
+        CHAIR_7: { x: 36 * 32, y: 28 * 32, name: 'Waiting Room Chair 7' },
+        CHAIR_8: { x: 37 * 32, y: 28 * 32, name: 'Waiting Room Chair 8' },
         // Right wall chairs
         CHAIR_9: { x: 38 * 32, y: 25 * 32, name: 'Waiting Room Chair 9' },
         CHAIR_10: { x: 38 * 32, y: 26 * 32, name: 'Waiting Room Chair 10' },
@@ -46,8 +50,8 @@ export const LOCATIONS = {
     // Pharmacy
     PHARMACY: {
         base: { x: 5 * 32, y: 26 * 32, name: 'base' },
-        PHARMACIST_BEHIND_COUNTER_1: { x: 2 * 32, y: 20 * 32, name: 'Pharmacist Behind Counter 1' },
-        PHARMACIST_BEHIND_COUNTER_2: { x: 5 * 32, y: 20 * 32, name: 'Pharmacist Behind Counter 2' },
+        PHARMACIST_BEHIND_COUNTER_1: { x: 2 * 32, y: 19.7 * 32, name: 'Pharmacist Behind Counter 1' },
+        PHARMACIST_BEHIND_COUNTER_2: { x: 5 * 32, y: 19.7 * 32, name: 'Pharmacist Behind Counter 2' },
         PATIENT_IN_FRONT_OF_COUNTER_1: { x: 5 * 32, y: 27 * 32, name: 'Patient In Front Of Counter 1' },
         PATIENT_IN_FRONT_OF_COUNTER_2: { x: 6 * 32, y: 27 * 32, name: 'Patient In Front Of Counter 2' }
     },
@@ -55,7 +59,7 @@ export const LOCATIONS = {
     // Examination Rooms - DOCTORS_OFFICE with multiple sub-positions
     DOCTORS_OFFICE: {
         base: { x: 37 * 32, y: 12 * 32, name: 'Doctor\'s Office' },
-        DOCTORS_CHAIR: { x: 1220, y: 365, name: 'Doctor\'s Chair' },
+        DOCTORS_CHAIR: { x: 38 * 32, y: 11.2 * 32, name: 'Doctor\'s Chair' },
         PATIENT_CHAIR: { x: 38 * 32, y: 12 * 32, name: 'Patient Chair' },
         EXAM_BENCH: { x: 36 * 32, y: 12 * 32, name: 'Exam Bench' }
     },
@@ -63,9 +67,10 @@ export const LOCATIONS = {
     // Examination Rooms - NURSE_OFFICE with multiple sub-positions
     NURSE_OFFICE: {
         base: { x: 34 * 32, y: 17 * 32, name: 'Nurse Office' },
-        NURSE_DESK: { x: 34 * 32, y: 17 * 32, name: 'Nurse\'s desk' },
-        NURSE_BY_PATIENT_SEAT: { x: 36 * 32, y: 18 * 32, name: 'Nurse by patient seat' },
+        NURSE_DESK: { x: 37.5 * 32, y: 17.5 * 32, name: 'Nurse\'s desk' },
+        NURSE_BY_PATIENT_SEAT: { x: 35.5 * 32, y: 17 * 32, name: 'Nurse by patient seat' },
         PATIENT_SEAT: { x: 35 * 32, y: 17 * 32, name: 'Patient seat' }
+
     },
 
     // Lab
@@ -73,8 +78,9 @@ export const LOCATIONS = {
         base: { x: 21 * 32, y: 20 * 32, name: 'default' },
         NURSE_POSITION: { x: 21 * 32, y: 20 * 32, name: 'Lab Nurse Position' },
         BIG_MACHINE: { x: 21 * 32, y: 17.2 * 32, name: 'Lab Big Machine' },
-        SMALL_MACHINE: { x: 21 * 32, y: 19.8 * 32, name: 'Lab Small Machine' },
+        SMALL_MACHINE: { x: 24 * 32, y: 21 * 32, name: 'Lab Small Machine' },
         PATIENT_CHAIR: { x: 23 * 32, y: 21 * 32, name: 'Patient Chair' },
+        COMPUTER: { x: 21 * 32, y: 22 * 32, name: 'Lab Computer' },
     },
 
     // MRI
@@ -90,20 +96,20 @@ export const LOCATIONS = {
     // Conference Room
     CONFERENCE_ROOM: {
         BASE: { x: 19 * 32, y: 6.5 * 32, name: 'Conference Room Base' },
-        BOTTOM_CHAIR_1: { x: 16.5 * 32, y: 9.8 * 32, name: 'Conference Room Chair 1' },
-        BOTTOM_CHAIR_2: { x: 17.5 * 32, y: 9.8 * 32, name: 'Conference Room Chair 2' },
-        BOTTOM_CHAIR_3: { x: 18.5 * 32, y: 9.8 * 32, name: 'Conference Room Chair 3' },
-        BOTTOM_CHAIR_4: { x: 19.5 * 32, y: 9.8 * 32, name: 'Conference Room Chair 4' },
-        BOTTOM_CHAIR_5: { x: 20.5 * 32, y: 9.8 * 32, name: 'Conference Room Chair 5' },
-        BOTTOM_CHAIR_6: { x: 21.5 * 32, y: 9.8 * 32, name: 'Conference Room Chair 6' },
-        BOTTOM_CHAIR_7: { x: 22.5 * 32, y: 9.8 * 32, name: 'Conference Room Chair 7' },
-        TOP_CHAIR_1: { x: 16.5 * 32, y: 7.5 * 32, name: 'Conference Room Chair 8' },
-        TOP_CHAIR_2: { x: 17.5 * 32, y: 7.5 * 32, name: 'Conference Room Chair 9' },
-        TOP_CHAIR_3: { x: 18.5 * 32, y: 7.5 * 32, name: 'Conference Room Chair 10' },
-        TOP_CHAIR_4: { x: 19.5 * 32, y: 7.5 * 32, name: 'Conference Room Chair 11' },
-        TOP_CHAIR_5: { x: 20.5 * 32, y: 7.5 * 32, name: 'Conference Room Chair 12' },
-        TOP_CHAIR_6: { x: 21.5 * 32, y: 7.5 * 32, name: 'Conference Room Chair 13' },
-        TOP_CHAIR_7: { x: 22.5 * 32, y: 7.5 * 32, name: 'Conference Room Chair 14' },
+        BOTTOM_CHAIR_1: { x: 16.5 * 32, y: 9.5 * 32, name: 'Conference Room Chair 1' },
+        BOTTOM_CHAIR_2: { x: 17.5 * 32, y: 9.5 * 32, name: 'Conference Room Chair 2' },
+        BOTTOM_CHAIR_3: { x: 18.5 * 32, y: 9.5 * 32, name: 'Conference Room Chair 3' },
+        BOTTOM_CHAIR_4: { x: 19.5 * 32, y: 9.5 * 32, name: 'Conference Room Chair 4' },
+        BOTTOM_CHAIR_5: { x: 20.5 * 32, y: 9.5 * 32, name: 'Conference Room Chair 5' },
+        BOTTOM_CHAIR_6: { x: 21.5 * 32, y: 9.5 * 32, name: 'Conference Room Chair 6' },
+        BOTTOM_CHAIR_7: { x: 22.5 * 32, y: 9.5 * 32, name: 'Conference Room Chair 7' },
+        TOP_CHAIR_1: { x: 16.5 * 32, y: 7.3 * 32, name: 'Conference Room Chair 8' },
+        TOP_CHAIR_2: { x: 17.5 * 32, y: 7.3 * 32, name: 'Conference Room Chair 9' },
+        TOP_CHAIR_3: { x: 18.5 * 32, y: 7.3 * 32, name: 'Conference Room Chair 10' },
+        TOP_CHAIR_4: { x: 19.5 * 32, y: 7.3 * 32, name: 'Conference Room Chair 11' },
+        TOP_CHAIR_5: { x: 20.5 * 32, y: 7.3 * 32, name: 'Conference Room Chair 12' },
+        TOP_CHAIR_6: { x: 21.5 * 32, y: 7.3 * 32, name: 'Conference Room Chair 13' },
+        TOP_CHAIR_7: { x: 22.5 * 32, y: 7.3 * 32, name: 'Conference Room Chair 14' },
     },
 
     // Labs
@@ -114,7 +120,7 @@ export const LOCATIONS = {
     LAB_MRI: { x: 2 * 32, y: 7 * 32, name: 'MRI Room' },
     LAB_XRAY: { x: 37 * 32, y: 2 * 32, name: 'X-Ray Room' },
     LAB_BLOOD: { x: 32 * 32, y: 15 * 32, name: 'Blood Test Room' },
-    LAB_CT: { x: 38 * 32, y: 18 * 32, name: 'CT Scan Room' },
+    LAB_CT: { x: 37 * 32, y: 2* 32, name: 'CT Scan Room' },
 };
 
 /**

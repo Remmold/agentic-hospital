@@ -1,0 +1,137 @@
+{
+  "patient": {
+    "name": "Adam Burton",
+    "age": 47,
+    "gender": "Male",
+    "symptoms": [
+      "intermittent abdominal pain",
+      "episodes of diarrhea",
+      "unexplained weight loss",
+      "acidic taste in mouth",
+      "mild nausea after meals"
+    ],
+    "medical_history": "History of peptic ulcers diagnosed five years ago",
+    "current_medications": [
+      "omeprazole",
+      "lansoprazole"
+    ],
+    "firstName": "Adam",
+    "lastName": "Burton"
+  },
+  "actual_disease": "zollinger_ellison_syndrome",
+  "department": "Gastroenterology",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "summary": "Triaged as SEMI_URGENT. Patient presenting with intermittent abdominal pain and unexplained weight loss. Needs evaluation by a doctor soon.",
+      "details": {
+        "urgency": "semi_urgent",
+        "triage_reasoning": "Patient presents with intermittent abdominal pain, episodes of diarrhea, and unexplained weight loss, which are concerning given their history of peptic ulcers.",
+        "vital_signs_concern": false,
+        "notes": "Patient's vital signs are stable.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "Patient should be evaluated for potential complications related to their peptic ulcers or other gastrointestinal issues.",
+        "viewer_output": "Triaged as SEMI_URGENT. Patient presenting with intermittent abdominal pain and unexplained weight loss. Needs evaluation by a doctor soon."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "summary": "Ordering abdominal ultrasound due to concerns for complications related to peptic ulcers. Found several relevant past cases suggesting this approach.",
+      "details": {
+        "diagnosis": null,
+        "recommended_treatment": null,
+        "follow_up_needed": true,
+        "next_step": "order_test",
+        "context_for_next": "potential complications related to peptic ulcers",
+        "ordered_test": "abdominal ultrasound",
+        "reasoning": "Given the patient's intermittent abdominal pain, diarrhea, and unexplained weight loss, I recommend conducting an abdominal ultrasound to assess for any complications arising from the peptic ulcers, as supported by relevant experiences. Similar past cases indicate this test helps clarify the diagnosis. No tests have been completed yet, indicating the need for new testing.",
+        "tests_completed_count": 0,
+        "learning_principles_used": "Applied principle: abdominal discomfort with weight loss and diarrhea requires thorough evaluation including imaging to rule out gastrointestinal complications.",
+        "viewer_output": "Ordering abdominal ultrasound due to concerns for complications related to peptic ulcers. Found several relevant past cases suggesting this approach."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "get_lab_results",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "final_result"
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "Lab",
+      "summary": "Abdominal ultrasound completed. Results will be reviewed by your doctor.",
+      "details": {
+        "tests_ran": "abdominal ultrasound",
+        "test_outcome": "Liver: normal size, Gallbladder: no stones, Pancreas: normal echogenicity, Kidneys: normal size and appearance, Spleen: normal size, Aorta: no abnormalities, Mesenteric lymph nodes: no enlargement",
+        "viewer_output": "Abdominal ultrasound completed. Results will be reviewed by your doctor."
+      },
+      "tools_used": [
+        "get_test_context",
+        "final_result"
+      ]
+    },
+    {
+      "step": 4,
+      "agent": "Doctor",
+      "summary": "Diagnosis: complications related to peptic ulcers, likely resulting in ongoing symptoms. Found 3 similar cases with successful outcomes. Treatment: Consider upper endoscopy and potentially start on a proton pump inhibitor (PPI).",
+      "details": {
+        "diagnosis": "complications related to peptic ulcers, likely resulting in ongoing symptoms",
+        "recommended_treatment": "Consider upper endoscopy and potentially start on a proton pump inhibitor (PPI) to manage symptoms and prevent further complications.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "Patient showing complexity of symptoms associated with past peptic ulcer history.",
+        "ordered_test": null,
+        "reasoning": "Found 3 similar cases with successful outcomes, but the current case involves complexity due to unexplained weight loss and diarrhea. An upper endoscopy is indicated to rule out complications such as perforation or malignancy. Past cases underscore the need for thorough evaluation.",
+        "tests_completed_count": 1,
+        "learning_principles_used": "Used case #1: dyspepsia, outcome success. Applied principle: need for thorough investigation when multiple symptoms are present.",
+        "viewer_output": "Diagnosis: complications related to peptic ulcers, likely resulting in ongoing symptoms. Found 3 similar cases with successful outcomes. Treatment: Consider upper endoscopy and potentially start on a proton pump inhibitor (PPI)."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 5,
+      "agent": "Reflection",
+      "summary": "Learned: Intermittent abdominal pain with diarrhea and weight loss requires testing for Zollinger-Ellison syndrome. This will improve future peptic ulcer and related diagnosis.",
+      "details": {
+        "principle_text": "Intermittent abdominal pain with diarrhea and weight loss requires testing for Zollinger-Ellison syndrome to exclude related complications.",
+        "reasoning": "The initial diagnosis of peptic ulcer complications overlooked the specific symptoms indicative of Zollinger-Ellison syndrome, thus timely testing could prevent misdiagnosis.",
+        "confidence": 0.9,
+        "viewer_output": "Learned: Intermittent abdominal pain with diarrhea and weight loss requires testing for Zollinger-Ellison syndrome. This will improve future peptic ulcer and related diagnosis."
+      },
+      "tools_used": []
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "complications related to peptic ulcers, likely resulting in ongoing symptoms",
+    "recommended_treatment": "Consider upper endoscopy and potentially start on a proton pump inhibitor (PPI) to manage symptoms and prevent further complications.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "Patient showing complexity of symptoms associated with past peptic ulcer history.",
+    "ordered_test": null,
+    "reasoning": "Found 3 similar cases with successful outcomes, but the current case involves complexity due to unexplained weight loss and diarrhea. An upper endoscopy is indicated to rule out complications such as perforation or malignancy. Past cases underscore the need for thorough evaluation.",
+    "tests_completed_count": 1,
+    "learning_principles_used": "Used case #1: dyspepsia, outcome success. Applied principle: need for thorough investigation when multiple symptoms are present.",
+    "viewer_output": "Diagnosis: complications related to peptic ulcers, likely resulting in ongoing symptoms. Found 3 similar cases with successful outcomes. Treatment: Consider upper endoscopy and potentially start on a proton pump inhibitor (PPI)."
+  },
+  "total_steps": 4,
+  "is_correct": false,
+  "validation_reason": "Clear mismatch: 'complications related to peptic ulcers' != 'zollinger ellison syndrome'"
+}

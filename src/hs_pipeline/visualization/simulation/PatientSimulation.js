@@ -4,6 +4,7 @@ import { CharacterFactory } from '../animation/CharacterFactory.js';
 import { PatientSpriteRegistry } from '../patient/PatientSpriteRegistry.js';
 import { PatientMovement } from './PatientMovement.js';
 import { PatientAnimations } from './PatientAnimations.js';
+import { LOCATIONS } from '../core/Constants.js';
 
 /**
  * PatientSimulation - Coordinates a patient's journey through the hospital
@@ -75,7 +76,19 @@ export class PatientSimulation {
 
     setSpeedMultiplier(speed) {
         this.speedMultiplier = speed;
-        console.log(`[PatientSimulation] Speed set to ${speed}x`);
+        
+        // Adjust active tween speed immediately
+        if (this.npc && this.npc.pathTween && this.npc.pathTween.isPlaying()) {
+            this.npc.pathTween.timeScale = speed;
+        }
+        
+        // Restart step if patient is idle waiting (no active tween but simulation running)
+        if (this.isPlaying && this.npc && (!this.npc.pathTween || !this.npc.pathTween.isPlaying())) {
+            // Cancel any pending delayed calls
+            this.scene.time.removeAllEvents();
+            // Immediately proceed to next step with new speed
+            this.playNextStep();
+        }
     }
 
     /**
@@ -85,7 +98,6 @@ export class PatientSimulation {
      */
     setPaused(paused) {
         this.isPausedByUI = paused;
-        console.log(`[PatientSimulation] ${paused ? 'PAUSED' : 'RESUMED'}`);
 
         if (paused) {
             if (this.npc && this.npc.pathTween && this.npc.pathTween.isPlaying()) {
@@ -95,7 +107,6 @@ export class PatientSimulation {
             // Switch to idle/sit animation when paused
             if (this.npc && this.npc.lastDirection) {
                 let action = this.npc.lastAction || 'idle';
-                // Convert walk to idle when paused
                 if (action === 'walk') {
                     action = 'idle';
                 }
@@ -105,11 +116,11 @@ export class PatientSimulation {
             // Resume movement if it was paused
             if (this.npc && this.npc.pathTween && this.npc.pathTween.isPaused()) {
                 this.movement.resumeMovement(this.npc);
+                // Reapply speed multiplier after resume
+                this.npc.pathTween.timeScale = this.speedMultiplier;
             } else if (this.isExiting) {
-                // If exiting but not moving, continue exit sequence
                 this.checkPauseBeforeFinish();
             } else if (this.isPlaying && !this.movement.isMoving(this.npc)) {
-                // Resume timeline if between steps
                 this.playNextStep();
             }
         }
@@ -138,23 +149,19 @@ export class PatientSimulation {
 
         this.spawnPatient();
 
-        // Notify UI that patient case is loaded
         EventBus.emit(EVENT_NAMES.PATIENT_CASE_LOADED, {
             caseData: jsonData,
             sprite: this.npc,
             patientId: this.npc?.uniqueId
         });
 
-        // Walk to reception
         this.movement.moveToLocation(this.npc, receptionDesk, 'idle', 'up', () => {
             console.log('[PatientSimulation] Arrived at reception, starting timeline...');
-            const adjustedWaitTime = this.waitTimeMs / this.speedMultiplier;
-            this.scene.time.delayedCall(adjustedWaitTime, () => {
+            this.scene.time.delayedCall(this.waitTimeMs, () => {
                 this.playNextStep();
             });
         });
     }
-
     /**
      * Determine chair direction based on chair key
      * 
@@ -248,9 +255,9 @@ export class PatientSimulation {
     }
 
     spawnPatient() {
-        const entrance = getLocation('ENTRANCE');
-        if (!entrance) {
-            console.error('[PatientSimulation] Could not find entrance location');
+        const house = getLocation('HOUSE');
+        if (!house) {
+            console.error('[PatientSimulation] Could not find House location');
             return;
         }
 
@@ -258,14 +265,14 @@ export class PatientSimulation {
             this.scene,
             'patient',
             this.spritesheet,
-            entrance.x,
-            entrance.y,
+            house.x,
+            house.y,
             {
                 bodyWidth: 24,
                 bodyHeight: 24,
-                offsetX: 6,
-                offsetY: 40,
-                initialDirection: 'up'  // Patients start facing UP at entrance
+                offsetX: 4,
+                offsetY: 44,
+                initialDirection: 'left'  // Patients start facing left out the house
             }
         );
 
@@ -276,7 +283,7 @@ export class PatientSimulation {
             this.scene.physics.add.collider(this.npc, collisionGroup);
         }
 
-        this.npc.setDepth(entrance.y);
+        this.npc.setDepth(house.y);
         this.npc.simulationPlayer = this;
 
         this.setupClickHandler();
@@ -316,33 +323,26 @@ export class PatientSimulation {
 
 
     playNextStep() {
-
         if (this.isPausedByUI) {
-            console.log(`[PatientSimulation] Paused, waiting to continue from step ${this.currentStep}...`);
             return;
         }
 
-        // Check if still playing
         if (!this.isPlaying) {
-            console.log('[PatientSimulation] Not playing, stopping');
             return;
         }
 
-        // Check if timeline complete
         if (this.currentStep >= this.simulationData.timeline.length) {
             this.showReflectionAndReturn();
             return;
         }
 
         const step = this.simulationData.timeline[this.currentStep];
-
         const agent = step.agent;
         let locationKey = AGENT_LOCATIONS[agent];
         let animation = 'idle';
         let direction = 'down';
 
-        // Determine location and animation based on agent type
-        if (agent === 'Lab Tech') {
+        if (agent === 'Lab') {
             const labLocation = this.getLabLocation(step);
             locationKey = labLocation.location;
             animation = labLocation.animation;
@@ -353,14 +353,25 @@ export class PatientSimulation {
         } else if (agent === 'Nurse') {
             animation = 'sit';
             direction = 'down';
-        }else if (agent === 'Reflection') {
+        } else if (agent === 'Reflection') {
             animation = 'sit';
             direction = 'up';
         }
 
-
         this.movement.moveToLocation(this.npc, locationKey, animation, direction, () => {
-            // Update UI highlight
+            // Patient arrived - NOW trigger nurse event if this is a Nurse step
+            if (agent === 'Nurse') {
+                this.scene.staffManager.eventSystem.triggerEvent(
+                    'examination_nurse',
+                    [
+                        { ...LOCATIONS.NURSE_OFFICE.NURSE_BY_PATIENT_SEAT, idleMs: 7000, idleDirection: 'left', idleAction: 'idle' }
+                    ],
+                    () => {
+                        console.log('[PatientSimulation] Nurse examination complete');
+                    }
+                );
+            }
+            
             this.lastHighlightedStep = this.currentStep;
 
             EventBus.emit(EVENT_NAMES.SIMULATION_STEP_CHANGED, {
@@ -369,15 +380,12 @@ export class PatientSimulation {
                 patientName: this.simulationData?.patient?.name
             });
 
-            // Wait before next step
-            const adjustedWaitTime = this.waitTimeMs / this.speedMultiplier;
-            this.scene.time.delayedCall(adjustedWaitTime, () => {
+            this.scene.time.delayedCall(this.waitTimeMs, () => {
                 this.currentStep++;
                 this.playNextStep();
             });
         });
     }
-
     /**
      * Determine lab location based on ordered test type
      * 
@@ -386,12 +394,14 @@ export class PatientSimulation {
      * @private
      */
     getLabLocation(step) {
-        const testType = step.test_ordered?.toLowerCase() || '';
+        // Check multiple possible property locations for test type
+        const testType = (step.details?.tests_ran || '').toLowerCase();
+        
 
         if (testType.includes('mri')) {
             return { location: 'LAB_MRI', animation: 'sit', direction: 'up' };
         } else if (testType.includes('x-ray') || testType.includes('xray')) {
-            return { location: 'LAB_XRAY', animation: 'idle', direction: 'up' };
+            return { location: 'LAB_XRAY', animation: 'sit', direction: 'down' };
         } else if (testType.includes('ct')) {
             return { location: 'LAB_CT', animation: 'sit', direction: 'up' };
         } else {
@@ -401,10 +411,26 @@ export class PatientSimulation {
 
 
     showReflectionAndReturn() {
-
-        const adjustedWaitTime = this.waitTimeMs / this.speedMultiplier;
-        this.scene.time.delayedCall(adjustedWaitTime, () => {
+        this.scene.time.delayedCall(this.waitTimeMs, () => {
             this.isExiting = true;
+
+            // Trigger nurse to greet next patient
+            if (this.scene.staffManager?.eventSystem) {
+                const receptionDesks = ['RECEPTION.LEFT', 'RECEPTION.RIGHT'];
+                const greetingDeskKey = receptionDesks[Math.floor(Math.random() * receptionDesks.length)];
+
+                
+                this.scene.staffManager.eventSystem.triggerEvent(
+                    'examination_nurse',
+                    [
+                        { ...LOCATIONS.WAITING_ROOM.NURSE_GREETING_SPOT, idleMs: 4600, idleDirection: 'right', idleAction: 'idle' },
+                        { ...LOCATIONS.NURSE_OFFICE.NURSE_BY_PATIENT_SEAT, idleMs: 500, idleDirection: 'left', idleAction: 'idle' }
+                    ],
+                    () => {
+                        console.log('[PatientSimulation] Nurse greeting complete');
+                    }
+                );
+            }
 
             if (this.onReturnStartCallback) {
                 this.onReturnStartCallback();
@@ -423,14 +449,14 @@ export class PatientSimulation {
             return;
         }
 
-        const entrance = getLocation('ENTRANCE');
-        if (!entrance) {
-            console.error('[PatientSimulation] Could not find entrance location');
+        const house = getLocation('HOUSE');
+        if (!house) {
+            console.error('[PatientSimulation] Could not find house location');
             this.completeSimulation();
             return;
         }
 
-        this.movement.moveToLocation(this.npc, entrance, 'idle', 'down', () => {
+        this.movement.moveToLocation(this.npc, house, 'idle', 'down', () => {
             this.completeSimulation();
         });
     }

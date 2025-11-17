@@ -1,0 +1,173 @@
+{
+  "patient": {
+    "name": "Cole Ramirez",
+    "age": 36,
+    "gender": "Male",
+    "symptoms": [
+      "weakness in legs",
+      "tingling sensation in fingers",
+      " occasional difficulty swallowing",
+      "mild dizziness after exertion",
+      "feeling unusually tired"
+    ],
+    "medical_history": "no significant past medical history, mild seasonal allergies",
+    "current_medications": [
+      "Loratadine"
+    ],
+    "firstName": "Cole",
+    "lastName": "Ramirez"
+  },
+  "actual_disease": "guillain_barre_syndrome",
+  "department": "Neurology",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "summary": "Triaged as SEMI_URGENT. Patient experiencing weakness in legs and tingling in fingers, suggesting possible neurological issues. Sent to doctor for evaluation.",
+      "details": {
+        "urgency": "semi_urgent",
+        "triage_reasoning": "The patient presents with multiple neurological symptoms, including weakness in legs and tingling in fingers, suggesting possible underlying issues that need attention. The patient's mild dizziness after exertion and unusual tiredness further support the need for a timely evaluation.",
+        "vital_signs_concern": false,
+        "notes": "Patient has mild seasonal allergies and is taking Loratadine, which is not related to current symptoms.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "Patient will need further neurological evaluation and possible diagnostic tests.",
+        "viewer_output": "Triaged as SEMI_URGENT. Patient experiencing weakness in legs and tingling in fingers, suggesting possible neurological issues. Sent to doctor for evaluation."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "summary": "Ordering MRI of the brain due to neurological symptoms of weakness and tingling. Found 3 similar cases with successful outcomes.",
+      "details": {
+        "diagnosis": null,
+        "recommended_treatment": null,
+        "follow_up_needed": null,
+        "next_step": "order_test",
+        "context_for_next": "further neurological evaluation with imaging tests",
+        "ordered_test": "MRI of the brain",
+        "reasoning": "Based on the semi-urgent nature of the neurological symptoms and the presence of similar cases, ordering an MRI of the brain is appropriate to investigate any structural causes of the patient's symptoms. Previous experiences suggest that imaging can be crucial in diagnosing potential issues related to weakness and tingling.",
+        "tests_completed_count": 0,
+        "learning_principles_used": "Used case #2: Tingling in legs with intermittent lower back pain requires MRI of the lumbar spine to assess for spina bifida.",
+        "viewer_output": "Ordering MRI of the brain due to neurological symptoms of weakness and tingling. Found 3 similar cases with successful outcomes."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "Lab",
+      "summary": "MRI scan completed. Results will be reviewed by your doctor.",
+      "details": {
+        "tests_ran": "MRI of the brain",
+        "test_outcome": "No evidence of acute intracranial abnormalities, normal brain morphology, no lesions detected.",
+        "viewer_output": "MRI scan completed. Results will be reviewed by your doctor."
+      },
+      "tools_used": [
+        "get_test_context",
+        "final_result"
+      ]
+    },
+    {
+      "step": 4,
+      "agent": "Doctor",
+      "summary": "Ordering CT scan of the brain due to ongoing neurological symptoms. Found 1 relevant past case suggesting this approach.",
+      "details": {
+        "diagnosis": null,
+        "recommended_treatment": null,
+        "follow_up_needed": true,
+        "next_step": "order_test",
+        "context_for_next": "Due to ongoing neurological symptoms and past experiences suggesting the need for further imaging, ordering additional tests is indicated.",
+        "ordered_test": "CT scan of the brain",
+        "reasoning": "Given the patient's neurological symptoms of weakness and tingling, and the history of detecting TIAs in similar cases, a CT scan is warranted despite a previous normal MRI. This approach aligns with past experiences that recommend imaging for differentiating conditions like TIA from more severe neurological events.  Similar cases indicated a CT scan for related symptoms with successful detection.",
+        "tests_completed_count": 1,
+        "learning_principles_used": "Used case #2: Transient Ischemic Attack (TIA) requires imaging for detection.",
+        "viewer_output": "Ordering CT scan of the brain due to ongoing neurological symptoms. Found 1 relevant past case suggesting this approach."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 5,
+      "agent": "Lab",
+      "summary": "CT scan completed. Results will be reviewed by your doctor.",
+      "details": {
+        "tests_ran": "CT scan of the brain",
+        "test_outcome": "No acute intracranial hemorrhage, mild cortical atrophy, ventricles moderately enlarged.",
+        "viewer_output": "CT scan completed. Results will be reviewed by your doctor."
+      },
+      "tools_used": [
+        "get_test_context",
+        "final_result"
+      ]
+    },
+    {
+      "step": 6,
+      "agent": "Doctor",
+      "summary": "Diagnosis: Transient Ischemic Attack (TIA). Found 3 similar cases with successful outcomes. Treatment: Initiate antiplatelet therapy and manage risk factors.",
+      "details": {
+        "diagnosis": "Transient Ischemic Attack (TIA)",
+        "recommended_treatment": "Initiate antiplatelet therapy and manage risk factors such as hypertension and hyperlipidemia. Schedule a follow-up visit for monitoring and further evaluation.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "",
+        "ordered_test": null,
+        "reasoning": "Based on the patient's ongoing neurological symptoms and semi-urgent assessment, I identified similar cases suggesting the need for imaging to rule out conditions like TIA. Having already completed an MRI and CT without acute findings, the diagnosis of TIA aligns with the presented symptoms and past cases. Treatment will involve managing risk factors for stroke and regular monitoring. Confidence in this diagnosis is supported by 4 similar cases and relevant past experiences indicating the importance of timely neurological assessment.",
+        "tests_completed_count": 2,
+        "learning_principles_used": "Used case #3: Diagnosis of Transient Ischemic Attack with successful outcomes from imaging; informed treatment plan accordingly.",
+        "viewer_output": "Diagnosis: Transient Ischemic Attack (TIA). Found 3 similar cases with successful outcomes. Treatment: Initiate antiplatelet therapy and manage risk factors."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 7,
+      "agent": "Reflection",
+      "summary": "Learned: Weakness in legs and tingling sensation in fingers requires proper neurological evaluation. This will improve future Guillain-Barr\u00e9 syndrome diagnoses.",
+      "details": {
+        "principle_text": "Weakness in legs and tingling sensation in fingers requires comprehensive neurological evaluation, including lumbar puncture and EMG, to rule out Guillain-Barr\u00e9 syndrome.",
+        "reasoning": "Misdiagnosing TIA for Guillain-Barr\u00e9 syndrome can lead to inadequate treatment; a proper neurological assessment is necessary to prevent serious complications.",
+        "confidence": 0.9,
+        "viewer_output": "Learned: Weakness in legs and tingling sensation in fingers requires proper neurological evaluation. This will improve future Guillain-Barr\u00e9 syndrome diagnoses."
+      },
+      "tools_used": []
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "Transient Ischemic Attack (TIA)",
+    "recommended_treatment": "Initiate antiplatelet therapy and manage risk factors such as hypertension and hyperlipidemia. Schedule a follow-up visit for monitoring and further evaluation.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "",
+    "ordered_test": null,
+    "reasoning": "Based on the patient's ongoing neurological symptoms and semi-urgent assessment, I identified similar cases suggesting the need for imaging to rule out conditions like TIA. Having already completed an MRI and CT without acute findings, the diagnosis of TIA aligns with the presented symptoms and past cases. Treatment will involve managing risk factors for stroke and regular monitoring. Confidence in this diagnosis is supported by 4 similar cases and relevant past experiences indicating the importance of timely neurological assessment.",
+    "tests_completed_count": 2,
+    "learning_principles_used": "Used case #3: Diagnosis of Transient Ischemic Attack with successful outcomes from imaging; informed treatment plan accordingly.",
+    "viewer_output": "Diagnosis: Transient Ischemic Attack (TIA). Found 3 similar cases with successful outcomes. Treatment: Initiate antiplatelet therapy and manage risk factors."
+  },
+  "total_steps": 6,
+  "is_correct": false,
+  "validation_reason": "Clear mismatch: 'transient ischemic attack' != 'guillain barre syndrome'"
+}

@@ -1,0 +1,134 @@
+{
+  "patient": {
+    "name": "Will White",
+    "age": 34,
+    "gender": "Male",
+    "symptoms": [
+      "dry cough",
+      "mild fever",
+      "muscle aches",
+      "occasional chills",
+      "shortness of breath after exertion",
+      "slight headache"
+    ],
+    "medical_history": "Non-smoker, works in a hospital setting, asthma diagnosed at age 18 but well controlled",
+    "current_medications": [
+      "inhaler (albuterol) as needed"
+    ],
+    "firstName": "Will",
+    "lastName": "White"
+  },
+  "actual_disease": "severe_acute_respiratory_syndrome_sars",
+  "department": "Respiratory",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "summary": "Triaged as URGENT. Patient presenting with shortness of breath after exertion and mild fever. Sent to doctor for further evaluation.",
+      "details": {
+        "urgency": "urgent",
+        "triage_reasoning": "Patient presents with shortness of breath after exertion and mild fever with associated symptoms, indicating a potential respiratory infection exacerbating asthma.",
+        "vital_signs_concern": false,
+        "notes": "The patient has a history of asthma, which may increase the risk due to respiratory symptoms.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "Assess further for possible asthma exacerbation and pneumonia.",
+        "viewer_output": "Triaged as URGENT. Patient presenting with shortness of breath after exertion and mild fever. Sent to doctor for further evaluation."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "summary": "Ordering chest X-ray from X-Ray Room due to potential pneumonia or asthma exacerbation. Found 4 relevant experiences suggesting this approach.",
+      "details": {
+        "diagnosis": null,
+        "recommended_treatment": null,
+        "follow_up_needed": null,
+        "next_step": "order_test",
+        "context_for_next": "ordering tests to rule out asthma exacerbation and pneumonia due to symptoms and relevant experiences.",
+        "ordered_test": "chest X-ray",
+        "reasoning": "Ordering chest X-ray from X-Ray Room due to shortness of breath and mild fever, which may indicate pneumonia or an asthma exacerbation. Found 4 relevant experiences suggesting imaging is critical in similar respiratory cases.",
+        "tests_completed_count": 0,
+        "learning_principles_used": "Used case #1: Asthma exacerbation with successful outcome; Applied principle: Imaging recommended for respiratory concerns.",
+        "viewer_output": "Ordering chest X-ray from X-Ray Room due to potential pneumonia or asthma exacerbation. Found 4 relevant experiences suggesting this approach."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "Lab",
+      "summary": "X-ray imaging done. Results being analyzed.",
+      "details": {
+        "tests_ran": "chest X-ray",
+        "test_outcome": "Mediastinal widening, bilateral infiltrates, ground-glass opacities noted.",
+        "viewer_output": "X-ray imaging done. Results being analyzed."
+      },
+      "tools_used": [
+        "get_test_context",
+        "final_result"
+      ]
+    },
+    {
+      "step": 4,
+      "agent": "Doctor",
+      "summary": "Diagnosis: pneumonia exacerbating asthma. Found 3 similar cases with successful outcomes. Treatment: Initiate bronchodilator therapy and consider corticosteroids, start antibiotics for pneumonia.",
+      "details": {
+        "diagnosis": "pneumonia exacerbating asthma",
+        "recommended_treatment": "Initiate bronchodilator therapy and consider corticosteroids. Start antibiotics for pneumonia treatment.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "",
+        "ordered_test": null,
+        "reasoning": "Found 3 similar cases of asthma exacerbation and pneumonia with successful outcomes. Current symptoms and chest X-ray findings indicate pneumonia; treatment plan targets both asthma and pneumonia.",
+        "tests_completed_count": 1,
+        "learning_principles_used": "Used case #1: asthma exacerbation was successful with no tests performed in a similar case.",
+        "viewer_output": "Diagnosis: pneumonia exacerbating asthma. Found 3 similar cases with successful outcomes. Treatment: Initiate bronchodilator therapy and consider corticosteroids, start antibiotics for pneumonia."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 5,
+      "agent": "Reflection",
+      "summary": "Learned: Dry cough and fever must prompt consideration for SARS testing to prevent misdiagnosis. This will improve future viral respiratory infection diagnoses.",
+      "details": {
+        "principle_text": "Dry cough, fever, muscle aches, and shortness of breath after exertion require testing for SARS to rule out viral infections before diagnosing pneumonia or asthma exacerbation.",
+        "reasoning": "Misinterpretation of respiratory symptoms led to a delay in diagnosing SARS, which requires different management than pneumonia or asthma.",
+        "confidence": 0.9,
+        "viewer_output": "Learned: Dry cough and fever must prompt consideration for SARS testing to prevent misdiagnosis. This will improve future viral respiratory infection diagnoses."
+      },
+      "tools_used": []
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "pneumonia exacerbating asthma",
+    "recommended_treatment": "Initiate bronchodilator therapy and consider corticosteroids. Start antibiotics for pneumonia treatment.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "",
+    "ordered_test": null,
+    "reasoning": "Found 3 similar cases of asthma exacerbation and pneumonia with successful outcomes. Current symptoms and chest X-ray findings indicate pneumonia; treatment plan targets both asthma and pneumonia.",
+    "tests_completed_count": 1,
+    "learning_principles_used": "Used case #1: asthma exacerbation was successful with no tests performed in a similar case.",
+    "viewer_output": "Diagnosis: pneumonia exacerbating asthma. Found 3 similar cases with successful outcomes. Treatment: Initiate bronchodilator therapy and consider corticosteroids, start antibiotics for pneumonia."
+  },
+  "total_steps": 4,
+  "is_correct": false,
+  "validation_reason": "Clear mismatch: 'pneumonia exacerbating asthma' != 'acute respiratory syndrome sars'"
+}

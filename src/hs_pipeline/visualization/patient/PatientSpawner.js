@@ -31,7 +31,9 @@ export class PatientSpawner {
         try {
             const response = await fetch('./assets/simulation_results/');
             const html = await response.text();
-            const regex = /sim_\d+_.*?\.json/g;
+
+            // Match *any* .json file in the folder
+            const regex = /[A-Za-z0-9_\-]+\.json/g;
             const matches = html.match(regex);
             return matches ? [...new Set(matches)] : [];
         } catch (error) {
@@ -39,6 +41,7 @@ export class PatientSpawner {
             return [];
         }
     }
+
 
     /**
      * Load a specific case file

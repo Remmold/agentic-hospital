@@ -1,0 +1,124 @@
+{
+  "patient": {
+    "name": "Quinn Price",
+    "age": 62,
+    "gender": "Male",
+    "symptoms": [
+      "difficulty speaking temporarily",
+      "mild weakness in the left arm",
+      "dizziness",
+      "slight confusion",
+      "unexplained fatigue"
+    ],
+    "medical_history": "Hypertension and hyperlipidemia",
+    "current_medications": [
+      "Amlodipine",
+      "Atorvastatin"
+    ],
+    "firstName": "Quinn",
+    "lastName": "Price"
+  },
+  "actual_disease": "transient_ischemic_attack",
+  "department": "Cardiology",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "summary": "Triaged as URGENT. Patient showing symptoms of possible stroke, including difficulty speaking and weakness. Sent to doctor immediately.",
+      "details": {
+        "urgency": "urgent",
+        "triage_reasoning": "Patient displays signs of possible stroke with temporary difficulty speaking, weakness, and confusion.",
+        "vital_signs_concern": true,
+        "notes": "Vital signs should be monitored closely due to concerning neurological symptoms.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "Patient may require neuroimaging and immediate evaluation.",
+        "viewer_output": "Triaged as URGENT. Patient showing symptoms of possible stroke, including difficulty speaking and weakness. Sent to doctor immediately."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "summary": "Diagnosis: Transient Ischemic Attack (TIA). Found 3 similar cases with successful outcomes. Treatment: Immediate referral for neuroimaging and evaluation by a neurologist.",
+      "details": {
+        "diagnosis": "Transient Ischemic Attack (TIA)",
+        "recommended_treatment": "Immediate referral for neuroimaging (CT scan) and evaluation by a neurologist.",
+        "follow_up_needed": true,
+        "next_step": "order_test",
+        "context_for_next": "Urgent neuroimaging needed due to potential stroke.",
+        "ordered_test": "CT scan",
+        "reasoning": "The patient shows symptoms consistent with a Transient Ischemic Attack (TIA). Similar cases demonstrated that immediate neuroimaging is crucial for diagnosis. Urgency is warranted due to potential risk of stroke.",
+        "tests_completed_count": 0,
+        "learning_principles_used": "Used case #1: Patient shows similar symptoms leading to TIA diagnosis with successful outcomes. Applied principle: Immediate evaluation and imaging are vital for stroke differentiation.",
+        "viewer_output": "Diagnosis: Transient Ischemic Attack (TIA). Found 3 similar cases with successful outcomes. Treatment: Immediate referral for neuroimaging and evaluation by a neurologist."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "final_result",
+        "final_result"
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "Lab",
+      "summary": "CT scan completed. Results will be reviewed by your doctor.",
+      "details": {
+        "tests_ran": "CT scan",
+        "test_outcome": "Findings: No acute intracranial hemorrhage, no mass effect, normal ventricular size, slight hypodensity in the right parietal region, no midline shift.",
+        "viewer_output": "CT scan completed. Results will be reviewed by your doctor."
+      },
+      "tools_used": [
+        "get_test_context",
+        "final_result"
+      ]
+    },
+    {
+      "step": 4,
+      "agent": "Doctor",
+      "summary": "Diagnosis: Transient Ischemic Attack (TIA). Found 3 similar cases with successful outcomes. Treatment: Immediate antiplatelet therapy and monitoring.",
+      "details": {
+        "diagnosis": "Transient Ischemic Attack (TIA)",
+        "recommended_treatment": "Immediate antiplatelet therapy and monitoring. Follow-up imaging recommended based on neurologist's evaluation.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "Patient requires urgent treatment due to TIA diagnosis and potential risk of stroke.",
+        "ordered_test": null,
+        "reasoning": "The patient exhibits symptoms indicative of a Transient Ischemic Attack (TIA) with an urgency for neuroimaging due to potential stroke. CT scan results from previous tests show no acute intracranial hemorrhage, but the slight hypodensity in the right parietal region may suggest an underlying issue. Similar cases show consistent outcomes with successful identification and management of TIAs. Risk is high, thus urgent monitoring and treatment are essential.",
+        "tests_completed_count": 1,
+        "learning_principles_used": "Used case #1: Successful management of TIA in similar symptoms. Used case #2: Correlation between CT findings and TIA diagnosis with positive outcomes.",
+        "viewer_output": "Diagnosis: Transient Ischemic Attack (TIA). Found 3 similar cases with successful outcomes. Treatment: Immediate antiplatelet therapy and monitoring."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "final_result",
+        "final_result"
+      ]
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "Transient Ischemic Attack (TIA)",
+    "recommended_treatment": "Immediate antiplatelet therapy and monitoring. Follow-up imaging recommended based on neurologist's evaluation.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "Patient requires urgent treatment due to TIA diagnosis and potential risk of stroke.",
+    "ordered_test": null,
+    "reasoning": "The patient exhibits symptoms indicative of a Transient Ischemic Attack (TIA) with an urgency for neuroimaging due to potential stroke. CT scan results from previous tests show no acute intracranial hemorrhage, but the slight hypodensity in the right parietal region may suggest an underlying issue. Similar cases show consistent outcomes with successful identification and management of TIAs. Risk is high, thus urgent monitoring and treatment are essential.",
+    "tests_completed_count": 1,
+    "learning_principles_used": "Used case #1: Successful management of TIA in similar symptoms. Used case #2: Correlation between CT findings and TIA diagnosis with positive outcomes.",
+    "viewer_output": "Diagnosis: Transient Ischemic Attack (TIA). Found 3 similar cases with successful outcomes. Treatment: Immediate antiplatelet therapy and monitoring."
+  },
+  "total_steps": 4,
+  "is_correct": true,
+  "validation_reason": "Exact match: 'transient ischemic attack'"
+}

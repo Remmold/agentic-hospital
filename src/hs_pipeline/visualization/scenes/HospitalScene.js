@@ -36,12 +36,14 @@ export class HospitalScene extends Phaser.Scene {
 
         const initializer = new SceneInitializer(this);
         initializer.setupManagers();
+        initializer.setupCamera();
         initializer.setupPlayer();
         initializer.setupPathfinding();
         initializer.setupClickToMove();
 
         this.staffManager = new StaffManager(this, this.depthManager);
         this.staffManager.spawnAllStaff();
+        await this.staffManager.initializeEventSystem();
 
         this.glowManager = new GlowManager(this);
         this.patientQueue = new PatientQueueManager(this, this.pathfinding, this.depthManager);

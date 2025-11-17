@@ -9,6 +9,11 @@ load_dotenv()
 PROJECT_ROOT = Path(__file__).parents[1]
 DATA_PATH = PROJECT_ROOT / "extraction" / "data"
 AGENT_JSON_STRUCTURE_PATH = PROJECT_ROOT / "agents" / "json_structures"
+# Directories for nameswitching for patient data 
+INPUT_DIR =  "simulation_results"
+OUTPUT_DIR = PROJECT_ROOT / "visualization" / "assets" / "simulation_results"
+FEMALE_NAMES_FILE = PROJECT_ROOT  / "utils" / "female_names.txt"
+MALE_NAMES_FILE = PROJECT_ROOT  / "utils" / "male_names.txt"
 
 """LLM constants"""
 GEMINI_LLM = 'gemini-2.5-flash' #Currently functions well for agent_loop but 10 calls per minute limit

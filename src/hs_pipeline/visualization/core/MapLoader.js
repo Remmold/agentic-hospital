@@ -10,18 +10,29 @@ export class MapLoader {
      * Load all required assets
      */
     static loadAssets(scene, cacheBuster = '') {
-        // Tilemap and props
-        const propAssets = [
+        // Tilemap & Environment tile sheets
+        const environmentAssets = [
             { type: 'tilemapTiledJSON', key: 'hospitalMap', path: './assets/hospital_tilemap.json' },
-            { type: 'spritesheet', key: 'floors', path: './assets/props/hospital_floors_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
-            { type: 'spritesheet', key: 'walls', path: './assets/props/hospital_walls_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
-            { type: 'spritesheet', key: 'borders', path: './assets/props/hospital_borders_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
+            { type: 'spritesheet', key: 'floors', path: './assets/environment/hospital_floors_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
+            { type: 'spritesheet', key: 'walls', path: './assets/environment/hospital_walls_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
+            { type: 'spritesheet', key: 'borders', path: './assets/environment/hospital_borders_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
+            { type: 'spritesheet', key: 'terrain', path: './assets/environment/terrain_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
+            { type: 'spritesheet', key: 'city_terrain', path: './assets/environment/city_terrain_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
+            { type: 'spritesheet', key: 'hospital_windows', path: './assets/environment/hospital_windows_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
+            { type: 'spritesheet', key: 'generic_buildings', path: './assets/environment/generic_buildings_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
+        ];
+
+        // Props, Doors & Room Labels
+        const propAssets = [
             { type: 'spritesheet', key: 'hospital_props', path: './assets/props/hospital_props_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
-            { type: 'spritesheet', key: 'hospital_windows', path: './assets/props/hospital_windows_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
+            { type: 'spritesheet', key: 'city_props', path: './assets/props/city_props_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
             { type: 'spritesheet', key: 'generic_props', path: './assets/props/generic_props_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
             { type: 'spritesheet', key: 'grocery_props', path: './assets/props/grocery_props_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
+            // Doors
             { type: 'spritesheet', key: 'wooden_door', path: './assets/doors/animated_door_big_5_32x32.png', config: { frameWidth: 32, frameHeight: 96 } },
             { type: 'spritesheet', key: 'surgery_door', path: './assets/doors/animated_hospital_surgery_door_32x32.png', config: { frameWidth: 64, frameHeight: 96 } },
+            { type: 'spritesheet', key: 'condo_door', path: './assets/doors/animated_condo_door_32x32.png', config: { frameWidth: 32, frameHeight: 70 } },
+            // Room Labels
             { type: 'spritesheet', key: 'room_labels', path: './assets/labels/room_labels_32x32.png', config: { frameWidth: 32, frameHeight: 32 } },
         ];
 
@@ -39,7 +50,7 @@ export class MapLoader {
         ];
 
         // Combine all assets
-        const allAssets = [...propAssets, ...patientAssets, ...doctorAssets, ...nurseAssets, ...otherCharacterAssets];
+        const allAssets = [...environmentAssets, ...propAssets, ...patientAssets, ...doctorAssets, ...nurseAssets, ...otherCharacterAssets];
 
         // Clear cache for all keys (only if they exist)
         const keysToRemove = allAssets.map(a => a.key);
@@ -104,10 +115,14 @@ export class MapLoader {
             map.addTilesetImage('floors', 'floors'),
             map.addTilesetImage('walls', 'walls'),
             map.addTilesetImage('borders', 'borders'),
+            map.addTilesetImage('terrain', 'terrain'),
+            map.addTilesetImage('city_terrain', 'city_terrain'),
             map.addTilesetImage('hospital_props', 'hospital_props'),
             map.addTilesetImage('hospital_windows', 'hospital_windows'),
+            map.addTilesetImage('generic_buildings', 'generic_buildings'),
             map.addTilesetImage('generic_props', 'generic_props'),
             map.addTilesetImage('grocery_props', 'grocery_props'),
+            map.addTilesetImage('city_props', 'city_props'),
             map.addTilesetImage('room_labels', 'room_labels'),
         ];
     }
@@ -125,6 +140,7 @@ export class MapLoader {
             { name: 'props', key: 'props', depth: 60 },
             { name: 'props_dynamic_in_front', key: 'propsDynamicInFront', depth: 70 },
             { name: 'props_in_front', key: 'propsInFront', depth: 10000 },
+            { name: 'buildings', key: 'buildings', depth: 10001 },
             { name: 'wall_inside', key: 'wallInside', depth: 30000 },
             { name: 'labels', key: 'room_labels', depth: 30000 },
             { name: 'wall_in_front', key: 'wallInFront', depth: 30001 },

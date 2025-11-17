@@ -120,6 +120,24 @@ export class AnimationManager {
         });
     }
 
+    static createCondoDoorAnims(scene) {
+        if (scene.anims.exists('condo_door_open')) return;
+
+        scene.anims.create({
+            key: 'condo_door_open',
+            frames: scene.anims.generateFrameNumbers('condo_door', { start: 0, end: 7 }),
+            frameRate: 8,
+            repeat: 0,
+        });
+
+        scene.anims.create({
+            key: 'condo_door_close',
+            frames: scene.anims.generateFrameNumbers('condo_door', { frames: [7, 8, 9, 10, 11, 12, 13, 0] }),
+            frameRate: 8,
+            repeat: 0,
+        });
+    }
+
     /**
      * Play phone animation sequence (pickup, hold loop, putdown on demand)
      */

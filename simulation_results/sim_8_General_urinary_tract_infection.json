@@ -1,0 +1,82 @@
+{
+  "patient": {
+    "name": "Jessica Thompson",
+    "age": 29,
+    "gender": "Female",
+    "symptoms": [
+      "mild abdominal discomfort",
+      "frequent urge to urinate",
+      "slight burning sensation during urination",
+      "intermittent back pain",
+      "feeling of fullness in the bladder"
+    ],
+    "medical_history": "History of mild anxiety and occasional headaches",
+    "current_medications": [
+      "Ibuprofen"
+    ]
+  },
+  "actual_disease": "urinary_tract_infection",
+  "department": "General",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "summary": "Triaged as SEMI_URGENT. Patient presents with mild abdominal discomfort and urinary symptoms. Scheduled for evaluation by a doctor.",
+      "details": {
+        "urgency": "semi_urgent",
+        "triage_reasoning": "Patient's symptoms include mild abdominal discomfort, urinary issues, and back pain, indicating a possible urinary tract infection or other mild gastrointestinal issue.",
+        "vital_signs_concern": false,
+        "notes": "There are no critical or alarming symptoms present, but the urinary symptoms necessitate a timely evaluation.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "Patient should be seen by a doctor to evaluate urinary symptoms and rule out infection.",
+        "viewer_output": "Triaged as SEMI_URGENT. Patient presents with mild abdominal discomfort and urinary symptoms. Scheduled for evaluation by a doctor."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "summary": "Diagnosis: urinary tract infection. Found 3 similar cases with successful outcomes. Treatment: prescribe antibiotics and increase fluid intake.",
+      "details": {
+        "diagnosis": "urinary tract infection",
+        "recommended_treatment": "prescribe antibiotics, recommend increased fluid intake, and monitor symptoms for improvement",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "Evaluate response to treatment and consider further testing if symptoms persist.",
+        "ordered_test": null,
+        "reasoning": "The patient's symptoms of mild abdominal discomfort, urinary symptoms, and back pain suggest a urinary tract infection. Findings from similar cases support this diagnosis. The nursing assessment indicated semi-urgent care, emphasizing the need for treatment rather than immediate testing.",
+        "tests_completed_count": 0,
+        "learning_principles_used": "Used case #1: urinary infection with similar symptoms leading to a successful outcome.",
+        "viewer_output": "Diagnosis: urinary tract infection. Found 3 similar cases with successful outcomes. Treatment: prescribe antibiotics and increase fluid intake."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "final_result",
+        "final_result"
+      ]
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "urinary tract infection",
+    "recommended_treatment": "prescribe antibiotics, recommend increased fluid intake, and monitor symptoms for improvement",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "Evaluate response to treatment and consider further testing if symptoms persist.",
+    "ordered_test": null,
+    "reasoning": "The patient's symptoms of mild abdominal discomfort, urinary symptoms, and back pain suggest a urinary tract infection. Findings from similar cases support this diagnosis. The nursing assessment indicated semi-urgent care, emphasizing the need for treatment rather than immediate testing.",
+    "tests_completed_count": 0,
+    "learning_principles_used": "Used case #1: urinary infection with similar symptoms leading to a successful outcome.",
+    "viewer_output": "Diagnosis: urinary tract infection. Found 3 similar cases with successful outcomes. Treatment: prescribe antibiotics and increase fluid intake."
+  },
+  "total_steps": 2,
+  "is_correct": true,
+  "validation_reason": "Exact match: 'urinary tract infection'"
+}

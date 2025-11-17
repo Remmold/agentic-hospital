@@ -1,0 +1,95 @@
+{
+  "patient": {
+    "name": "Kinsley Adams",
+    "age": 64,
+    "gender": "Female",
+    "symptoms": [
+      "occasional discomfort during bowel movements",
+      "feeling of fullness in the rectal area",
+      "intermittent anal itching",
+      "brief episodes of noticeable swelling after bowel movements"
+    ],
+    "medical_history": "history of chronic constipation",
+    "current_medications": [
+      "fiber supplement",
+      "occasional laxative"
+    ],
+    "firstName": "Kinsley",
+    "lastName": "Adams"
+  },
+  "actual_disease": "rectal_prolapse",
+  "department": "Gastroenterology",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "summary": "Triaged as NON_URGENT. Patient experiencing occasional discomfort during bowel movements with a history of chronic constipation. Routine evaluation scheduled with the doctor.",
+      "details": {
+        "urgency": "non_urgent",
+        "triage_reasoning": "Patient is presenting with mild discomfort and intermittent issues that are consistent with a chronic condition. No acute or life-threatening symptoms are present.",
+        "vital_signs_concern": false,
+        "notes": "Patient has a history of chronic constipation and is on a fiber supplement and occasional laxative. The symptoms are manageable and indicate a non-critical issue.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "Patient can wait for a routine evaluation.",
+        "viewer_output": "Triaged as NON_URGENT. Patient experiencing occasional discomfort during bowel movements with a history of chronic constipation. Routine evaluation scheduled with the doctor."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "summary": "Diagnosis: mild gastrointestinal issues. Found 3 similar cases with successful outcomes. Treatment: Recommend dietary adjustments and symptomatic treatment.",
+      "details": {
+        "diagnosis": "mild gastrointestinal issues",
+        "recommended_treatment": "Recommend dietary adjustments and symptomatic treatment for mild gastrointestinal discomfort. Follow up if symptoms persist or worsen.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "Patient presents with mild abdominal discomfort, aligned with similar cases suggesting minor gastro issues. Monitor for potential escalation.",
+        "ordered_test": null,
+        "reasoning": "The patient presents with mild abdominal discomfort, which aligns with several similar cases indicating mild gastrointestinal issues. Past experiences also suggest careful monitoring is essential to avoid potential complications. No tests have been run yet, but based on similar cases, the diagnosis is likely correct and confident enough not to order tests immediately.",
+        "tests_completed_count": 0,
+        "learning_principles_used": "Used case #1: Mild gastrointestinal discomfort treated successfully without tests. Used case #2: Similar presentation led to successful UTI diagnosis without tests.",
+        "viewer_output": "Diagnosis: mild gastrointestinal issues. Found 3 similar cases with successful outcomes. Treatment: Recommend dietary adjustments and symptomatic treatment."
+      },
+      "tools_used": [
+        "get_lab_results",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "final_result",
+        "final_result"
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "Reflection",
+      "summary": "Learned: Occasional discomfort during bowel movements with a feeling of fullness in the rectal area requires evaluation for rectal prolapse. This will improve future rectal condition diagnoses.",
+      "details": {
+        "principle_text": "Occasional discomfort during bowel movements with a feeling of fullness in the rectal area requires evaluation for rectal prolapse. This ensures timely diagnosis to prevent complications associated with untreated prolapse.",
+        "reasoning": "The initial assessment dismissed serious conditions due to a vague description of symptoms, leading to a lack of necessary examination or diagnostic tests.",
+        "confidence": 0.9,
+        "viewer_output": "Learned: Occasional discomfort during bowel movements with a feeling of fullness in the rectal area requires evaluation for rectal prolapse. This will improve future rectal condition diagnoses."
+      },
+      "tools_used": []
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "mild gastrointestinal issues",
+    "recommended_treatment": "Recommend dietary adjustments and symptomatic treatment for mild gastrointestinal discomfort. Follow up if symptoms persist or worsen.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "Patient presents with mild abdominal discomfort, aligned with similar cases suggesting minor gastro issues. Monitor for potential escalation.",
+    "ordered_test": null,
+    "reasoning": "The patient presents with mild abdominal discomfort, which aligns with several similar cases indicating mild gastrointestinal issues. Past experiences also suggest careful monitoring is essential to avoid potential complications. No tests have been run yet, but based on similar cases, the diagnosis is likely correct and confident enough not to order tests immediately.",
+    "tests_completed_count": 0,
+    "learning_principles_used": "Used case #1: Mild gastrointestinal discomfort treated successfully without tests. Used case #2: Similar presentation led to successful UTI diagnosis without tests.",
+    "viewer_output": "Diagnosis: mild gastrointestinal issues. Found 3 similar cases with successful outcomes. Treatment: Recommend dietary adjustments and symptomatic treatment."
+  },
+  "total_steps": 2,
+  "is_correct": false,
+  "validation_reason": "Clear mismatch: 'gastrointestinal issues' != 'rectal prolapse'"
+}

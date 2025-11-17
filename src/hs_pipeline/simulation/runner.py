@@ -25,6 +25,26 @@ from hs_pipeline.database_management.db_manager import get_db
 from hs_pipeline.agents.reflection_agent import create_learning_principle
 
 
+def get_test_room_type(test_name: str) -> str:
+    """Identify which room type a test belongs to."""
+    test_lower = test_name.lower()
+    
+    # MRI Room
+    if any(term in test_lower for term in ["mri", "fmri", "mra", "magnetic resonance"]):
+        return "MRI Room"
+    
+    # X-Ray Room
+    if any(term in test_lower for term in ["x-ray", "xray", "x ray", "radiography"]):
+        return "X-Ray Room"
+    
+    # CT Scan Room
+    if any(term in test_lower for term in ["ct scan", "ct", "computed tomography", "cat scan"]):
+        return "CT Scan Room"
+    
+    # General Lab (everything else)
+    return "General Lab"
+
+
 def format_timeline_for_viewer(timeline: list) -> list:
     """Convert internal timeline to viewer-friendly format."""
     viewer_timeline = []
@@ -123,6 +143,11 @@ class SimulationRunner:
                 "tools_used": extract_tool_calls(result)
             })
             
+            # Display learning principles if doctor used them
+            if current_agent_name == "Doctor" and hasattr(result.output, 'learning_principles_used'):
+                if result.output.learning_principles_used:
+                    print(f"  📚 Database helped: {result.output.learning_principles_used}")
+            
             # Check completion
             if result.output.next_step in ["finish_chain", "discharge"]:
                 print("Done!")
@@ -184,6 +209,8 @@ class SimulationRunner:
                     continue
                 
                 print(f"  Ordering: {result.output.ordered_test}")
+                room_type = get_test_room_type(result.output.ordered_test)
+                print(f"  🏥 Room: {room_type}")
                 ordered_tests.add(requested_test)
                 
                 lab_result = run_agent_with_retry(
@@ -358,7 +385,7 @@ class SimulationRunner:
 
 
 if __name__ == "__main__":    
-    NUM_SIMULATIONS = 10
+    NUM_SIMULATIONS = 20
     TARGET_DEPARTMENT = None  # or None for random
     
     runner = SimulationRunner()

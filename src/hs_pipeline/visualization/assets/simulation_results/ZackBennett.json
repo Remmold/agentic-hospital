@@ -1,0 +1,95 @@
+{
+  "patient": {
+    "name": "Zack Bennett",
+    "age": 42,
+    "gender": "Male",
+    "symptoms": [
+      "knee discomfort",
+      "slight swelling",
+      "intermittent clicking sound",
+      "mild instability while walking"
+    ],
+    "medical_history": "History of moderate osteoarthritis in knees",
+    "current_medications": [
+      "Ibuprofen",
+      "Glucosamine"
+    ],
+    "firstName": "Zack",
+    "lastName": "Bennett"
+  },
+  "actual_disease": "meniscus_tear",
+  "department": "Orthopedics",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "summary": "Triaged as SEMI_URGENT. Patient experiencing knee discomfort, slight swelling, and instability while walking. Sent to doctor for evaluation.",
+      "details": {
+        "urgency": "semi_urgent",
+        "triage_reasoning": "Patient exhibiting symptoms of knee discomfort and slight swelling, along with a medical history of moderate osteoarthritis, indicating a need for evaluation within the next hour.",
+        "vital_signs_concern": false,
+        "notes": "Patient's current medications include Ibuprofen and Glucosamine, which are appropriate for osteoarthritis management. Stability issues while walking warrant attention.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "medical evaluation for knee condition",
+        "viewer_output": "Triaged as SEMI_URGENT. Patient experiencing knee discomfort, slight swelling, and instability while walking. Sent to doctor for evaluation."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "summary": "Diagnosis: Patellofemoral pain syndrome. Found 3 similar cases with successful outcomes. Treatment: Physical therapy and NSAIDs.",
+      "details": {
+        "diagnosis": "Patellofemoral pain syndrome",
+        "recommended_treatment": "Physical therapy focused on strengthening and flexibility, followed by pain management with NSAIDs.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "",
+        "ordered_test": null,
+        "reasoning": "The patient presents with symptoms of knee discomfort and slight swelling, corroborated by similar cases of patellofemoral pain syndrome. Search for past experiences reinforces this diagnosis, pointing towards necessary physical therapy. Found 3 similar cases with successful outcomes for knee-related issues.",
+        "tests_completed_count": 0,
+        "learning_principles_used": "Used case #2: Case of knee discomfort assessments for correct diagnosis.",
+        "viewer_output": "Diagnosis: Patellofemoral pain syndrome. Found 3 similar cases with successful outcomes. Treatment: Physical therapy and NSAIDs."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "final_result"
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "Reflection",
+      "summary": "Learned: Knee discomfort with swelling and clicking requires MRI to rule out meniscus tear. This will improve future diagnoses of meniscus injuries.",
+      "details": {
+        "principle_text": "Knee discomfort with swelling, clicking, and mild instability requires MRI to evaluate for meniscus tear. Early imaging can differentiate between patellofemoral pain syndrome and meniscus injury.",
+        "reasoning": "The initial diagnosis overlooked the typical symptoms of meniscus tear and did not include imaging to confirm, leading to a misdiagnosis.",
+        "confidence": 0.9,
+        "viewer_output": "Learned: Knee discomfort with swelling and clicking requires MRI to rule out meniscus tear. This will improve future diagnoses of meniscus injuries."
+      },
+      "tools_used": []
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "Patellofemoral pain syndrome",
+    "recommended_treatment": "Physical therapy focused on strengthening and flexibility, followed by pain management with NSAIDs.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "",
+    "ordered_test": null,
+    "reasoning": "The patient presents with symptoms of knee discomfort and slight swelling, corroborated by similar cases of patellofemoral pain syndrome. Search for past experiences reinforces this diagnosis, pointing towards necessary physical therapy. Found 3 similar cases with successful outcomes for knee-related issues.",
+    "tests_completed_count": 0,
+    "learning_principles_used": "Used case #2: Case of knee discomfort assessments for correct diagnosis.",
+    "viewer_output": "Diagnosis: Patellofemoral pain syndrome. Found 3 similar cases with successful outcomes. Treatment: Physical therapy and NSAIDs."
+  },
+  "total_steps": 2,
+  "is_correct": false,
+  "validation_reason": "Clear mismatch: 'patellofemoral pain syndrome' != 'meniscus tear'"
+}

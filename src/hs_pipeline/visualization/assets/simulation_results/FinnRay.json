@@ -1,0 +1,134 @@
+{
+  "patient": {
+    "name": "Finn Ray",
+    "age": 45,
+    "gender": "Male",
+    "symptoms": [
+      "redness in left leg",
+      "mild swelling",
+      "slight warmth in the area",
+      "tenderness when touched",
+      "fatigue"
+    ],
+    "medical_history": "hypertension, recent insect bite on left leg",
+    "current_medications": [
+      "lisinopril"
+    ],
+    "firstName": "Finn",
+    "lastName": "Ray"
+  },
+  "actual_disease": "cellulitis",
+  "department": "General",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "summary": "Triaged as SEMI_URGENT. Patient reports redness, swelling, and tenderness in the left leg after an insect bite. Sent to doctor for further evaluation.",
+      "details": {
+        "urgency": "semi_urgent",
+        "triage_reasoning": "Patient exhibits mild swelling, redness, and tenderness in the left leg following a recent insect bite, indicating a potential localized infection or inflammatory process that requires further evaluation.",
+        "vital_signs_concern": false,
+        "notes": "Monitor for any signs of infection or worsening symptoms.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "Patient needs assessment for possible infection or thrombosis.",
+        "viewer_output": "Triaged as SEMI_URGENT. Patient reports redness, swelling, and tenderness in the left leg after an insect bite. Sent to doctor for further evaluation."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "summary": "Ordering ultrasound of the leg due to concern for infection or thrombosis following an insect bite. This decision aligns with evaluation protocols for similar presentations.",
+      "details": {
+        "diagnosis": null,
+        "recommended_treatment": null,
+        "follow_up_needed": true,
+        "next_step": "order_test",
+        "context_for_next": "Infection or thrombosis assessment needed based on symptoms after insect bite.",
+        "ordered_test": "ultrasound of the leg",
+        "reasoning": "Ordering ultrasound of the leg to assess for possible thrombosis or localized infection due to swelling and tenderness in the left leg after an insect bite. Found 0 relevant past cases suggesting this approach, but symptoms match common practices for assessment and management.",
+        "tests_completed_count": 0,
+        "learning_principles_used": "Applied principle: Assessment of symptoms aligned with established practices for insect bites and potential complications.",
+        "viewer_output": "Ordering ultrasound of the leg due to concern for infection or thrombosis following an insect bite. This decision aligns with evaluation protocols for similar presentations."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "Lab",
+      "summary": "Ultrasound completed. Results will be reviewed by your healthcare provider.",
+      "details": {
+        "tests_ran": "ultrasound of the leg",
+        "test_outcome": "Fluid collection: 3.2 cm, Vascularity: increased, Skin thickness: 4.5 mm",
+        "viewer_output": "Ultrasound completed. Results will be reviewed by your healthcare provider."
+      },
+      "tools_used": [
+        "get_test_context",
+        "final_result"
+      ]
+    },
+    {
+      "step": 4,
+      "agent": "Doctor",
+      "summary": "Diagnosis: Localized infection due to insect bite with potential cellulitis. Found 3 similar cases with successful outcomes. Treatment: Initiate antibiotics and monitor for further symptoms.",
+      "details": {
+        "diagnosis": "Localized infection due to insect bite with potential cellulitis.",
+        "recommended_treatment": "Initiate antibiotics and monitor for further symptoms of spread or systemic infection. ELEVATE the leg and apply cool compresses to reduce swelling.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "Based on the assessment, initiate intervention for the localized infection.",
+        "ordered_test": null,
+        "reasoning": "Urgent assessment indicated mild swelling and redness after an insect bite, with prior ultrasound showing fluid collection and increased vascularity. High confidence in diagnosis based upon similar cases, although the exact cause of redness and tenderness may need monitoring. Past experiences suggest taking appropriate measures for localized infections.",
+        "tests_completed_count": 1,
+        "learning_principles_used": "Used case #2: [Pulmonary embolism with comparison to possible thrombosis symptoms].",
+        "viewer_output": "Diagnosis: Localized infection due to insect bite with potential cellulitis. Found 3 similar cases with successful outcomes. Treatment: Initiate antibiotics and monitor for further symptoms."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 5,
+      "agent": "Reflection",
+      "summary": "Learned: Localized redness, swelling, and warmth post-insect bite requires evaluation for cellulitis. This will improve future cellulitis diagnoses.",
+      "details": {
+        "principle_text": "Localized redness, swelling, and warmth post-insect bite requires evaluation for cellulitis via imaging or examination. Prompt recognition ensures adequate treatment and prevents complications.",
+        "reasoning": "Misdiagnosis occurred due to failure to fully assess the severity of symptoms indicating active cellulitis.",
+        "confidence": 0.9,
+        "viewer_output": "Learned: Localized redness, swelling, and warmth post-insect bite requires evaluation for cellulitis. This will improve future cellulitis diagnoses."
+      },
+      "tools_used": []
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "Localized infection due to insect bite with potential cellulitis.",
+    "recommended_treatment": "Initiate antibiotics and monitor for further symptoms of spread or systemic infection. ELEVATE the leg and apply cool compresses to reduce swelling.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "Based on the assessment, initiate intervention for the localized infection.",
+    "ordered_test": null,
+    "reasoning": "Urgent assessment indicated mild swelling and redness after an insect bite, with prior ultrasound showing fluid collection and increased vascularity. High confidence in diagnosis based upon similar cases, although the exact cause of redness and tenderness may need monitoring. Past experiences suggest taking appropriate measures for localized infections.",
+    "tests_completed_count": 1,
+    "learning_principles_used": "Used case #2: [Pulmonary embolism with comparison to possible thrombosis symptoms].",
+    "viewer_output": "Diagnosis: Localized infection due to insect bite with potential cellulitis. Found 3 similar cases with successful outcomes. Treatment: Initiate antibiotics and monitor for further symptoms."
+  },
+  "total_steps": 4,
+  "is_correct": false,
+  "validation_reason": "Clear mismatch: 'localized infection due to insect bite' != 'cellulitis'"
+}

@@ -20,6 +20,19 @@ import { LOCATIONS } from '../core/Constants.js';
  */
 export const STAFF_CONFIG = [
     // Doctors Office - Main Doctor
+    
+    // {
+    //     id: 'testbro',                                                           //Uncomment testbro to test locations ;)
+    //     spritesheet: 'doctor_1',
+    //     initialPosition: { ...LOCATIONS.DOCTORS_OFFICE.DOCTORS_CHAIR },
+    //     patrol: [
+    //         { ...LOCATIONS.WAITING_ROOM.NURSE_GREETING_SPOT, idleMs: 7000, idleDirection: 'right' },
+    //         { ...LOCATIONS.NURSE_OFFICE.NURSE_BY_PATIENT_SEAT, idleMs: 6000, idleDirection: 'left' },
+    //     ],
+    //     idleAction: 'idle',
+    //     idleDirection: 'down',
+    //     idleMs: 3000
+    // },
     {
         id: 'doctor_1',
         spritesheet: 'doctor_1',
@@ -51,7 +64,9 @@ export const STAFF_CONFIG = [
         initialPosition: { ...LOCATIONS.LAB.NURSE_POSITION },
         patrol: [
             { ...LOCATIONS.LAB.BIG_MACHINE, idleMs: 5000, idleDirection: 'up' },
-            { ...LOCATIONS.LAB.SMALL_MACHINE, idleMs: 5000 }
+            { ...LOCATIONS.LAB.SMALL_MACHINE, idleMs: 5000,idleDirection:'up' },
+            { ...LOCATIONS.LAB.BIG_MACHINE, idleMs: 5000, idleDirection: 'up' },
+            { ...LOCATIONS.LAB.COMPUTER, idleMs: 5000,idleDirection:'down' }
         ],
         idleAction: 'idle',
         idleDirection: 'right'
@@ -60,11 +75,11 @@ export const STAFF_CONFIG = [
     // Examination Nurse - Stationary in nurse office
     {
         id: 'examination_nurse',
-        spritesheet: 'nurse_5',
-        initialPosition: { ...LOCATIONS.NURSE_OFFICE.NURSE_BY_PATIENT_SEAT },
+        spritesheet: 'nurse_2',
+        initialPosition: { ...LOCATIONS.NURSE_OFFICE.NURSE_DESK },
         patrol: false,
         idleAction: 'idle',
-        idleDirection: 'left'
+        idleDirection: 'down'
     },
 
     // MRI Technician - Stationary at MRI control station
@@ -80,7 +95,7 @@ export const STAFF_CONFIG = [
     // Reception - Left Desk
     {
         id: 'receptionist_1',
-        spritesheet: 'nurse_2',
+        spritesheet: 'nurse_3',
         initialPosition: { ...LOCATIONS.RECEPTION.LEFT_COMPUTER },
         patrol: false,
         idleAction: 'idle',
@@ -91,7 +106,7 @@ export const STAFF_CONFIG = [
     // Reception - Right Desk
     {
         id: 'receptionist_2',
-        spritesheet: 'nurse_3',
+        spritesheet: 'nurse_4',
         initialPosition: { ...LOCATIONS.RECEPTION.RIGHT_COMPUTER },
         patrol: false,
         idleAction: 'idle',
@@ -102,7 +117,7 @@ export const STAFF_CONFIG = [
     // Pharmacy - First Pharmacist
     {
         id: 'pharmacist_1',
-        spritesheet: 'doctor_9',
+        spritesheet: 'doctor_2',
         initialPosition: { ...LOCATIONS.PHARMACY.PHARMACIST_BEHIND_COUNTER_1 },
         patrol: false,
         idleAction: 'idle',
@@ -113,7 +128,7 @@ export const STAFF_CONFIG = [
     // Pharmacy - Second Pharmacist
     {
         id: 'pharmacist_2',
-        spritesheet: 'doctor_10',
+        spritesheet: 'doctor_3',
         initialPosition: { ...LOCATIONS.PHARMACY.PHARMACIST_BEHIND_COUNTER_2 },
         patrol: false,
         idleAction: 'idle',
@@ -124,7 +139,7 @@ export const STAFF_CONFIG = [
     // Conference Room - Attendee 1 (Bottom Row, Seat 2)
     {
         id: 'conference_2',
-        spritesheet: 'doctor_7',
+        spritesheet: 'doctor_4',
         initialPosition: { ...LOCATIONS.CONFERENCE_ROOM.BOTTOM_CHAIR_2 },
         patrol: false,
         idleAction: 'idle',
@@ -135,7 +150,7 @@ export const STAFF_CONFIG = [
     // Conference Room - Attendee 2 (Bottom Row, Seat 3)
     {
         id: 'conference_3',
-        spritesheet: 'doctor_6',
+        spritesheet: 'doctor_5',
         initialPosition: { ...LOCATIONS.CONFERENCE_ROOM.BOTTOM_CHAIR_3 },
         patrol: false,
         idleAction: 'idle',
@@ -146,7 +161,7 @@ export const STAFF_CONFIG = [
     // Conference Room - Attendee 3 (Bottom Row, Seat 4)
     {
         id: 'conference_4',
-        spritesheet: 'doctor_5',
+        spritesheet: 'doctor_6',
         initialPosition: { ...LOCATIONS.CONFERENCE_ROOM.BOTTOM_CHAIR_4 },
         patrol: false,
         idleAction: 'idle',
@@ -157,7 +172,7 @@ export const STAFF_CONFIG = [
     // Conference Room - Attendee 4 (Bottom Row, Seat 6)
     {
         id: 'conference_5',
-        spritesheet: 'nurse_10',
+        spritesheet: 'doctor_7',
         initialPosition: { ...LOCATIONS.CONFERENCE_ROOM.BOTTOM_CHAIR_6 },
         patrol: false,
         idleAction: 'idle',
@@ -168,7 +183,7 @@ export const STAFF_CONFIG = [
     // Conference Room - Attendee 5 (Top Row, Seat 2 - Sitting)
     {
         id: 'conference_6',
-        spritesheet: 'nurse_9',
+        spritesheet: 'doctor_8',
         initialPosition: { ...LOCATIONS.CONFERENCE_ROOM.TOP_CHAIR_2 },
         patrol: false,
         idleAction: 'sit',
@@ -179,7 +194,7 @@ export const STAFF_CONFIG = [
     // Conference Room - Attendee 6 (Top Row, Seat 4)
     {
         id: 'conference_7',
-        spritesheet: 'nurse_8',
+        spritesheet: 'doctor_9',
         initialPosition: { ...LOCATIONS.CONFERENCE_ROOM.TOP_CHAIR_4 },
         patrol: false,
         idleAction: 'idle',
@@ -190,7 +205,7 @@ export const STAFF_CONFIG = [
     // Conference Room - Attendee 7 (Top Row, Seat 6)
     {
         id: 'conference_8',
-        spritesheet: 'nurse_7',
+        spritesheet: 'doctor_10',
         initialPosition: { ...LOCATIONS.CONFERENCE_ROOM.TOP_CHAIR_6 },
         patrol: false,
         idleAction: 'idle',

@@ -1,0 +1,95 @@
+{
+  "patient": {
+    "name": "Vince Coleman",
+    "age": 57,
+    "gender": "Male",
+    "symptoms": [
+      "occasional joint stiffness",
+      "mild discomfort in knees after sitting for long periods",
+      "slight swelling around joints",
+      "increased difficulty walking up stairs"
+    ],
+    "medical_history": "History of mild osteoarthritis diagnosed 2 years ago, no previous surgeries",
+    "current_medications": [
+      "acetaminophen",
+      "glucosamine sulfate"
+    ],
+    "firstName": "Vince",
+    "lastName": "Coleman"
+  },
+  "actual_disease": "bone_spurs_osteophytes",
+  "department": "Orthopedics",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "summary": "Triaged as SEMI_URGENT. Patient shows occasional joint stiffness and mild discomfort related to osteoarthritis. Sent to doctor for further evaluation.",
+      "details": {
+        "urgency": "semi_urgent",
+        "triage_reasoning": "Patient exhibits occasional joint stiffness and mild discomfort, likely related to a history of osteoarthritis. Symptoms suggest a need for evaluation but are stable and not life-threatening.",
+        "vital_signs_concern": false,
+        "notes": "Encouraged to explore treatment options for osteoarthritis, potential follow-up for physical therapy.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "Patient will benefit from further assessment and possible modification of treatment plan.",
+        "viewer_output": "Triaged as SEMI_URGENT. Patient shows occasional joint stiffness and mild discomfort related to osteoarthritis. Sent to doctor for further evaluation."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "summary": "Diagnosis: Osteoarthritis. Found 3 similar cases with successful outcomes. Treatment: Continue current plan with a focus on pain management and adjust as needed.",
+      "details": {
+        "diagnosis": "Osteoarthritis",
+        "recommended_treatment": "Continue current treatment plan with a focus on pain management and physical therapy. Consider adjustments based on patient response.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "",
+        "ordered_test": null,
+        "reasoning": "Diagnosis is based on the patient's symptoms of occasional joint stiffness and discomfort, consistent with osteoarthritis. Found 3 similar cases of joint-related discomfort leading to successful outcomes with conservative management. Insights from past experiences emphasize the importance of evaluating joint stiffness, which aligns with the current symptoms.",
+        "tests_completed_count": 0,
+        "learning_principles_used": "Used case #1: Similar cases of joint discomfort with successful conservative management strategies used as a reference.",
+        "viewer_output": "Diagnosis: Osteoarthritis. Found 3 similar cases with successful outcomes. Treatment: Continue current plan with a focus on pain management and adjust as needed."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "final_result"
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "Reflection",
+      "summary": "Learned: Joint stiffness and discomfort after sitting requires imaging to evaluate for bone spurs before diagnosing osteoarthritis. This will improve future osteoarthritis diagnoses.",
+      "details": {
+        "principle_text": "Joint stiffness and discomfort after sitting requires imaging to evaluate for bone spurs or osteophytes before diagnosing osteoarthritis.",
+        "reasoning": "Diagnosing osteoarthritis without appropriate imaging can lead to missed diagnoses such as bone spurs, which may require different treatment approaches.",
+        "confidence": 0.9,
+        "viewer_output": "Learned: Joint stiffness and discomfort after sitting requires imaging to evaluate for bone spurs before diagnosing osteoarthritis. This will improve future osteoarthritis diagnoses."
+      },
+      "tools_used": []
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "Osteoarthritis",
+    "recommended_treatment": "Continue current treatment plan with a focus on pain management and physical therapy. Consider adjustments based on patient response.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "",
+    "ordered_test": null,
+    "reasoning": "Diagnosis is based on the patient's symptoms of occasional joint stiffness and discomfort, consistent with osteoarthritis. Found 3 similar cases of joint-related discomfort leading to successful outcomes with conservative management. Insights from past experiences emphasize the importance of evaluating joint stiffness, which aligns with the current symptoms.",
+    "tests_completed_count": 0,
+    "learning_principles_used": "Used case #1: Similar cases of joint discomfort with successful conservative management strategies used as a reference.",
+    "viewer_output": "Diagnosis: Osteoarthritis. Found 3 similar cases with successful outcomes. Treatment: Continue current plan with a focus on pain management and adjust as needed."
+  },
+  "total_steps": 2,
+  "is_correct": false,
+  "validation_reason": "Clear mismatch: 'osteoarthritis' != 'bone spurs osteophytes'"
+}

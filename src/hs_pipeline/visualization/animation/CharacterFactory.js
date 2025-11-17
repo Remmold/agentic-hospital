@@ -19,13 +19,13 @@ export class CharacterFactory {
 
         // Create sprite
         const sprite = scene.physics.add.sprite(x, y, spritesheet, 0);
-        sprite.setOrigin(0.5, 1);
+        sprite.setOrigin(0.5, 0.905);
         
         // Physics body configuration
         const bodyWidth = options.bodyWidth || 24;
         const bodyHeight = options.bodyHeight || 24;
-        const offsetX = options.offsetX || 6;
-        const offsetY = options.offsetY || 40;
+        const offsetX = options.offsetX || 4;
+        const offsetY = options.offsetY || 44;
         
         sprite.body.setSize(bodyWidth, bodyHeight, false);
         sprite.body.setOffset(offsetX, offsetY);

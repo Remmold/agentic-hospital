@@ -1,0 +1,96 @@
+{
+  "patient": {
+    "name": "Lucy Campbell",
+    "age": 34,
+    "gender": "Female",
+    "symptoms": [
+      "mild headaches",
+      "changes in menstrual cycle",
+      "fatigue",
+      "difficulty concentrating",
+      "occasionally feeling dizzy"
+    ],
+    "medical_history": "History of irregular periods since teenage years, no prior surgeries or hospitalizations.",
+    "current_medications": [
+      "oral contraceptives"
+    ],
+    "firstName": "Lucy",
+    "lastName": "Campbell"
+  },
+  "actual_disease": "prolactinoma",
+  "department": "Endocrinology",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "summary": "Triaged as SEMI_URGENT. Patient presenting with fatigue, dizziness, and headaches associated with menstrual cycle changes. Sent to doctor for further evaluation.",
+      "details": {
+        "urgency": "semi_urgent",
+        "triage_reasoning": "Patient presents with multiple moderate symptoms such as fatigue, dizziness, and headaches, which may suggest a combination of hormonal issues related to menstrual cycle changes. These warrant further evaluation but are not life-threatening at this moment.",
+        "vital_signs_concern": false,
+        "notes": "Patient's medical history does not indicate any acute conditions requiring immediate attention. Current medications are consistent with managing menstrual irregularities.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "to evaluate hormonal symptoms and consider appropriate testing or treatment options.",
+        "viewer_output": "Triaged as SEMI_URGENT. Patient presenting with fatigue, dizziness, and headaches associated with menstrual cycle changes. Sent to doctor for further evaluation."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "summary": "Diagnosis: Hormonal imbalance related to menstrual cycle changes leading to fatigue, dizziness, and headaches. Found 3 similar cases with successful outcomes. Treatment: Consider hormonal evaluation and lifestyle changes.",
+      "details": {
+        "diagnosis": "Hormonal imbalance related to menstrual cycle changes leading to fatigue, dizziness, and headaches.",
+        "recommended_treatment": "Consider hormonal evaluation with labs such as estradiol, progesterone levels, and possibly thyroid function tests. Follow-up with lifestyle changes including diet and stress management.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "Patient has several symptoms potentially related to hormonal issues; treatment options including testing have been discussed.",
+        "ordered_test": null,
+        "reasoning": "Three similar cases (migraines and fibromyalgia) successfully treated without tests indicate a strong correlation with hormonal symptoms. Total tests completed: 0. Confidence in diagnosis given symptom pattern and relevant past experiences.",
+        "tests_completed_count": 0,
+        "learning_principles_used": "Used case #1: Symptoms of headaches indicated potential hormonal involvement; Applied principle: assessing symptoms and holistic treatment approach.",
+        "viewer_output": "Diagnosis: Hormonal imbalance related to menstrual cycle changes leading to fatigue, dizziness, and headaches. Found 3 similar cases with successful outcomes. Treatment: Consider hormonal evaluation and lifestyle changes."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "final_result",
+        "final_result"
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "Reflection",
+      "summary": "Learned: Menstrual changes with fatigue and dizziness require a serum prolactin level to rule out prolactinoma. This will improve future prolactinoma diagnoses.",
+      "details": {
+        "principle_text": "Menstrual changes with fatigue and dizziness require a serum prolactin level to rule out prolactinoma.",
+        "reasoning": "The error occurred due to misattributing symptoms to hormonal imbalances without appropriate testing for prolactinoma.",
+        "confidence": 0.9,
+        "viewer_output": "Learned: Menstrual changes with fatigue and dizziness require a serum prolactin level to rule out prolactinoma. This will improve future prolactinoma diagnoses."
+      },
+      "tools_used": []
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "Hormonal imbalance related to menstrual cycle changes leading to fatigue, dizziness, and headaches.",
+    "recommended_treatment": "Consider hormonal evaluation with labs such as estradiol, progesterone levels, and possibly thyroid function tests. Follow-up with lifestyle changes including diet and stress management.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "Patient has several symptoms potentially related to hormonal issues; treatment options including testing have been discussed.",
+    "ordered_test": null,
+    "reasoning": "Three similar cases (migraines and fibromyalgia) successfully treated without tests indicate a strong correlation with hormonal symptoms. Total tests completed: 0. Confidence in diagnosis given symptom pattern and relevant past experiences.",
+    "tests_completed_count": 0,
+    "learning_principles_used": "Used case #1: Symptoms of headaches indicated potential hormonal involvement; Applied principle: assessing symptoms and holistic treatment approach.",
+    "viewer_output": "Diagnosis: Hormonal imbalance related to menstrual cycle changes leading to fatigue, dizziness, and headaches. Found 3 similar cases with successful outcomes. Treatment: Consider hormonal evaluation and lifestyle changes."
+  },
+  "total_steps": 2,
+  "is_correct": false,
+  "validation_reason": "Clear mismatch: 'hormonal imbalance related to menstrual cycle changes leading to fatigue' != 'prolactinoma'"
+}

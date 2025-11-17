@@ -9,6 +9,7 @@ import { DebugManager } from '../core/DebugManager.js';
 import { ZoneManager } from '../physics/ZoneManager.js';
 import { CollisionManager } from '../physics/CollisionManager.js';
 import { DepthManager } from '../rendering/DepthManager.js';
+import { CameraManager } from '../rendering/CameraManager.js';
 import DoorManager from '../rendering/DoorManager.js';
 import { InputManager } from '../input/InputManager.js';
 import { MovementController } from '../input/MovementController.js';
@@ -46,6 +47,21 @@ export class SceneInitializer {
     }
 
     /**
+     * Setup camera system with scrolling and mini-cam
+     * Must be called after setupManagers (needs map dimensions)
+     */
+    setupCamera() {
+        // Map dimensions: 40x50 tiles = 1280x1600 pixels
+        const worldWidth = this.scene.map.widthInPixels;
+        const worldHeight = this.scene.map.heightInPixels;
+
+        this.scene.cameraManager = new CameraManager(this.scene);
+        this.scene.cameraManager.initialize(worldWidth, worldHeight);
+
+        console.log(`[SceneInitializer] Camera system initialized for ${worldWidth}x${worldHeight}px world`);
+    }
+
+    /**
      * Setup player character with physics and collision
      */
     setupPlayer() {
@@ -58,8 +74,8 @@ export class SceneInitializer {
             {
                 bodyWidth: 24,
                 bodyHeight: 24,
-                offsetX: 6,
-                offsetY: 42,
+                offsetX: 4,
+                offsetY: 44,
                 initialDirection: 'down'
             }
         );

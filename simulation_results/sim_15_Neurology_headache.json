@@ -1,0 +1,93 @@
+{
+  "patient": {
+    "name": "Liam Sullivan",
+    "age": 29,
+    "gender": "Male",
+    "symptoms": [
+      "intermittent pressure in the forehead",
+      "occasional dizziness",
+      "increased sensitivity to noise",
+      "mild nausea",
+      "trouble concentrating"
+    ],
+    "medical_history": "occasional migraines during high-stress periods",
+    "current_medications": [
+      "ibuprofen"
+    ]
+  },
+  "actual_disease": "headache",
+  "department": "Neurology",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "summary": "Triaged as SEMI_URGENT. Patient experiencing intermittent pressure in the forehead and dizziness. Sent to doctor for evaluation.",
+      "details": {
+        "urgency": "semi_urgent",
+        "triage_reasoning": "Patient presents with symptoms consistent with migraine, including pressure in the forehead, dizziness, and mild nausea. Past medical history indicates occasional migraines, warranting assessment but stable enough to wait.",
+        "vital_signs_concern": false,
+        "notes": "Patient's symptoms suggest a possible migraine attack, stability allows for non-immediate intervention.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "evaluate for migraine management options and consider possible interventions.",
+        "viewer_output": "Triaged as SEMI_URGENT. Patient experiencing intermittent pressure in the forehead and dizziness. Sent to doctor for evaluation."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "summary": "Diagnosis: migraine. Found 3 similar cases with successful outcomes. Treatment: suggested interventions include triptans for acute attacks, preventive medications such as beta-blockers, and lifestyle modifications.",
+      "details": {
+        "diagnosis": "migraine",
+        "recommended_treatment": "suggested interventions include triptans for acute attacks, preventive medications such as beta-blockers, and lifestyle modifications like hydration and sleep hygiene.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "",
+        "ordered_test": null,
+        "reasoning": "Found 3 similar cases successfully managed with no need for tests, confidently diagnosing this patient's condition as migraine based on presented symptoms. Treatment plans include both acute and preventative strategies based on successful management in prior cases.",
+        "tests_completed_count": 0,
+        "learning_principles_used": "Used case #1: Successful migraine management without tests. Used case #2: Similar case outcome with conservative measures.",
+        "viewer_output": "Diagnosis: migraine. Found 3 similar cases with successful outcomes. Treatment: suggested interventions include triptans for acute attacks, preventive medications such as beta-blockers, and lifestyle modifications."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "Reflection",
+      "summary": "Learned: Intermittent pressure in the forehead with dizziness requires thorough evaluation to differentiate between migraine and tension-type headache. This will improve future headache diagnoses.",
+      "details": {
+        "principle_text": "Intermittent pressure in the forehead with dizziness requires thorough evaluation to differentiate between migraine and tension-type headache. This ensures appropriate treatment and management for headache disorders.",
+        "reasoning": "The misdiagnosis occurred due to a superficial assessment without considering the specific characteristics of the headache; a detailed evaluation is essential to prevent errors.",
+        "confidence": 0.9,
+        "viewer_output": "Learned: Intermittent pressure in the forehead with dizziness requires thorough evaluation to differentiate between migraine and tension-type headache. This will improve future headache diagnoses."
+      },
+      "tools_used": []
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "migraine",
+    "recommended_treatment": "suggested interventions include triptans for acute attacks, preventive medications such as beta-blockers, and lifestyle modifications like hydration and sleep hygiene.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "",
+    "ordered_test": null,
+    "reasoning": "Found 3 similar cases successfully managed with no need for tests, confidently diagnosing this patient's condition as migraine based on presented symptoms. Treatment plans include both acute and preventative strategies based on successful management in prior cases.",
+    "tests_completed_count": 0,
+    "learning_principles_used": "Used case #1: Successful migraine management without tests. Used case #2: Similar case outcome with conservative measures.",
+    "viewer_output": "Diagnosis: migraine. Found 3 similar cases with successful outcomes. Treatment: suggested interventions include triptans for acute attacks, preventive medications such as beta-blockers, and lifestyle modifications."
+  },
+  "total_steps": 2,
+  "is_correct": false,
+  "validation_reason": "Clear mismatch: 'migraine' != 'headache'"
+}

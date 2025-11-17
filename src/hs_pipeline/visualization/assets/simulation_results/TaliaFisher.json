@@ -1,0 +1,96 @@
+{
+  "patient": {
+    "name": "Talia Fisher",
+    "age": 29,
+    "gender": "Female",
+    "symptoms": [
+      "intermittent sneezing",
+      "slight itching around the eyes",
+      "occasional headaches",
+      "scratchy throat",
+      "fatigue"
+    ],
+    "medical_history": "History of seasonal allergies, occasional asthma triggered by pollen",
+    "current_medications": [
+      "antihistamines during allergy season",
+      "inhaler for asthma"
+    ],
+    "firstName": "Talia",
+    "lastName": "Fisher"
+  },
+  "actual_disease": "allergies",
+  "department": "General",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "summary": "Triaged as NON_URGENT. Patient presenting with mild allergy symptoms and fatigue. Scheduled an appointment with the doctor.",
+      "details": {
+        "urgency": "non_urgent",
+        "triage_reasoning": "Patient is experiencing mild allergy symptoms including sneezing, itching, and fatigue, which are stable and non-life-threatening.",
+        "vital_signs_concern": false,
+        "notes": "Symptoms are consistent with seasonal allergies and occasional asthma without acute episodes.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "Patients with similar background of allergic reactions and mild asthma symptoms",
+        "viewer_output": "Triaged as NON_URGENT. Patient presenting with mild allergy symptoms and fatigue. Scheduled an appointment with the doctor."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "summary": "Diagnosis: allergic reaction. Found 3 similar cases with successful outcomes. Treatment: antihistamines and asthma monitoring.",
+      "details": {
+        "diagnosis": "allergic reaction",
+        "recommended_treatment": "antihistamines and monitoring asthma symptoms",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "",
+        "ordered_test": null,
+        "reasoning": "Found 3 similar cases of allergic reactions and mild asthma symptoms with successful outcomes. The patient's symptoms are aligned with an allergic reaction rather than severe asthma. Treatment involves antihistamines and monitoring due to the stable and non-urgent nature of the symptoms.",
+        "tests_completed_count": 0,
+        "learning_principles_used": "Used case #2: mild rash and tightness indicate allergic reaction success.",
+        "viewer_output": "Diagnosis: allergic reaction. Found 3 similar cases with successful outcomes. Treatment: antihistamines and asthma monitoring."
+      },
+      "tools_used": [
+        "search_similar_cases",
+        "get_lab_results",
+        "get_nurse_assessment",
+        "search_relevant_experiences",
+        "final_result"
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "Reflection",
+      "summary": "Learned: Intermittent sneezing with slight eye itching requires confirmation of allergies with patient history. This will improve future allergies diagnostics.",
+      "details": {
+        "principle_text": "Intermittent sneezing with slight eye itching requires confirmation of allergies with patient history and possible skin tests. This will improve future allergies diagnostics and avoid misdiagnosis of allergic reactions.",
+        "reasoning": "The misdiagnosis occurred due to insufficient assessment of the patient's history and lack of objective testing for allergies.",
+        "confidence": 0.9,
+        "viewer_output": "Learned: Intermittent sneezing with slight eye itching requires confirmation of allergies with patient history. This will improve future allergies diagnostics."
+      },
+      "tools_used": []
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "allergic reaction",
+    "recommended_treatment": "antihistamines and monitoring asthma symptoms",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "",
+    "ordered_test": null,
+    "reasoning": "Found 3 similar cases of allergic reactions and mild asthma symptoms with successful outcomes. The patient's symptoms are aligned with an allergic reaction rather than severe asthma. Treatment involves antihistamines and monitoring due to the stable and non-urgent nature of the symptoms.",
+    "tests_completed_count": 0,
+    "learning_principles_used": "Used case #2: mild rash and tightness indicate allergic reaction success.",
+    "viewer_output": "Diagnosis: allergic reaction. Found 3 similar cases with successful outcomes. Treatment: antihistamines and asthma monitoring."
+  },
+  "total_steps": 2,
+  "is_correct": false,
+  "validation_reason": "Clear mismatch: 'allergic reaction' != 'allergies'"
+}

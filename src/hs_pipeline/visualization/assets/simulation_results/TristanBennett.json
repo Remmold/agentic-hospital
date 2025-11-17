@@ -1,0 +1,136 @@
+{
+  "patient": {
+    "name": "Tristan Bennett",
+    "age": 62,
+    "gender": "Male",
+    "symptoms": [
+      "temporary weakness in the right arm",
+      "slurred speech that comes and goes",
+      "occasional headaches",
+      "sudden difficulty in concentrating",
+      "lightheadedness during physical exertion"
+    ],
+    "medical_history": "History of hypertension and mild dyslipidemia",
+    "current_medications": [
+      "Lisinopril",
+      "Atorvastatin"
+    ],
+    "firstName": "Tristan",
+    "lastName": "Bennett"
+  },
+  "actual_disease": "cerebrovascular_disease",
+  "department": "Cardiology",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "summary": "Triaged as URGENT. Patient exhibiting temporary weakness in the right arm and slurred speech. Sent to doctor immediately.",
+      "details": {
+        "urgency": "urgent",
+        "triage_reasoning": "Patient presents with symptoms suggestive of a possible transient ischemic attack (TIA), including temporary weakness in the right arm and slurred speech. Vital signs need to be evaluated urgently due to the risk of deterioration into a stroke.",
+        "vital_signs_concern": true,
+        "notes": "Given the patient's history of hypertension and mild dyslipidemia, immediate assessment is critical to rule out serious complications such as a stroke.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "patient in need of urgent evaluation by a physician",
+        "viewer_output": "Triaged as URGENT. Patient exhibiting temporary weakness in the right arm and slurred speech. Sent to doctor immediately."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "summary": "Diagnosis: Transient Ischemic Attack (TIA). Found 3 similar cases with successful outcomes. Treatment: Immediate hospitalization and monitoring, initiate antiplatelet therapy.",
+      "details": {
+        "diagnosis": "Transient Ischemic Attack (TIA)",
+        "recommended_treatment": "Immediate hospitalization and monitoring, start antiplatelet therapy and perform imaging studies, preferably a CT scan, to rule out stroke.",
+        "follow_up_needed": true,
+        "next_step": "order_test",
+        "context_for_next": "Proceed with ordering the CT scan to evaluate the patient's condition and rule out stroke.",
+        "ordered_test": "CT scan",
+        "reasoning": "The patient exhibits clear signs of TIA, supported by multiple similar cases with successful outcomes. Given the urgency and risk of deterioration, a CT scan is necessary to rule out a stroke. Similar past cases have shown favorable outcomes when treated promptly.",
+        "tests_completed_count": 0,
+        "learning_principles_used": "Used case #1: Similar symptoms led to a diagnosis of TIA with successful outcome.",
+        "viewer_output": "Diagnosis: Transient Ischemic Attack (TIA). Found 3 similar cases with successful outcomes. Treatment: Immediate hospitalization and monitoring, initiate antiplatelet therapy."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "final_result",
+        "final_result"
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "Lab",
+      "summary": "CT scan completed. Images are being reviewed.",
+      "details": {
+        "tests_ran": "CT scan",
+        "test_outcome": "No acute intracranial hemorrhage, No midline shift, Ventricles are normal, No significant mass effect, Mild chronic ischemic changes noted, No evidence of recent stroke",
+        "viewer_output": "CT scan completed. Images are being reviewed."
+      },
+      "tools_used": [
+        "get_test_context",
+        "final_result"
+      ]
+    },
+    {
+      "step": 4,
+      "agent": "Doctor",
+      "summary": "Diagnosis: Transient Ischemic Attack (TIA). Found 4 similar cases with successful outcomes. Treatment: Immediate intervention with antiplatelet therapy and monitoring.",
+      "details": {
+        "diagnosis": "Transient Ischemic Attack (TIA)",
+        "recommended_treatment": "Immediate intervention with antiplatelet therapy and monitoring.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "Continue monitoring for symptoms and review for further treatment.",
+        "ordered_test": null,
+        "reasoning": "Considering the urgent assessment of symptoms suggestive of a TIA and the CT scan results that show no acute issues but slight chronic ischemic changes, the diagnosis is consistent with past successful cases of TIA. 4 similar cases found supporting this diagnosis with successful outcomes. Treatment will involve immediate intervention with antiplatelet therapy and monitoring for any further symptoms or complications.",
+        "tests_completed_count": 1,
+        "learning_principles_used": "Used case #2: successful diagnosis of TIA with similar symptoms and imaging results.",
+        "viewer_output": "Diagnosis: Transient Ischemic Attack (TIA). Found 4 similar cases with successful outcomes. Treatment: Immediate intervention with antiplatelet therapy and monitoring."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "final_result",
+        "final_result"
+      ]
+    },
+    {
+      "step": 5,
+      "agent": "Reflection",
+      "summary": "Learned: Temporary weakness and slurred speech necessitate advanced imaging to assess for cerebrovascular disease. This will improve future cerebrovascular disease diagnoses.",
+      "details": {
+        "principle_text": "Temporary weakness in the right arm and slurred speech requires a CT scan to rule out cerebrovascular disease before diagnosing TIA.",
+        "reasoning": "The misdiagnosis occurred due to an overlooking of more serious underlying cerebrovascular issues, which is vital to identify for appropriate management.",
+        "confidence": 0.9,
+        "viewer_output": "Learned: Temporary weakness and slurred speech necessitate advanced imaging to assess for cerebrovascular disease. This will improve future cerebrovascular disease diagnoses."
+      },
+      "tools_used": []
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "Transient Ischemic Attack (TIA)",
+    "recommended_treatment": "Immediate intervention with antiplatelet therapy and monitoring.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "Continue monitoring for symptoms and review for further treatment.",
+    "ordered_test": null,
+    "reasoning": "Considering the urgent assessment of symptoms suggestive of a TIA and the CT scan results that show no acute issues but slight chronic ischemic changes, the diagnosis is consistent with past successful cases of TIA. 4 similar cases found supporting this diagnosis with successful outcomes. Treatment will involve immediate intervention with antiplatelet therapy and monitoring for any further symptoms or complications.",
+    "tests_completed_count": 1,
+    "learning_principles_used": "Used case #2: successful diagnosis of TIA with similar symptoms and imaging results.",
+    "viewer_output": "Diagnosis: Transient Ischemic Attack (TIA). Found 4 similar cases with successful outcomes. Treatment: Immediate intervention with antiplatelet therapy and monitoring."
+  },
+  "total_steps": 4,
+  "is_correct": false,
+  "validation_reason": "Clear mismatch: 'transient ischemic attack' != 'cerebrovascular disease'"
+}

@@ -10,6 +10,7 @@ export default class DoorManager {
         this.doors = {};
         AnimationManager.createWoodenDoorAnims(scene);
         AnimationManager.createSurgeryDoorAnims(scene);
+        AnimationManager.createCondoDoorAnims(scene);
         this.loadDoors();
     }
 
@@ -42,8 +43,16 @@ export default class DoorManager {
             trigger.body.setAllowGravity(false);
 
             // Create door sprite based on type
-            const spritesheetKey = doorType === 'surgery' ? 'surgery_door' : 'wooden_door';
-            const door = this.scene.add.sprite(triggerX, doorY - 16, spritesheetKey, 0);
+            let spritesheetKey = 'wooden_door';  // Default
+            let yOffset = 16
+            if (doorType === 'surgery') {
+                spritesheetKey = 'surgery_door';
+            } else if (doorType === 'condo') {
+                spritesheetKey = 'condo_door';
+                yOffset = 2
+            }
+
+            const door = this.scene.add.sprite(triggerX, doorY - yOffset, spritesheetKey, 0);
             door.setOrigin(0.5, 0.5);
             door.setDepth(40);
 
@@ -90,7 +99,13 @@ export default class DoorManager {
 
         if (!doorObj.isOpen) {
             // Play animation based on door type
-            const animKey = doorObj.doorType === 'surgery' ? 'surgery_door_open' : 'wooden_door_open';
+            let animKey = 'wooden_door_open';  // Default
+            if (doorObj.doorType === 'surgery') {
+                animKey = 'surgery_door_open';
+            } else if (doorObj.doorType === 'condo') {
+                animKey = 'condo_door_open';
+            }
+
             doorObj.door.play(animKey);
             doorObj.isOpen = true;
 
@@ -121,7 +136,13 @@ export default class DoorManager {
             if (doorObj.overlappingSprites.size === 0 && doorObj.isOpen) {
                 if (!doorObj.closeTimer) {
                     doorObj.closeTimer = this.scene.time.delayedCall(500, () => {
-                        const animKey = doorObj.doorType === 'surgery' ? 'surgery_door_close' : 'wooden_door_close';
+                        let animKey = 'wooden_door_close';  // Default
+                        if (doorObj.doorType === 'surgery') {
+                            animKey = 'surgery_door_close';
+                        } else if (doorObj.doorType === 'condo') {
+                            animKey = 'condo_door_close';
+                        }
+
                         doorObj.door.play(animKey);
                         doorObj.isOpen = false;
                         doorObj.closeTimer = null;

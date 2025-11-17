@@ -1,0 +1,95 @@
+{
+  "patient": {
+    "name": "Finn Hunter",
+    "age": 47,
+    "gender": "Male",
+    "symptoms": [
+      "mild lower back stiffness",
+      "occasional tightness in legs",
+      "difficulty bending over",
+      "mild fatigue",
+      "intermittent discomfort while sitting"
+    ],
+    "medical_history": "Occasional episodes of lower back strain from heavy lifting 5 years ago.",
+    "current_medications": [
+      "Ibuprofen 400mg as needed"
+    ],
+    "firstName": "Finn",
+    "lastName": "Hunter"
+  },
+  "actual_disease": "back_pain",
+  "department": "General",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "summary": "Triaged as NON_URGENT. Patient exhibits mild lower back stiffness and discomfort. Sent for routine evaluation.",
+      "details": {
+        "urgency": "non_urgent",
+        "triage_reasoning": "The patient presents with mild lower back stiffness and occasional discomfort, which are stable symptoms from a previous lower back strain. No acute distress or serious symptoms noted warranting immediate care.",
+        "vital_signs_concern": false,
+        "notes": "Patient has a history of lower back strain but is currently stable with no signs of worsening condition. Vital signs within normal limits.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "Routine assessment for musculoskeletal discomfort.",
+        "viewer_output": "Triaged as NON_URGENT. Patient exhibits mild lower back stiffness and discomfort. Sent for routine evaluation."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "summary": "Diagnosis: muscle strain. Found 3 similar cases with successful outcomes. Treatment: Rest, application of heat or cold, and over-the-counter pain relievers.",
+      "details": {
+        "diagnosis": "muscle strain",
+        "recommended_treatment": "Rest, application of heat or cold, and over-the-counter pain relievers as needed. Follow up if symptoms persist.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "",
+        "ordered_test": null,
+        "reasoning": "Patient presents with stable mild lower back stiffness and discomfort consistent with a muscle strain. No acute symptoms are present, and similar cases have been successfully managed without testing. Treatment plan includes conservative measures to promote recovery. Confidence is moderate due to the non-urgent nature of the symptoms and similarity to past cases.",
+        "tests_completed_count": 0,
+        "learning_principles_used": "Used case #2: [Lateral Epicondylitis treated conservatively with success]",
+        "viewer_output": "Diagnosis: muscle strain. Found 3 similar cases with successful outcomes. Treatment: Rest, application of heat or cold, and over-the-counter pain relievers."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "Reflection",
+      "summary": "Learned: Mild lower back stiffness with difficulty bending over requires thorough evaluation to rule out back pain issues. This will improve future back pain diagnoses.",
+      "details": {
+        "principle_text": "Mild lower back stiffness with difficulty bending over requires thorough evaluation to rule out back pain issues. This prevents misdiagnosis and ensures proper management of potential underlying conditions.",
+        "reasoning": "The misdiagnosis occurred because the symptoms were attributed to muscle strain without a full assessment, and no tests were ordered to confirm the accurate diagnosis.",
+        "confidence": 0.9,
+        "viewer_output": "Learned: Mild lower back stiffness with difficulty bending over requires thorough evaluation to rule out back pain issues. This will improve future back pain diagnoses."
+      },
+      "tools_used": []
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "muscle strain",
+    "recommended_treatment": "Rest, application of heat or cold, and over-the-counter pain relievers as needed. Follow up if symptoms persist.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "",
+    "ordered_test": null,
+    "reasoning": "Patient presents with stable mild lower back stiffness and discomfort consistent with a muscle strain. No acute symptoms are present, and similar cases have been successfully managed without testing. Treatment plan includes conservative measures to promote recovery. Confidence is moderate due to the non-urgent nature of the symptoms and similarity to past cases.",
+    "tests_completed_count": 0,
+    "learning_principles_used": "Used case #2: [Lateral Epicondylitis treated conservatively with success]",
+    "viewer_output": "Diagnosis: muscle strain. Found 3 similar cases with successful outcomes. Treatment: Rest, application of heat or cold, and over-the-counter pain relievers."
+  },
+  "total_steps": 2,
+  "is_correct": false,
+  "validation_reason": "Clear mismatch: 'muscle strain' != 'back pain'"
+}

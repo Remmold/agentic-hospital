@@ -1,0 +1,133 @@
+{
+  "patient": {
+    "name": "Grace Latham",
+    "age": 68,
+    "gender": "Female",
+    "symptoms": [
+      "occasional headaches",
+      "jaw fatigue while chewing",
+      "slightly blurred vision",
+      "reduced appetite",
+      "mild fever"
+    ],
+    "medical_history": "hypertension and mild osteoarthritis",
+    "current_medications": [
+      "lisinopril",
+      "naproxen"
+    ]
+  },
+  "actual_disease": "giant_cell_arteritis",
+  "department": "Rheumatology",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "summary": "Triaged as SEMI_URGENT. Patient experiencing occasional headaches, jaw fatigue, and slightly blurred vision. Sent to doctor for further evaluation.",
+      "details": {
+        "urgency": "semi_urgent",
+        "triage_reasoning": "Patient has multiple symptoms including blurred vision and reduced appetite that warrant attention within 30-60 minutes. The presence of hypertension, though managed, along with mild fever adds to the concern.",
+        "vital_signs_concern": false,
+        "notes": "Patient is stable but requires evaluation due to the combination of symptoms.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "patient's symptoms need further evaluation to rule out underlying issues.",
+        "viewer_output": "Triaged as SEMI_URGENT. Patient experiencing occasional headaches, jaw fatigue, and slightly blurred vision. Sent to doctor for further evaluation."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "summary": "Ordering blood glucose test from General Lab due to the concern for diabetes mellitus. Found 3 relevant past cases suggesting this approach.",
+      "details": {
+        "diagnosis": null,
+        "recommended_treatment": null,
+        "follow_up_needed": true,
+        "next_step": "order_test",
+        "context_for_next": "to rule out diabetes mellitus and cardiovascular events",
+        "ordered_test": "blood glucose test",
+        "reasoning": "Given the patient's symptoms of blurred vision, reduced appetite, and hypertension, there is a need to rule out diabetes mellitus as a possible underlying cause. The urgency and nature of the symptoms, combined with past cases, support this approach. No tests have been completed yet, and I found similar cases indicating this test is necessary.",
+        "tests_completed_count": 0,
+        "learning_principles_used": "Used case #1: Symptoms suggestive of diabetes mellitus led to successful outcome with blood glucose testing.",
+        "viewer_output": "Ordering blood glucose test from General Lab due to the concern for diabetes mellitus. Found 3 relevant past cases suggesting this approach."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "final_result"
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "Lab",
+      "summary": "Lab tests complete. Doctor will discuss findings with you.",
+      "details": {
+        "tests_ran": "blood glucose test",
+        "test_outcome": "Fasting glucose: 120 mg/dL",
+        "viewer_output": "Lab tests complete. Doctor will discuss findings with you."
+      },
+      "tools_used": [
+        "get_test_context",
+        "final_result"
+      ]
+    },
+    {
+      "step": 4,
+      "agent": "Doctor",
+      "summary": "Diagnosis: Impaired fasting glucose. Found 3 similar cases with successful outcomes. Treatment: Lifestyle modifications and monitoring.",
+      "details": {
+        "diagnosis": "Impaired fasting glucose",
+        "recommended_treatment": "Lifestyle modifications including diet and exercise, consider monitoring for progression to diabetes.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "",
+        "ordered_test": null,
+        "reasoning": "The patient presents with symptoms suggestive of impaired glucose metabolism, supported by a fasting glucose of 120 mg/dL. The case assessment aligns with relevant past experiences of similar diagnoses. No immediate cardiovascular events were indicated, but ongoing monitoring is recommended for the hypertension and glucose levels.",
+        "tests_completed_count": 1,
+        "learning_principles_used": "Used case #1: Blurred vision and glucose levels in similar diabetes cases led to identification of risk.",
+        "viewer_output": "Diagnosis: Impaired fasting glucose. Found 3 similar cases with successful outcomes. Treatment: Lifestyle modifications and monitoring."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "final_result",
+        "final_result"
+      ]
+    },
+    {
+      "step": 5,
+      "agent": "Reflection",
+      "summary": "Learned: Occasional headaches with jaw fatigue and blurred vision require temporal artery evaluation to rule out giant cell arteritis. This will improve future giant cell arteritis diagnoses.",
+      "details": {
+        "principle_text": "Occasional headaches with jaw fatigue while chewing and blurred vision require temporal artery evaluation to rule out giant cell arteritis.",
+        "reasoning": "The diagnostic error occurred by not recognizing the classic symptoms of giant cell arteritis, which can mimic other conditions, leading to a focus on unrelated glucose levels.",
+        "confidence": 0.9,
+        "viewer_output": "Learned: Occasional headaches with jaw fatigue and blurred vision require temporal artery evaluation to rule out giant cell arteritis. This will improve future giant cell arteritis diagnoses."
+      },
+      "tools_used": []
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "Impaired fasting glucose",
+    "recommended_treatment": "Lifestyle modifications including diet and exercise, consider monitoring for progression to diabetes.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "",
+    "ordered_test": null,
+    "reasoning": "The patient presents with symptoms suggestive of impaired glucose metabolism, supported by a fasting glucose of 120 mg/dL. The case assessment aligns with relevant past experiences of similar diagnoses. No immediate cardiovascular events were indicated, but ongoing monitoring is recommended for the hypertension and glucose levels.",
+    "tests_completed_count": 1,
+    "learning_principles_used": "Used case #1: Blurred vision and glucose levels in similar diabetes cases led to identification of risk.",
+    "viewer_output": "Diagnosis: Impaired fasting glucose. Found 3 similar cases with successful outcomes. Treatment: Lifestyle modifications and monitoring."
+  },
+  "total_steps": 4,
+  "is_correct": false,
+  "validation_reason": "Clear mismatch: 'impaired fasting glucose' != 'giant cell arteritis'"
+}

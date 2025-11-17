@@ -14,7 +14,7 @@ const config = {
         default: 'arcade',
         arcade: {
             gravity: { y: 0 },
-            debug: false // Set to true to see collision boxes
+            debug: false // Set to true to see object shapes
         }
     },
     scene: HospitalScene

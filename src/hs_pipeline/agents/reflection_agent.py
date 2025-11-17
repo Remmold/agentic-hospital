@@ -71,29 +71,47 @@ def create_learning_principle(
     correct_diagnosis: str,
     department: str = "General"
 ) -> ExperiencePrinciple | None:
-    """Analyze error and create learning principle."""
+    """Analyze error and create learning principle with retry logic."""
     deps = ReflectionDeps(
         patient_data, symptoms, tests_ordered, test_results,
         wrong_diagnosis, correct_diagnosis, department
     )
     
-    try:
-        result = reflection_agent.run_sync(
-            f"Analyze: Doctor said {wrong_diagnosis}, actually {correct_diagnosis}. Create prevention principle.",
-            deps=deps
-        )
-        
-        principle = result.output
-        
-        # Validate
-        if len(principle.principle_text) < 20 or principle.confidence < 0.5:
-            return None
-        
-        action_words = ["requires", "order", "obtain", "check", "rule out", "before"]
-        if not any(word in principle.principle_text.lower() for word in action_words):
-            return None
-        
-        return principle
-    except Exception as e:
-        print(f"Reflection failed: {e}")
-        return None
+    max_attempts = 5
+    
+    for attempt in range(max_attempts):
+        try:
+            # Vary the prompt slightly for each attempt
+            prompts = [
+                f"Analyze: Doctor said {wrong_diagnosis}, actually {correct_diagnosis}. Create prevention principle.",
+                f"Error analysis: Misdiagnosed as {wrong_diagnosis}, was {correct_diagnosis}. Extract actionable lesson.",
+                f"What went wrong? Diagnosed {wrong_diagnosis} instead of {correct_diagnosis}. Create specific rule.",
+                f"Diagnostic mistake: {wrong_diagnosis} → {correct_diagnosis}. What should be done differently?",
+                f"Learn from error: {wrong_diagnosis} was wrong, {correct_diagnosis} was correct. Make a clear principle."
+            ]
+            
+            result = reflection_agent.run_sync(prompts[attempt], deps=deps)
+            principle = result.output
+            
+            # Validate
+            if len(principle.principle_text) < 20 or principle.confidence < 0.5:
+                print(f"  Attempt {attempt + 1}/{max_attempts}: Validation failed (length or confidence)")
+                continue
+            
+            action_words = ["requires", "order", "obtain", "check", "rule out", "before"]
+            if not any(word in principle.principle_text.lower() for word in action_words):
+                print(f"  Attempt {attempt + 1}/{max_attempts}: Missing action words")
+                continue
+            
+            # Success!
+            if attempt > 0:
+                print(f"  ✓ Generated valid principle on attempt {attempt + 1}")
+            return principle
+            
+        except Exception as e:
+            print(f"  Attempt {attempt + 1}/{max_attempts} failed: {e}")
+            if attempt == max_attempts - 1:
+                print(f"  ✗ All {max_attempts} attempts failed")
+                return None
+    
+    return None

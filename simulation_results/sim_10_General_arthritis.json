@@ -1,0 +1,122 @@
+{
+  "patient": {
+    "name": "Karen Thompson",
+    "age": 47,
+    "gender": "Female",
+    "symptoms": [
+      "occasional joint stiffness",
+      "mild swelling in fingers",
+      "fatigue",
+      "difficulty gripping objects",
+      "intermittent low-grade fever"
+    ],
+    "medical_history": "Has a history of mild asthma and seasonal allergies.",
+    "current_medications": [
+      "albuterol inhaler",
+      "loratadine"
+    ]
+  },
+  "actual_disease": "arthritis",
+  "department": "General",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "summary": "Triaged as SEMI_URGENT. Patient exhibiting joint stiffness and low-grade fever. Sent to doctor for evaluation.",
+      "details": {
+        "urgency": "semi_urgent",
+        "triage_reasoning": "Patient presents with intermittent low-grade fever and joint stiffness, indicating a potential inflammatory process. The history of mild asthma is also a factor, necessitating close monitoring.",
+        "vital_signs_concern": false,
+        "notes": "Monitor for any signs of acute infection or exacerbation of asthma.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "Alert doctor of patient's symptoms and history for further evaluation.",
+        "viewer_output": "Triaged as SEMI_URGENT. Patient exhibiting joint stiffness and low-grade fever. Sent to doctor for evaluation."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "summary": "Ordering inflammatory markers (ESR, CRP) from General Lab due to intermittent low-grade fever and joint stiffness suggesting potential inflammatory processes. Found 3 relevant past cases suggesting this approach.",
+      "details": {
+        "diagnosis": null,
+        "recommended_treatment": null,
+        "follow_up_needed": true,
+        "next_step": "order_test",
+        "context_for_next": "Assess inflammatory markers to guide potential diagnosis.",
+        "ordered_test": "inflammatory markers (ESR, CRP)",
+        "reasoning": "Given the patient's symptoms of intermittent low-grade fever and joint stiffness, it is crucial to assess for potential inflammatory or autoimmune conditions. Previous cases indicate that similar presentations warrant investigating inflammatory markers, which can guide further evaluation. Additionally, there are direct lessons learned from related cases, reinforcing the need for thorough assessment to prevent misdiagnosis.",
+        "tests_completed_count": 0,
+        "learning_principles_used": "Used case #2: Previous success with similar symptoms indicating inflammatory process. Historical experiences suggest the importance of checking inflammatory markers in cases with potential autoimmune links.",
+        "viewer_output": "Ordering inflammatory markers (ESR, CRP) from General Lab due to intermittent low-grade fever and joint stiffness suggesting potential inflammatory processes. Found 3 relevant past cases suggesting this approach."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "final_result",
+        "final_result"
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "Lab",
+      "summary": "Lab tests complete. Doctor will discuss findings with you.",
+      "details": {
+        "tests_ran": "Inflammatory markers (ESR, CRP)",
+        "test_outcome": "ESR: 45 mm/hr, CRP: 12 mg/L",
+        "viewer_output": "Lab tests complete. Doctor will discuss findings with you."
+      },
+      "tools_used": [
+        "get_test_context",
+        "final_result"
+      ]
+    },
+    {
+      "step": 4,
+      "agent": "Doctor",
+      "summary": "Diagnosis: Possible inflammatory arthritis. Found 3 similar cases with successful outcomes. Treatment: Initiate NSAIDs and schedule follow-up.",
+      "details": {
+        "diagnosis": "Possible inflammatory arthritis",
+        "recommended_treatment": "Initiate NSAIDs for pain and inflammation, schedule follow-up to assess treatment response and further evaluate rheumatological conditions.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "Monitor patient's response to treatment and adjust if necessary.",
+        "ordered_test": null,
+        "reasoning": "The patient's elevated inflammatory markers along with symptoms of intermittent low-grade fever and joint stiffness align with a potential diagnosis of inflammatory arthritis. Found 3 similar cases with successful outcomes. Using past experiences highlights the importance of assessing autoimmune factors when dealing with joint and inflammatory symptoms.",
+        "tests_completed_count": 1,
+        "learning_principles_used": "Used case #1: viral meningitis, focus on inflammatory process. Used experience #1: inflammatory markers for axial spondyloarthritis assessment.",
+        "viewer_output": "Diagnosis: Possible inflammatory arthritis. Found 3 similar cases with successful outcomes. Treatment: Initiate NSAIDs and schedule follow-up."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "final_result",
+        "final_result"
+      ]
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "Possible inflammatory arthritis",
+    "recommended_treatment": "Initiate NSAIDs for pain and inflammation, schedule follow-up to assess treatment response and further evaluate rheumatological conditions.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "Monitor patient's response to treatment and adjust if necessary.",
+    "ordered_test": null,
+    "reasoning": "The patient's elevated inflammatory markers along with symptoms of intermittent low-grade fever and joint stiffness align with a potential diagnosis of inflammatory arthritis. Found 3 similar cases with successful outcomes. Using past experiences highlights the importance of assessing autoimmune factors when dealing with joint and inflammatory symptoms.",
+    "tests_completed_count": 1,
+    "learning_principles_used": "Used case #1: viral meningitis, focus on inflammatory process. Used experience #1: inflammatory markers for axial spondyloarthritis assessment.",
+    "viewer_output": "Diagnosis: Possible inflammatory arthritis. Found 3 similar cases with successful outcomes. Treatment: Initiate NSAIDs and schedule follow-up."
+  },
+  "total_steps": 4,
+  "is_correct": true,
+  "validation_reason": "LLM (medium): Possible inflammatory arthritis is a subset of arthritis. Since it is a specific type of arthritis, they refer to conditions within the same overall category."
+}

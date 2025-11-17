@@ -59,6 +59,11 @@ export class SceneEventHandlers {
             if (this.scene.patientQueue?.activePatient) {
                 this.scene.patientQueue.activePatient.player.setSpeedMultiplier(speed);
             }
+            
+            // Update speed for staff events
+            if (this.scene.staffManager?.eventSystem) {
+                this.scene.staffManager.eventSystem.setSpeedMultiplier(speed);
+            }
         });
 
         this.eventUnsubscribers.push(unsubscribe);
@@ -93,6 +98,12 @@ export class SceneEventHandlers {
             // Attach glow to the sprite
             if (e.detail.sprite && this.scene.glowManager) {
                 this.scene.glowManager.attachToSprite(e.detail.sprite);
+            }
+
+            // AUTO-FOLLOW: Make mini-cam follow new active patient
+            if (e.detail.sprite && this.scene.cameraManager) {
+                this.scene.cameraManager.followSprite(e.detail.sprite);
+                console.log('[SceneEventHandlers] Mini-cam auto-following active patient');
             }
         });
         this.eventUnsubscribers.push(unsubscribe);
@@ -144,6 +155,11 @@ export class SceneEventHandlers {
             // Move glow to clicked patient if sprite exists
             if (e.detail.sprite && this.scene.glowManager) {
                 this.scene.glowManager.attachToSprite(e.detail.sprite);
+            }
+
+            // Make mini-cam follow clicked patient
+            if (e.detail.sprite && this.scene.cameraManager) {
+                this.scene.cameraManager.followSprite(e.detail.sprite);
             }
         });
         this.eventUnsubscribers.push(unsubscribe);

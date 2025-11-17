@@ -1,6 +1,7 @@
 import { CharacterFactory } from '../animation/CharacterFactory.js';
 import { STAFF_CONFIG } from './StaffConfig.js';
 
+
 /**
  * StaffManager - Manages all staff NPCs in the hospital
  * 
@@ -17,6 +18,13 @@ export class StaffManager {
         this.staff = [];
 
         this.staffConfig = STAFF_CONFIG;
+
+        this.eventSystem = null; // Will be initialized after construction
+}
+
+    async initializeEventSystem() {
+        const { StaffEventSystem } = await import('./StaffEventSystem.js');
+        this.eventSystem = new StaffEventSystem(this.scene, this);
     }
 
     spawnAllStaff() {
@@ -83,9 +91,27 @@ export class StaffManager {
      * Updates depth and processes patrol routes
      */
     update() {
+        // UPDATE EVENT SYSTEM FIRST
+        if (this.eventSystem) {
+            this.eventSystem.update();
+        }
+        
+        // Get current speed multiplier
+        const speedMultiplier = this.eventSystem?.speedMultiplier || 1;
+        
         this.staff.forEach(staffData => {
             try {
                 this.depthManager.updateSpriteDepth(staffData.npc);
+
+                // Apply speed multiplier to any active tween
+                if (staffData.npc.pathTween && staffData.npc.pathTween.isPlaying()) {
+                    staffData.npc.pathTween.timeScale = speedMultiplier;
+                }
+
+                // Skip normal patrol if staff has active event
+                if (this.eventSystem?.hasActiveEvent(staffData.id)) {
+                    return;
+                }
 
                 if (staffData.config.patrol && Array.isArray(staffData.config.patrol)) {
                     this.updatePatrol(staffData);
@@ -95,7 +121,6 @@ export class StaffManager {
             }
         });
     }
-
     /**
      * Update patrol state for a staff member
      * Handles waypoint arrival, idle timing, and moving to next waypoint
@@ -112,7 +137,7 @@ export class StaffManager {
 
         if (staffData.isIdling) {
             // Increment idle timer
-            staffData.idleTimer += 1000 / 120; // Assuming 120 FPS update rate
+            staffData.idleTimer += 1000 / 60; // Assuming 60 FPS update rate
 
             // Check if idle time is complete
             if (staffData.idleTimer >= currentWaypoint.idleMs) {
@@ -150,16 +175,24 @@ export class StaffManager {
      * @param {Object} staffData - Staff tracking data
      * @param {Object} waypoint - Target waypoint {x, y, idleMs}
      * @param {number} [speed=150] - Movement speed in pixels per second
+     * @param {number} [speedMultiplier=1] - Speed multiplier for time scaling
+     * @param {Function} [onComplete] - Callback when movement completes
      * @private
      */
-    moveToWaypoint(staffData, waypoint, speed = 150) {
+    moveToWaypoint(staffData, waypoint, speed = 150, speedMultiplier = 1, onComplete = null) {
         const npc = staffData.npc;
 
         try {
             if (this.scene.pathfinding) {
                 this.scene.pathfinding.moveToPoint(npc, waypoint.x, waypoint.y, speed, () => {
-                    // Callback when arrival complete (if needed)
+                    // Movement complete - call the callback
+                    if (onComplete) onComplete();
                 });
+                
+                // Apply speed multiplier to the tween
+                if (npc.pathTween) {
+                    npc.pathTween.timeScale = speedMultiplier;
+                }
             }
         } catch (error) {
             console.error('[StaffManager] Error moving to waypoint:', error);

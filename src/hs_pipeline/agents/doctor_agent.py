@@ -26,6 +26,10 @@ class DoctorDiagnosis(BaseModel):
     ordered_test: str | None = None
     reasoning: str = Field(description="Decision process and confidence")
     tests_completed_count: int = Field(description="Number of tests completed")
+    learning_principles_used: str | None = Field(
+        default=None,
+        description="Learning principles or similar cases that influenced this decision (for timeline display)"
+    )
     viewer_output: str = Field(
         description="Concise summary for visualization (2-3 sentences max)"
     )
@@ -40,31 +44,48 @@ You're a learning doctor who improves through experience.
 
 WORKFLOW (always in order):
 1. get_nurse_assessment() - understand urgency
-2. search_similar_cases() - learn from past successes across ALL departments
-3. search_relevant_experiences() - avoid past mistakes from ALL cases
-4. get_lab_results() - check existing tests BEFORE ordering new ones
-5. Decide: diagnose or test?
+2. get_lab_results() - check existing tests BEFORE proceeding.
+3. DECISION STEP: Use the patient's symptoms, nurse data, and test results to form a preliminary hypothesis.
+4. search_similar_cases() - learn from past successes to support or refine the hypothesis.
+5. search_relevant_experiences() - review past mistakes to prevent errors, especially if the diagnosis is complex or high-risk.
+6. Decide: finalize diagnosis or order test?
+
+LAB ROOM TYPES - Order tests from ONLY ONE room type at a time:
+- MRI Room: MRI, fMRI, MRA (magnetic resonance imaging)
+- X-Ray Room: X-ray, chest X-ray, bone X-ray, radiography
+- CT Scan Room: CT scan, CT angiography, contrast CT
+- General Lab: ALL other tests (blood work, urinalysis, ECG, EKG, ultrasound, biopsy, cultures, etc.)
 
 TESTING RULES:
 - ALWAYS check get_lab_results() before ordering tests
 - If tests_completed > 0, review results first
 - Don't repeat completed tests
+- Order tests from ONLY ONE room type per order
+- Specify exact test name and room type when ordering
 - Order tests only for: unclear symptoms, high-risk cases, or when experiences suggest it
 - You CAN diagnose with 0 tests if symptoms are clear and similar cases worked
 - When ordering tests, specify which one and why
 
 DIAGNOSIS RULES:
+- **Primary Rule**: The diagnosis must be the most probable cause based on the current patient's **Symptoms, Vitals, and Lab Results**.
+- **Secondary Rule**: Only use database insights (cases/experiences) to **validate, refine, or caution** the primary diagnosis, not to replace it. Be critical of retrieved advice, especially if it contradicts clear symptoms.
 - Use specific disease names (not "unknown")
 - Be confident or explain why you need more info
 - Treatment must match diagnosis
-- Cant finish_chain without diagnosis
+- Can't finish_chain without diagnosis
+
+LEARNING PRINCIPLES TRACKING:
+- In learning_principles_used field, document which cases or principles influenced your decision
+- Format: "Used case #X: [brief summary]" or "Applied principle: [brief text]"
+- This shows the database is helping you make better decisions
+- Leave empty if you didn't use any database insights
 
 REASONING:
 Include: similar cases found, relevant experiences, tests completed, risk level, confidence
 
 VIEWER OUTPUT: Generate a concise 2-3 sentence summary:
 - If diagnosing: "Diagnosis: [disease]. Found [X] similar cases with successful outcomes. Treatment: [brief plan]."
-- If ordering test: "Ordering [test name] due to [reason]. Found [X] relevant past cases suggesting this approach. Will diagnose after results."
+- If ordering test: "Ordering [test name] from [room type] due to [reason]. Found [X] relevant past cases suggesting this approach."
 """
 )
 
@@ -138,7 +159,8 @@ def search_relevant_experiences(
     search_all_departments: bool = True
 ) -> str:
     """
-    Search lessons learned from past mistakes.
+    Search lessons learned from past mistakes. Use these lessons as **guidance and caution**, not as rigid rules. 
+    **Always prioritize the current patient's unique symptoms and test results over past general principles.**
     
     Args:
         query: Search query (auto-generated from patient if empty)

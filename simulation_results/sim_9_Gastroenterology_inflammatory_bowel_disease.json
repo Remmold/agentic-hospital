@@ -1,0 +1,133 @@
+{
+  "patient": {
+    "name": "Jessica Turner",
+    "age": 29,
+    "gender": "Female",
+    "symptoms": [
+      "abdominal cramping",
+      "intermittent diarrhea",
+      "fatigue",
+      "occasional bloating"
+    ],
+    "medical_history": "History of seasonal allergies, no prior gastrointestinal issues",
+    "current_medications": [
+      "loratadine",
+      "multivitamins"
+    ]
+  },
+  "actual_disease": "inflammatory_bowel_disease",
+  "department": "Gastroenterology",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "summary": "Triaged as SEMI_URGENT. Patient presenting with abdominal cramping and intermittent diarrhea. Sent to doctor for evaluation.",
+      "details": {
+        "urgency": "semi_urgent",
+        "triage_reasoning": "Patient is experiencing abdominal cramping and intermittent diarrhea which are moderate symptoms but stable and related to gastrointestinal distress as there is no significant deterioration risk.",
+        "vital_signs_concern": false,
+        "notes": "Fatigue and occasional bloating also present, but vital signs are stable and there are no concerning chronic conditions.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "Gastroenterology evaluation for potential gastrointestinal issues.",
+        "viewer_output": "Triaged as SEMI_URGENT. Patient presenting with abdominal cramping and intermittent diarrhea. Sent to doctor for evaluation."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "summary": "Ordering abdominal ultrasound due to moderate abdominal cramping and diarrhea. Found 4 relevant past cases suggesting this approach.",
+      "details": {
+        "diagnosis": null,
+        "recommended_treatment": null,
+        "follow_up_needed": false,
+        "next_step": "order_test",
+        "context_for_next": "Patient exhibits intermittent abdominal discomfort and diarrhea, indicating potential gastrointestinal conditions.",
+        "ordered_test": "abdominal ultrasound",
+        "reasoning": "Ordering abdominal ultrasound due to moderate abdominal cramping and diarrhea, which may indicate gastrointestinal issues like pancreatitis or Crohn's disease. Found 4 relevant past experiences suggesting the need for imaging to rule out serious complications.",
+        "tests_completed_count": 0,
+        "learning_principles_used": "Used case #3: [Acute Pancreatitis diagnosis following similar symptoms]",
+        "viewer_output": "Ordering abdominal ultrasound due to moderate abdominal cramping and diarrhea. Found 4 relevant past cases suggesting this approach."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "Lab",
+      "summary": "Ultrasound completed. Doctor will discuss findings with you.",
+      "details": {
+        "tests_ran": "abdominal ultrasound",
+        "test_outcome": "No significant abnormalities detected.",
+        "viewer_output": "Ultrasound completed. Doctor will discuss findings with you."
+      },
+      "tools_used": [
+        "get_test_context",
+        "final_result"
+      ]
+    },
+    {
+      "step": 4,
+      "agent": "Doctor",
+      "summary": "Diagnosis: Mild Gastroenteritis. Found 3 similar cases with successful outcomes. Treatment: Hydration and rest, monitor for worsening symptoms.",
+      "details": {
+        "diagnosis": "Mild Gastroenteritis",
+        "recommended_treatment": "Hydration and rest, consider diet modification, and monitor for worsening symptoms.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "The patient should be monitored for signs of dehydration or worsening gastrointestinal distress. If symptoms persist, consider further evaluations such as stool tests.",
+        "ordered_test": null,
+        "reasoning": "Patient shows intermittent abdominal discomfort and diarrhea with no significant abnormalities in prior ultrasound. Found 3 similar cases with successful outcomes suggesting mild gastroenteritis. Treatment based on these cases supports hydration and symptom management.",
+        "tests_completed_count": 1,
+        "learning_principles_used": "Used case #1: Mild Gastroenteritis diagnosis was similar with a successful outcome.",
+        "viewer_output": "Diagnosis: Mild Gastroenteritis. Found 3 similar cases with successful outcomes. Treatment: Hydration and rest, monitor for worsening symptoms."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "get_lab_results",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 5,
+      "agent": "Reflection",
+      "summary": "Learned: Abdominal cramping and intermittent diarrhea in a patient with no prior GI issues requires consideration of inflammatory bowel disease. This will improve future IBD diagnoses.",
+      "details": {
+        "principle_text": "Abdominal cramping and intermittent diarrhea in a patient with no prior GI issues requires consideration of inflammatory bowel disease. This can prevent misdiagnosis and ensure appropriate treatment.",
+        "reasoning": "The symptoms were misattributed to mild gastroenteritis, overlooking possible underlying chronic conditions such as IBD.",
+        "confidence": 0.9,
+        "viewer_output": "Learned: Abdominal cramping and intermittent diarrhea in a patient with no prior GI issues requires consideration of inflammatory bowel disease. This will improve future IBD diagnoses."
+      },
+      "tools_used": []
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "Mild Gastroenteritis",
+    "recommended_treatment": "Hydration and rest, consider diet modification, and monitor for worsening symptoms.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "The patient should be monitored for signs of dehydration or worsening gastrointestinal distress. If symptoms persist, consider further evaluations such as stool tests.",
+    "ordered_test": null,
+    "reasoning": "Patient shows intermittent abdominal discomfort and diarrhea with no significant abnormalities in prior ultrasound. Found 3 similar cases with successful outcomes suggesting mild gastroenteritis. Treatment based on these cases supports hydration and symptom management.",
+    "tests_completed_count": 1,
+    "learning_principles_used": "Used case #1: Mild Gastroenteritis diagnosis was similar with a successful outcome.",
+    "viewer_output": "Diagnosis: Mild Gastroenteritis. Found 3 similar cases with successful outcomes. Treatment: Hydration and rest, monitor for worsening symptoms."
+  },
+  "total_steps": 4,
+  "is_correct": false,
+  "validation_reason": "Clear mismatch: 'gastroenteritis' != 'inflammatory bowel disease'"
+}

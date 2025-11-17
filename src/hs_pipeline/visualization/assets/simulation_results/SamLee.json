@@ -1,0 +1,136 @@
+{
+  "patient": {
+    "name": "Sam Lee",
+    "age": 47,
+    "gender": "Male",
+    "symptoms": [
+      "mild fever",
+      "chills",
+      "intermittent fatigue",
+      "slight cough",
+      "joint discomfort",
+      "unexplained weight loss"
+    ],
+    "medical_history": "Hypertension, history of rheumatic fever",
+    "current_medications": [
+      "Lisinopril",
+      "Aspirin"
+    ],
+    "firstName": "Sam",
+    "lastName": "Lee"
+  },
+  "actual_disease": "infectious_endocarditis",
+  "department": "Cardiology",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "summary": "Triaged as SEMI_URGENT. Patient exhibits mild fever, chills, and unexplained weight loss. Sent to doctor for further evaluation.",
+      "details": {
+        "urgency": "semi_urgent",
+        "triage_reasoning": "Patient presents with multiple concerning symptoms, including mild fever, chills, and unexplained weight loss, combined with a medical history of hypertension and rheumatic fever, indicating the need for evaluation.",
+        "vital_signs_concern": false,
+        "notes": "Vital signs are stable, but the combination of symptoms raises concern for potential infection or other issues.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "The doctor will need to evaluate the patient to determine further tests or treatments.",
+        "viewer_output": "Triaged as SEMI_URGENT. Patient exhibits mild fever, chills, and unexplained weight loss. Sent to doctor for further evaluation."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "summary": "Ordering blood work from General Lab due to the patient's concerning symptoms suggesting infection or underlying pathology. Found 3 relevant past cases suggesting this approach.",
+      "details": {
+        "diagnosis": null,
+        "recommended_treatment": null,
+        "follow_up_needed": null,
+        "next_step": "order_test",
+        "context_for_next": "suspected infection or underlying pathology due to symptoms and history",
+        "ordered_test": "blood work",
+        "reasoning": "The patient's symptoms of mild fever, chills, and unexplained weight loss, combined with their medical history, suggest a potential infection or other underlying pathology. Blood work is essential to assess for any infectious processes or inflammatory markers. Found 3 similar cases with successful diagnoses that highlight the importance of early laboratory evaluation in similar presentations.",
+        "tests_completed_count": 0,
+        "learning_principles_used": "Used case #1: Viral meningitis presentation showed success with lab tests; Applied principle: early evaluation necessary due to concerning symptoms.",
+        "viewer_output": "Ordering blood work from General Lab due to the patient's concerning symptoms suggesting infection or underlying pathology. Found 3 relevant past cases suggesting this approach."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "Lab",
+      "summary": "Blood work completed. Results sent to your doctor.",
+      "details": {
+        "tests_ran": "blood work",
+        "test_outcome": "WBC: 12,800 cells/\u00b5L, Hemoglobin: 10.2 g/dL, Platelets: 150,000 cells/\u00b5L, ESR: 45 mm/hr, CRP: 8.5 mg/dL",
+        "viewer_output": "Blood work completed. Results sent to your doctor."
+      },
+      "tools_used": [
+        "get_test_context",
+        "final_result"
+      ]
+    },
+    {
+      "step": 4,
+      "agent": "Doctor",
+      "summary": "Diagnosis: suspected infection or underlying pathology. Found 3 similar cases with successful outcomes. Treatment: Initiate appropriate antibiotic therapy.",
+      "details": {
+        "diagnosis": "suspected infection or underlying pathology",
+        "recommended_treatment": "Initiate appropriate antibiotic therapy based on assessment of potential infection.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "Urgent evaluation of suspected infection.",
+        "ordered_test": null,
+        "reasoning": "The patient presents with features indicative of an infection, corroborated by elevated WBC count and inflammatory markers (e.g., high CRP and ESR). Similar cases demonstrate successful outcomes with infection management. The medical history and semi-urgent nature suggest a need for treatment.",
+        "tests_completed_count": 1,
+        "learning_principles_used": "Used case #1: Patient with mild fever and headache diagnosed with viral meningitis, showing importance of evaluation; Applied principle: inflammatory markers suggest infection.",
+        "viewer_output": "Diagnosis: suspected infection or underlying pathology. Found 3 similar cases with successful outcomes. Treatment: Initiate appropriate antibiotic therapy."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 5,
+      "agent": "Reflection",
+      "summary": "Learned: Mild fever with chills and joint discomfort in a patient with rheumatic fever requires consideration of infectious endocarditis. This will improve future endocarditis diagnoses.",
+      "details": {
+        "principle_text": "Mild fever with chills, fatigue, and joint discomfort in a patient with a history of rheumatic fever requires consideration of infectious endocarditis and appropriate blood work. This will improve future diagnoses of endocarditis.",
+        "reasoning": "The error happened due to not considering endocarditis as a differential given the patient's history and presenting symptoms, leading to delayed diagnosis and treatment.",
+        "confidence": 0.9,
+        "viewer_output": "Learned: Mild fever with chills and joint discomfort in a patient with rheumatic fever requires consideration of infectious endocarditis. This will improve future endocarditis diagnoses."
+      },
+      "tools_used": []
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "suspected infection or underlying pathology",
+    "recommended_treatment": "Initiate appropriate antibiotic therapy based on assessment of potential infection.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "Urgent evaluation of suspected infection.",
+    "ordered_test": null,
+    "reasoning": "The patient presents with features indicative of an infection, corroborated by elevated WBC count and inflammatory markers (e.g., high CRP and ESR). Similar cases demonstrate successful outcomes with infection management. The medical history and semi-urgent nature suggest a need for treatment.",
+    "tests_completed_count": 1,
+    "learning_principles_used": "Used case #1: Patient with mild fever and headache diagnosed with viral meningitis, showing importance of evaluation; Applied principle: inflammatory markers suggest infection.",
+    "viewer_output": "Diagnosis: suspected infection or underlying pathology. Found 3 similar cases with successful outcomes. Treatment: Initiate appropriate antibiotic therapy."
+  },
+  "total_steps": 4,
+  "is_correct": false,
+  "validation_reason": "Clear mismatch: 'infection or underlying pathology' != 'infectious endocarditis'"
+}

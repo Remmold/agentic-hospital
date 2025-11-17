@@ -1,0 +1,95 @@
+{
+  "patient": {
+    "name": "Jaxon Turner",
+    "age": 29,
+    "gender": "Male",
+    "symptoms": [
+      "lower back stiffness",
+      "occasional hip discomfort",
+      "fatigue",
+      "intermittent pain in the knees",
+      "mild swelling in the heels"
+    ],
+    "medical_history": "Mild asthma since childhood, no previous surgeries",
+    "current_medications": [
+      "ibuprofen"
+    ],
+    "firstName": "Jaxon",
+    "lastName": "Turner"
+  },
+  "actual_disease": "axial_spondyloarthritis",
+  "department": "Rheumatology",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "summary": "Triaged as SEMI_URGENT. Patient presenting with lower back stiffness and knee pain. Sent to doctor for evaluation.",
+      "details": {
+        "urgency": "semi_urgent",
+        "triage_reasoning": "The patient presents with lower back stiffness, intermittent knee pain, and fatigue, indicating the need for evaluation of musculoskeletal issues, though they are stable at this time.",
+        "vital_signs_concern": false,
+        "notes": "Patient has mild asthma but is currently stable with no acute respiratory symptoms.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "patient requires assessment for musculoskeletal concerns",
+        "viewer_output": "Triaged as SEMI_URGENT. Patient presenting with lower back stiffness and knee pain. Sent to doctor for evaluation."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "summary": "Diagnosis: musculoskeletal discomfort possibly indicating strain or overuse. Found 3 similar cases with successful outcomes. Treatment: Recommend rest, physiotherapy, or NSAIDs as needed.",
+      "details": {
+        "diagnosis": "musculoskeletal discomfort possibly indicating strain or overuse",
+        "recommended_treatment": "Recommend rest, physiotherapy, or NSAIDs as needed. Follow-up if symptoms persist or worsen.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "",
+        "ordered_test": null,
+        "reasoning": "Evaluated similar cases where patients presented with musculoskeletal concerns. Three successful outcomes were tied to a diagnosis without needing tests. No tests have been completed, aligning with the current patient's symptoms of stiffness and pain in specific areas.",
+        "tests_completed_count": 0,
+        "learning_principles_used": "Used case #1: Diagnosis and treatment approaches without previous testing were successful for similar musculoskeletal symptoms.",
+        "viewer_output": "Diagnosis: musculoskeletal discomfort possibly indicating strain or overuse. Found 3 similar cases with successful outcomes. Treatment: Recommend rest, physiotherapy, or NSAIDs as needed."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "Reflection",
+      "summary": "Learned: Lower back stiffness and hip discomfort requires assessment for axial spondyloarthritis. This will improve future axial spondyloarthritis diagnoses.",
+      "details": {
+        "principle_text": "Lower back stiffness and hip discomfort requires assessment for axial spondyloarthritis including imaging and inflammatory markers. This prevents misdiagnosis and ensures appropriate treatment.",
+        "reasoning": "The error occurred as typical musculoskeletal symptoms were misinterpreted, highlighting the need for awareness of inflammatory conditions.",
+        "confidence": 0.8,
+        "viewer_output": "Learned: Lower back stiffness and hip discomfort requires assessment for axial spondyloarthritis. This will improve future axial spondyloarthritis diagnoses."
+      },
+      "tools_used": []
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "musculoskeletal discomfort possibly indicating strain or overuse",
+    "recommended_treatment": "Recommend rest, physiotherapy, or NSAIDs as needed. Follow-up if symptoms persist or worsen.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "",
+    "ordered_test": null,
+    "reasoning": "Evaluated similar cases where patients presented with musculoskeletal concerns. Three successful outcomes were tied to a diagnosis without needing tests. No tests have been completed, aligning with the current patient's symptoms of stiffness and pain in specific areas.",
+    "tests_completed_count": 0,
+    "learning_principles_used": "Used case #1: Diagnosis and treatment approaches without previous testing were successful for similar musculoskeletal symptoms.",
+    "viewer_output": "Diagnosis: musculoskeletal discomfort possibly indicating strain or overuse. Found 3 similar cases with successful outcomes. Treatment: Recommend rest, physiotherapy, or NSAIDs as needed."
+  },
+  "total_steps": 2,
+  "is_correct": false,
+  "validation_reason": "Clear mismatch: 'musculoskeletal discomfort possibly indicating strain or overuse' != 'axial spondyloarthritis'"
+}

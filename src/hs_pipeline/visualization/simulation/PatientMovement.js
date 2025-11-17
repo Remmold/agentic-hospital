@@ -29,7 +29,6 @@ export class PatientMovement {
      * @param {Function} [onComplete] - Optional callback when movement completes
      */
     moveToLocation(sprite, locationKey, arrivalAction, arrivalDirection, onComplete) {
-        // Resolve location from key or object
         const location = getLocation(locationKey);
 
         if (!location) {
@@ -38,15 +37,15 @@ export class PatientMovement {
             return;
         }
 
+        const baseSpeed = 150;
+
         this.pathfinding.moveToPoint(
             sprite,
             location.x,
             location.y,
-            150, // Movement speed
+            baseSpeed, // Use base speed only - timeScale handles the multiplier
             () => {
-                // On arrival: play arrival animation and trigger callback
                 this.animations.stopAndPlay(sprite, arrivalAction, arrivalDirection);
-
                 if (onComplete) {
                     onComplete();
                 }

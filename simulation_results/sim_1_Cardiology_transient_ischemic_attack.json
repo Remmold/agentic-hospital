@@ -1,0 +1,83 @@
+{
+  "patient": {
+    "name": "David Martinez",
+    "age": 62,
+    "gender": "Male",
+    "symptoms": [
+      "slight weakness in the left arm",
+      "mild dizziness",
+      "temporary difficulty speaking",
+      "a vague sensation of tingling",
+      "brief confusion"
+    ],
+    "medical_history": "History of hypertension and high cholesterol",
+    "current_medications": [
+      "Lisinopril",
+      "Atorvastatin"
+    ]
+  },
+  "actual_disease": "transient_ischemic_attack",
+  "department": "Cardiology",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "summary": "Triaged as URGENT. Patient presents with weakness in the left arm and difficulty speaking, indicating possible stroke symptoms. Sent to doctor immediately for further evaluation.",
+      "details": {
+        "urgency": "urgent",
+        "triage_reasoning": "Patient exhibits signs consistent with a potential stroke, including weakness, difficulty speaking, and confusion.",
+        "vital_signs_concern": true,
+        "notes": "Patient has a history of hypertension and high cholesterol, both of which increase stroke risk. Symptoms are concerning enough to warrant immediate evaluation.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "Patient needs to be assessed for a possible stroke.",
+        "viewer_output": "Triaged as URGENT. Patient presents with weakness in the left arm and difficulty speaking, indicating possible stroke symptoms. Sent to doctor immediately for further evaluation."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "summary": "Diagnosis: Transient Ischemic Attack (TIA). Found 2 similar cases with successful outcomes. Treatment: Immediate referral to neurology.",
+      "details": {
+        "diagnosis": "Transient Ischemic Attack (TIA)",
+        "recommended_treatment": "Immediate referral to neurology for further evaluation and potential treatment to prevent stroke.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "",
+        "ordered_test": null,
+        "reasoning": "The patient displays symptoms consistent with a TIA as seen in similar cases. Urgent imaging is typically required to confirm the diagnosis and exclude full stroke, maintaining a high risk level is critical for treatment. Previous experiences highlight the need for immediate imaging in such situations, supporting this diagnosis.",
+        "tests_completed_count": 0,
+        "learning_principles_used": "Used case #1: TIA diagnosis from similar symptoms and outcomes; Used case #2: also supports the diagnosis of TIA based on early symptoms.",
+        "viewer_output": "Diagnosis: Transient Ischemic Attack (TIA). Found 2 similar cases with successful outcomes. Treatment: Immediate referral to neurology."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "final_result",
+        "final_result"
+      ]
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "Transient Ischemic Attack (TIA)",
+    "recommended_treatment": "Immediate referral to neurology for further evaluation and potential treatment to prevent stroke.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "",
+    "ordered_test": null,
+    "reasoning": "The patient displays symptoms consistent with a TIA as seen in similar cases. Urgent imaging is typically required to confirm the diagnosis and exclude full stroke, maintaining a high risk level is critical for treatment. Previous experiences highlight the need for immediate imaging in such situations, supporting this diagnosis.",
+    "tests_completed_count": 0,
+    "learning_principles_used": "Used case #1: TIA diagnosis from similar symptoms and outcomes; Used case #2: also supports the diagnosis of TIA based on early symptoms.",
+    "viewer_output": "Diagnosis: Transient Ischemic Attack (TIA). Found 2 similar cases with successful outcomes. Treatment: Immediate referral to neurology."
+  },
+  "total_steps": 2,
+  "is_correct": true,
+  "validation_reason": "Exact match: 'transient ischemic attack'"
+}

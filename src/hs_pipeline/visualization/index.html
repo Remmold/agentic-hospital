@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hospital Simulation</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="icon" href="data:,"> 
+    <link rel="icon" href="data:,">
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
 </head>
 
@@ -24,16 +24,13 @@
             <div class="patient-info">
                 <h3>About This Simulation</h3>
                 <p>
-                    This system simulates a hospital workflow, where AI agents (nurses, doctors, lab techs) collaborate to diagnose
-                    patients step by step.
+                    This system simulates a hospital workflow, where AI agents (nurses, doctors, lab techs) collaborate to diagnose patients step by step.
                 </p>
                 <p>
-                    <strong>How it works:</strong> Each case begins with triage, followed by a doctor’s exam, then lab tests. Agents
-                    learn from outcomes to improve diagnoses.
+                    <strong>How it works:</strong> Each case begins with triage, followed by a doctor’s exam, then lab tests. Agents learn from outcomes to improve diagnoses.
                 </p>
                 <p>
-                    <strong>Your role:</strong> Watch as agents work through each scenario. The right panel shows the decision
-                    timeline.
+                    <strong>Your role:</strong> Watch as agents work through each scenario. The right panel shows the decision timeline.
                 </p>
                 <p>
                     Use the controls below to navigate and interact with the simulation.
@@ -77,10 +74,15 @@
                     </div>
                 </div>
 
-                <div class="space-button-container">
+                <div class="shift-button-container">
                     <div class="controller-item">
-                        <button class="control-btn space-btn">Space</button>
+                        <button class="control-btn shift-btn">Shift</button>
                     </div>
+                </div>
+
+                <!-- Mini Follow Camera -->
+                <div id="mini-cam-border">
+                    <div id="mini-cam-label">Follow Camera</div>
                 </div>
             </div>
         </div>
@@ -88,9 +90,14 @@
 
     <div id="main-section">
         <div class="panel-header">
-            <h1>🏥 Hospital Simulation Visualizer</h1>
+            <h1>Digital Hospital</h1>
         </div>
-        <div id="game-container"></div>
+        <div id="game-container">
+            <!-- Camera Scrollbar -->
+            <div id="camera-scrollbar">
+                <div id="camera-scrollbar-thumb"></div>
+            </div>
+        </div>
     </div>
 
     <div id="simulation-panel" class="side-panel">

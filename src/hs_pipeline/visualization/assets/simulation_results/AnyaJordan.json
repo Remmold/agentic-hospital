@@ -1,0 +1,96 @@
+{
+  "patient": {
+    "name": "Anya Jordan",
+    "age": 41,
+    "gender": "Female",
+    "symptoms": [
+      "wrist pain",
+      "occasional swelling",
+      "discomfort when gripping objects",
+      "tingling sensation in fingers",
+      "mild stiffness in the morning"
+    ],
+    "medical_history": "Diagnosed with rheumatoid arthritis 5 years ago, currently managed with NSAIDs.",
+    "current_medications": [
+      "Ibuprofen",
+      "Methotrexate"
+    ],
+    "firstName": "Anya",
+    "lastName": "Jordan"
+  },
+  "actual_disease": "de_quervains_tenosynovitis",
+  "department": "Orthopedics",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "summary": "Triaged as SEMI_URGENT. Patient has wrist pain with occasional swelling and tingling in fingers. Sent to doctor for further evaluation.",
+      "details": {
+        "urgency": "semi_urgent",
+        "triage_reasoning": "Patient presents with wrist pain, swelling, and tingling in fingers, indicative of potential exacerbation of rheumatoid arthritis. Underlying chronic condition requires attention within 30-60 minutes, but not life-threatening at present.",
+        "vital_signs_concern": false,
+        "notes": "Assess for potential exacerbation of rheumatoid arthritis and consider further imaging or adjustments in treatment plan.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "Rheumatology assessment needed for treatment modification and management of symptoms.",
+        "viewer_output": "Triaged as SEMI_URGENT. Patient has wrist pain with occasional swelling and tingling in fingers. Sent to doctor for further evaluation."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "summary": "Diagnosis: rheumatoid arthritis exacerbation. Found 3 similar cases with successful outcomes suggesting treatment modification. Treatment: adjustment of DMARDs and possible corticosteroid injection for relief.",
+      "details": {
+        "diagnosis": "rheumatoid arthritis exacerbation",
+        "recommended_treatment": "adjustment of disease-modifying antirheumatic drugs (DMARDs) and possible corticosteroid injection for symptomatic relief.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "Patient's symptoms indicate an exacerbation of rheumatoid arthritis, requiring treatment modification and monitoring.",
+        "ordered_test": null,
+        "reasoning": "The patient exhibits symptoms consistent with rheumatoid arthritis exacerbation, confirmed by similar cases that indicate successful management strategies. No tests have been completed yet, but previous experiences indicate that adjusting current medication is often necessary for symptom management in similar presentations.",
+        "tests_completed_count": 0,
+        "learning_principles_used": "Used case #1: Successful management strategies for wrist pain and swelling in rheumatoid arthritis context.",
+        "viewer_output": "Diagnosis: rheumatoid arthritis exacerbation. Found 3 similar cases with successful outcomes suggesting treatment modification. Treatment: adjustment of DMARDs and possible corticosteroid injection for relief."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "get_lab_results",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "final_result"
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "Reflection",
+      "summary": "Learned: Wrist pain with grip discomfort requires a focused assessment for de Quervain's tenosynovitis. This will improve future diagnoses of tenosynovitis and avoid mislabeling arthritic flare-ups.",
+      "details": {
+        "principle_text": "Wrist pain with grip discomfort and tingling requires evaluation for de Quervain's tenosynovitis before concluding rheumatoid arthritis exacerbation.",
+        "reasoning": "The symptoms described may overlap with rheumatoid arthritis, but specific functional impairment and location indicate de Quervain's. Careful assessment can prevent misdiagnosis.",
+        "confidence": 0.9,
+        "viewer_output": "Learned: Wrist pain with grip discomfort requires a focused assessment for de Quervain's tenosynovitis. This will improve future diagnoses of tenosynovitis and avoid mislabeling arthritic flare-ups."
+      },
+      "tools_used": []
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "rheumatoid arthritis exacerbation",
+    "recommended_treatment": "adjustment of disease-modifying antirheumatic drugs (DMARDs) and possible corticosteroid injection for symptomatic relief.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "Patient's symptoms indicate an exacerbation of rheumatoid arthritis, requiring treatment modification and monitoring.",
+    "ordered_test": null,
+    "reasoning": "The patient exhibits symptoms consistent with rheumatoid arthritis exacerbation, confirmed by similar cases that indicate successful management strategies. No tests have been completed yet, but previous experiences indicate that adjusting current medication is often necessary for symptom management in similar presentations.",
+    "tests_completed_count": 0,
+    "learning_principles_used": "Used case #1: Successful management strategies for wrist pain and swelling in rheumatoid arthritis context.",
+    "viewer_output": "Diagnosis: rheumatoid arthritis exacerbation. Found 3 similar cases with successful outcomes suggesting treatment modification. Treatment: adjustment of DMARDs and possible corticosteroid injection for relief."
+  },
+  "total_steps": 2,
+  "is_correct": false,
+  "validation_reason": "Clear mismatch: 'rheumatoid arthritis exacerbation' != 'de quervains tenosynovitis'"
+}

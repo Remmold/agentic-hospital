@@ -15,7 +15,7 @@ export class GlowManager {
     createGlow() {
         // Create a glowing circle
         this.glowGraphics = this.scene.add.graphics();
-        this.glowGraphics.setDepth(45); 
+        this.glowGraphics.setDepth(10); 
         
         // Draw multiple layers for glow effect
         // Outer glow (largest, most transparent)
@@ -92,7 +92,7 @@ export class GlowManager {
             // Position higher to center around sprite body (sprites have origin at feet)
             this.glowGraphics.setPosition(
                 this.targetSprite.x,
-                this.targetSprite.y - 24
+                this.targetSprite.y - 17
             );
         }
     }

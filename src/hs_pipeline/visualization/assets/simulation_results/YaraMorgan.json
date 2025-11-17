@@ -1,0 +1,135 @@
+{
+  "patient": {
+    "name": "Yara Morgan",
+    "age": 45,
+    "gender": "Female",
+    "symptoms": [
+      "intermittent abdominal discomfort",
+      "slight nausea especially after meals",
+      "occasional bloating",
+      "mild yellowing of skin",
+      "decreased appetite"
+    ],
+    "medical_history": "hypertension, occasional heartburn",
+    "current_medications": [
+      "lisinopril",
+      "omeprazole"
+    ],
+    "firstName": "Yara",
+    "lastName": "Morgan"
+  },
+  "actual_disease": "cholecystitis",
+  "department": "Gastroenterology",
+  "timeline": [
+    {
+      "step": 1,
+      "agent": "Nurse",
+      "summary": "Triaged as SEMI_URGENT. Patient experiencing abdominal discomfort, nausea, and mild jaundice. Sent to doctor for further evaluation.",
+      "details": {
+        "urgency": "semi_urgent",
+        "triage_reasoning": "Patient presents with intermittent abdominal discomfort, nausea, bloating, and mild jaundice, indicating potential liver issues which require further evaluation. Chronic conditions like hypertension necessitate closer observation, contributing to the urgency.",
+        "vital_signs_concern": false,
+        "notes": "Patient is stable but needs assessment to rule out significant liver dysfunction.",
+        "next_step": "send_to_doctor",
+        "context_for_next": "Further evaluation needed for abdominal symptoms and possible liver dysfunction.",
+        "viewer_output": "Triaged as SEMI_URGENT. Patient experiencing abdominal discomfort, nausea, and mild jaundice. Sent to doctor for further evaluation."
+      },
+      "tools_used": [
+        "get_patient_symptoms",
+        "get_medical_history",
+        "get_current_medications",
+        "final_result"
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "Doctor",
+      "summary": "Ordering liver function tests from General Lab due to abdominal symptoms and potential liver dysfunction. Found 4 relevant past cases suggesting this approach.",
+      "details": {
+        "diagnosis": null,
+        "recommended_treatment": null,
+        "follow_up_needed": true,
+        "next_step": "order_test",
+        "context_for_next": "Ordering liver function tests to evaluate for possible liver dysfunction due to presenting symptoms.",
+        "ordered_test": "liver function tests from General Lab",
+        "reasoning": "The patient presents with intermittent abdominal discomfort, nausea, and mild jaundice, which necessitates liver function testing. Found 4 relevant past experiences indicating the importance of liver function tests in cases suggesting liver dysfunction.",
+        "tests_completed_count": 0,
+        "learning_principles_used": "Used case #1: [Intermittent abdominal discomfort with recent weight loss and heavy alcohol consumption promotes liver function tests for distinguishing liver diseases.]",
+        "viewer_output": "Ordering liver function tests from General Lab due to abdominal symptoms and potential liver dysfunction. Found 4 relevant past cases suggesting this approach."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "Lab",
+      "summary": "Lab tests complete. Doctor will discuss findings with you.",
+      "details": {
+        "tests_ran": "liver function tests",
+        "test_outcome": "ALT: 45 U/L, AST: 60 U/L, ALP: 150 U/L, Total Bilirubin: 2.1 mg/dL, Direct Bilirubin: 0.8 mg/dL, Albumin: 3.5 g/dL",
+        "viewer_output": "Lab tests complete. Doctor will discuss findings with you."
+      },
+      "tools_used": [
+        "get_test_context",
+        "final_result"
+      ]
+    },
+    {
+      "step": 4,
+      "agent": "Doctor",
+      "summary": "Diagnosis: Mild Hepatic Dysfunction. Found 3 similar cases with successful outcomes. Treatment: Monitor liver function closely; consider further imaging or referral to gastroenterology for persistent symptoms.",
+      "details": {
+        "diagnosis": "Mild Hepatic Dysfunction",
+        "recommended_treatment": "Monitor liver function closely; consider further imaging or referral to gastroenterology for persistent symptoms.",
+        "follow_up_needed": true,
+        "next_step": "finish_chain",
+        "context_for_next": "",
+        "ordered_test": null,
+        "reasoning": "Urgent evaluation of liver function due to symptoms. Found 3 similar cases with successful outcomes, highlighting the importance of liver function tests in patients with similar presentations. Tests completed indicate mild liver dysfunction with elevated liver enzymes and total bilirubin levels.",
+        "tests_completed_count": 1,
+        "learning_principles_used": "Used case #1: abdominal discomfort with jaundice necessitates monitoring of liver function.",
+        "viewer_output": "Diagnosis: Mild Hepatic Dysfunction. Found 3 similar cases with successful outcomes. Treatment: Monitor liver function closely; consider further imaging or referral to gastroenterology for persistent symptoms."
+      },
+      "tools_used": [
+        "get_nurse_assessment",
+        "search_similar_cases",
+        "search_relevant_experiences",
+        "get_lab_results",
+        "final_result"
+      ]
+    },
+    {
+      "step": 5,
+      "agent": "Reflection",
+      "summary": "Learned: Intermittent abdominal discomfort with nausea after meals requires ultrasound for cholecystitis workup. This will improve future cholecystitis diagnoses.",
+      "details": {
+        "principle_text": "Intermittent abdominal discomfort with slight nausea after meals requires ultrasound to assess for cholecystitis before concluding hepatic dysfunction.",
+        "reasoning": "Initial assumption of hepatic dysfunction neglected the common presentation of cholecystitis; investigations must align with symptom patterns.",
+        "confidence": 0.9,
+        "viewer_output": "Learned: Intermittent abdominal discomfort with nausea after meals requires ultrasound for cholecystitis workup. This will improve future cholecystitis diagnoses."
+      },
+      "tools_used": []
+    }
+  ],
+  "final_diagnosis": {
+    "diagnosis": "Mild Hepatic Dysfunction",
+    "recommended_treatment": "Monitor liver function closely; consider further imaging or referral to gastroenterology for persistent symptoms.",
+    "follow_up_needed": true,
+    "next_step": "finish_chain",
+    "context_for_next": "",
+    "ordered_test": null,
+    "reasoning": "Urgent evaluation of liver function due to symptoms. Found 3 similar cases with successful outcomes, highlighting the importance of liver function tests in patients with similar presentations. Tests completed indicate mild liver dysfunction with elevated liver enzymes and total bilirubin levels.",
+    "tests_completed_count": 1,
+    "learning_principles_used": "Used case #1: abdominal discomfort with jaundice necessitates monitoring of liver function.",
+    "viewer_output": "Diagnosis: Mild Hepatic Dysfunction. Found 3 similar cases with successful outcomes. Treatment: Monitor liver function closely; consider further imaging or referral to gastroenterology for persistent symptoms."
+  },
+  "total_steps": 4,
+  "is_correct": false,
+  "validation_reason": "Clear mismatch: 'hepatic dysfunction' != 'cholecystitis'"
+}
