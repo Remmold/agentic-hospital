@@ -21,7 +21,7 @@ jobs:
           key: ${{ secrets.PROD_SSH_KEY }}
           script: |
             echo "📦 Pulling latest code"
-            cd /home/winniio_admin/hospital-simulation-pipeline
+            cd /home/danialraza/hospital-simulation-pipeline
             git pull origin main
 
             echo "🛑 Stopping previous containers"
