@@ -1,12 +1,12 @@
 from dataclasses import dataclass
 from typing import Literal
-from hs_pipeline.agents.patient_generator import PatientData
-from hs_pipeline.agents.nurse_agent import NurseAssessment
-from hs_pipeline.agents.lab_agent import LabResults
+from hs_pipeline.simulation.agents.patient_generator import PatientData
+from hs_pipeline.simulation.agents.nurse_agent import NurseAssessment
+from hs_pipeline.simulation.agents.lab_agent import LabResults
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent, RunContext
 from hs_pipeline.utils.constants import CHOSEN_LLM
-from hs_pipeline.database_management.db_manager import get_db
+from hs_pipeline.simulation.database import get_db
 
 
 @dataclass

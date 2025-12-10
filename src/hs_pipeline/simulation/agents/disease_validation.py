@@ -203,7 +203,7 @@ def validate_diagnosis(
     
     # Fallback to LLM for uncertain cases
     if use_llm == "fallback":
-        print(f"  ℹ️  Rules uncertain, using LLM validation...")
+        print(f"Rules uncertain, using LLM validation...")
         return validate_with_llm(doctor_diagnosis, actual_disease)
     
     # "never" mode but uncertain - default to False

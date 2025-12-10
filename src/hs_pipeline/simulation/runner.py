@@ -5,24 +5,26 @@ import json
 import uuid
 import time
 
-from hs_pipeline.extraction import extractor, llm_parser
-from hs_pipeline.agents.nurse_agent import nurse_agent, PatientData
-from hs_pipeline.agents.doctor_agent import doctor_agent, DoctorDeps
-from hs_pipeline.agents.lab_agent import lab_agent, LabAgentDeps
-from hs_pipeline.agents.agent_utils import (
+from hs_pipeline.extraction import extractor
+from hs_pipeline.extraction import llm_parser
+from hs_pipeline.simulation.agents.nurse_agent import nurse_agent, PatientData
+from hs_pipeline.simulation.agents.doctor_agent import doctor_agent, DoctorDeps
+from hs_pipeline.simulation.agents.lab_agent import lab_agent, LabAgentDeps
+from hs_pipeline.simulation.agents.agent_utils import (
     run_agent_with_retry, 
     extract_tool_calls,
     extract_lab_data,
     format_examination_data
 )
-from hs_pipeline.agents.patient_generator import (  
+from hs_pipeline.simulation.agents.patient_generator import (  
     generate_patient_for_department,
     generate_random_patient
 )
 from hs_pipeline.utils.constants import DATA_PATH, CHOSEN_LLM
-from hs_pipeline.agents.disease_validation import validate_diagnosis
-from hs_pipeline.database_management.db_manager import get_db
-from hs_pipeline.agents.reflection_agent import create_learning_principle
+from hs_pipeline.simulation.agents.disease_validation import validate_diagnosis
+from hs_pipeline.simulation.database import get_db
+from hs_pipeline.simulation.agents.reflection_agent import create_learning_principle
+
 
 
 def get_test_room_type(test_name: str) -> str:
@@ -146,7 +148,7 @@ class SimulationRunner:
             # Display learning principles if doctor used them
             if current_agent_name == "Doctor" and hasattr(result.output, 'learning_principles_used'):
                 if result.output.learning_principles_used:
-                    print(f"  📚 Database helped: {result.output.learning_principles_used}")
+                    print(f"Database helped: {result.output.learning_principles_used}")
             
             # Check completion
             if result.output.next_step in ["finish_chain", "discharge"]:
@@ -252,7 +254,7 @@ class SimulationRunner:
         validation_reason = ""
         
         if result and hasattr(result.output, 'diagnosis') and result.output.diagnosis:
-            print(f"\n💊 DIAGNOSIS: {result.output.diagnosis}")
+            print(f"\nDIAGNOSIS: {result.output.diagnosis}")
             
             if actual_disease:
                 is_correct, validation_reason = validate_diagnosis(
@@ -261,7 +263,7 @@ class SimulationRunner:
                     use_llm="fallback"
                 )
                 
-                status = "✅ CORRECT" if is_correct else "❌ WRONG"
+                status = "CORRECT" if is_correct else "WRONG"
                 print(f"{status}: {validation_reason}")
                 
                 # Track session outcome
@@ -323,9 +325,9 @@ class SimulationRunner:
                 treatment_plan=treatment,
                 outcome="success"
             )
-            print(f"💾 Case saved to Medical Base ({department})")
+            print(f"Case saved to Medical Base ({department})")
         except Exception as e:
-            print(f"❌ Error saving case: {e}")
+            print(f"Error saving case: {e}")
     
     def _learn_from_error(
         self, patient: PatientData, timeline: list,
@@ -347,7 +349,7 @@ class SimulationRunner:
         )
         
         if not principle:
-            print("❌ Failed to create principle")
+            print("Failed to create principle")
             # Add failed reflection to timeline
             timeline.append({
                 "step": len(timeline) + 1,
@@ -379,13 +381,13 @@ class SimulationRunner:
                 principle_text=principle.principle_text,
                 validation_accuracy=principle.confidence
             )
-            print(f"💾 Experience saved to Base ({department})")
+            print(f"Experience saved to Base ({department})")
         except Exception as e:
-            print(f"❌ Error saving experience: {e}")
+            print(f"Error saving experience: {e}")
 
 
 if __name__ == "__main__":    
-    NUM_SIMULATIONS = 20
+    NUM_SIMULATIONS = 1
     TARGET_DEPARTMENT = None  # or None for random
     
     runner = SimulationRunner()

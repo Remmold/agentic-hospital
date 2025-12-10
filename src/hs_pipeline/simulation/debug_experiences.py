@@ -2,7 +2,7 @@
 Debug: Check if experiences are saved and retrievable
 Uses ONLY public database API methods
 """
-from hs_pipeline.database_management.db_manager import get_db
+from hs_pipeline.simulation.database import get_db
 
 db = get_db()
 
@@ -41,7 +41,7 @@ for dept in departments:
 print("\n" + "="*60)
 
 if not all_experiences:
-    print("❌ NO EXPERIENCES FOUND")
+    print("NO EXPERIENCES FOUND")
     print("="*60)
     print("\nThis means:")
     print("  • No wrong diagnoses yet (all correct so far)")

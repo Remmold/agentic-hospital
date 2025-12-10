@@ -26,4 +26,4 @@ CHATGPT_LLM = OpenAIChatModel(
 )
 
 # LLM used throughout the project
-CHOSEN_LLM = CHATGPT_LLM  # Change as needed
+CHOSEN_LLM = GEMINI_LLM  # Change as needed

@@ -1,151 +1,31 @@
 """
-Agent Hospital Database Manager - Global semantic search with optional department filtering
+Experiences Database Operations
+
+Handles CRUD operations for learning experiences including:
+- Adding new experiences to DuckDB and ChromaDB
+- Semantic search for relevant experiences
+- Tracking experience retrieval and outcomes
+- Performance monitoring and deprecation
 """
+
+from typing import Any
 import duckdb
 import chromadb
-from pathlib import Path
-from typing import Optional, Dict, Any, List
 
 
-class AgentHospitalDB:
-    """Manages structured (DuckDB) and vector (ChromaDB) databases with global semantic search."""
+class ExperiencesMixin:
+    """Mixin providing experience operations for AgentHospitalDB."""
     
-    def __init__(
-        self, 
-        db_path: str = "data/agent_hospital.db",
-        chroma_path: str = "data/chroma_db"
-    ):
-        self.db_path = db_path
-        self.chroma_path = chroma_path
-        
-        Path(db_path).parent.mkdir(parents=True, exist_ok=True)
-        Path(chroma_path).mkdir(parents=True, exist_ok=True)
-        
-        self._duckdb_conn = None
-        self._chroma_client = None
-        self._current_session_experiences = []
-    
-    @property
-    def duckdb(self) -> duckdb.DuckDBPyConnection:
-        if self._duckdb_conn is None:
-            self._duckdb_conn = duckdb.connect(self.db_path)
-        return self._duckdb_conn
-    
-    @property
-    def chroma(self) -> chromadb.Client:
-        if self._chroma_client is None:
-            self._chroma_client = chromadb.PersistentClient(path=self.chroma_path)
-        return self._chroma_client
-    
-    def init_tables(self):
-        """Initialize DuckDB tables."""
-        self.duckdb.execute("""
-            CREATE TABLE IF NOT EXISTS medical_cases (
-                case_id VARCHAR PRIMARY KEY,
-                department VARCHAR,
-                patient_age INTEGER,
-                patient_gender VARCHAR,
-                medical_history TEXT,
-                symptoms TEXT,
-                examination_ordered TEXT,
-                examination_results TEXT,
-                diagnosis VARCHAR,
-                treatment_plan TEXT,
-                outcome VARCHAR,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """)
-        
-        self.duckdb.execute("""
-            CREATE TABLE IF NOT EXISTS experiences (
-                experience_id VARCHAR PRIMARY KEY,
-                department VARCHAR,
-                principle_text TEXT,
-                validation_accuracy FLOAT,
-                times_retrieved INTEGER DEFAULT 0,
-                times_led_to_correct INTEGER DEFAULT 0,
-                times_led_to_incorrect INTEGER DEFAULT 0,
-                is_active BOOLEAN DEFAULT TRUE,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """)
-        
-        self.duckdb.execute("""
-            CREATE TABLE IF NOT EXISTS disease_knowledge (
-                disease_id VARCHAR PRIMARY KEY,
-                disease_name VARCHAR,
-                department VARCHAR,
-                symptoms TEXT,
-                typical_exam_results TEXT,
-                treatment_options TEXT
-            )
-        """)
-        
-        self.duckdb.commit()
-    
-    
-    def get_medical_cases_collection(self):
-        """Global vector store for all medical cases."""
-        return self.chroma.get_or_create_collection(
-            name="medical_cases",
-            metadata={"type": "medical_records"}
-        )
+    # These will be provided by the core class
+    duckdb: duckdb.DuckDBPyConnection
+    chroma: chromadb.Client
+    _current_session_experiences: list[str]
     
     def get_experiences_collection(self):
         """Global vector store for all experiences."""
         return self.chroma.get_or_create_collection(
             name="experiences",
             metadata={"type": "experience_base"}
-        )
-    
-    def add_medical_case(
-        self,
-        case_id: str,
-        department: str,
-        patient_age: int,
-        patient_gender: str,
-        medical_history: str,
-        symptoms: str,
-        examination_ordered: str,
-        examination_results: str,
-        diagnosis: str,
-        treatment_plan: str,
-        outcome: str = "success"
-    ):
-        """Add case to both DuckDB and global ChromaDB collection."""
-        self.duckdb.execute("""
-            INSERT INTO medical_cases 
-            (case_id, department, patient_age, patient_gender, medical_history, 
-             symptoms, examination_ordered, examination_results, diagnosis, 
-             treatment_plan, outcome)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, [
-            case_id, department, patient_age, patient_gender, medical_history,
-            symptoms, examination_ordered, examination_results, diagnosis,
-            treatment_plan, outcome
-        ])
-        self.duckdb.commit()
-        
-        # Vectorize for semantic search
-        case_text = f"""Age: {patient_age}, Gender: {patient_gender}
-Medical History: {medical_history}
-Symptoms: {symptoms}
-Examination: {examination_ordered}
-Results: {examination_results}
-Diagnosis: {diagnosis}
-Treatment: {treatment_plan}"""
-        
-        collection = self.get_medical_cases_collection()
-        collection.add(
-            documents=[case_text],
-            ids=[case_id],
-            metadatas=[{
-                "department": department,
-                "age": patient_age,
-                "gender": patient_gender,
-                "diagnosis": diagnosis
-            }]
         )
     
     def add_experience(
@@ -173,38 +53,13 @@ Treatment: {treatment_plan}"""
             }]
         )
     
-    def search_similar_cases(
-        self,
-        query: str,
-        department: Optional[str] = None,
-        n_results: int = 3
-    ) -> Dict[str, Any]:
-        """
-        Semantic search across all cases, optionally filtered by department.
-        
-        Args:
-            query: Search query (symptoms, age, etc.)
-            department: Optional department filter
-            n_results: Number of results
-        """
-        collection = self.get_medical_cases_collection()
-        
-        # Build where clause for department filtering
-        where = {"department": department} if department else None
-        
-        return collection.query(
-            query_texts=[query],
-            n_results=n_results,
-            where=where
-        )
-    
     def search_relevant_experiences(
         self,
         query: str,
-        department: Optional[str] = None,
+        department: str | None = None,
         n_results: int = 4,
         only_active: bool = True
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Semantic search across all experiences, optionally filtered by department.
         
@@ -247,34 +102,7 @@ Treatment: {treatment_plan}"""
         
         return results
     
-    def get_case_details(self, case_id: str) -> Optional[Dict[str, Any]]:
-        """Get full case details from DuckDB."""
-        result = self.duckdb.execute("""
-            SELECT case_id, department, patient_age, patient_gender, medical_history,
-                   symptoms, examination_ordered, examination_results, diagnosis,
-                   treatment_plan, outcome, created_at
-            FROM medical_cases
-            WHERE case_id = ?
-        """, [case_id]).fetchone()
-        
-        if result:
-            return {
-                'case_id': result[0],
-                'department': result[1],
-                'patient_age': result[2],
-                'patient_gender': result[3],
-                'medical_history': result[4],
-                'symptoms': result[5],
-                'examination_ordered': result[6],
-                'examination_results': result[7],
-                'diagnosis': result[8],
-                'treatment_plan': result[9],
-                'outcome': result[10],
-                'created_at': result[11]
-            }
-        return None
-    
-    def get_experience_details(self, experience_id: str) -> Optional[Dict[str, Any]]:
+    def get_experience_details(self, experience_id: str) -> dict[str, Any] | None:
         """Get full experience details from DuckDB."""
         result = self.duckdb.execute("""
             SELECT experience_id, department, principle_text, validation_accuracy,
@@ -299,7 +127,7 @@ Treatment: {treatment_plan}"""
             }
         return None
     
-    def track_experience_retrieval(self, experience_ids: List[str]):
+    def track_experience_retrieval(self, experience_ids: list[str]):
         """Increment retrieval count for experiences."""
         self._current_session_experiences.extend(experience_ids)
         
@@ -312,7 +140,7 @@ Treatment: {treatment_plan}"""
             """, [exp_id])
         self.duckdb.commit()
     
-    def track_experience_outcome(self, experience_ids: List[str], led_to_correct: bool):
+    def track_experience_outcome(self, experience_ids: list[str], led_to_correct: bool):
         """Track whether experiences led to correct diagnosis."""
         for exp_id in experience_ids:
             self.duckdb.execute("""
@@ -328,7 +156,7 @@ Treatment: {treatment_plan}"""
             ])
         self.duckdb.commit()
     
-    def get_experience_performance(self, experience_id: str) -> Dict[str, Any]:
+    def get_experience_performance(self, experience_id: str) -> dict[str, Any]:
         """Get performance metrics for an experience."""
         result = self.duckdb.execute("""
             SELECT 
@@ -357,7 +185,7 @@ Treatment: {treatment_plan}"""
             }
         return None
     
-    def get_all_experience_stats(self) -> List[Dict[str, Any]]:
+    def get_all_experience_stats(self) -> list[dict[str, Any]]:
         """Get statistics for all experiences."""
         results = self.duckdb.execute("""
             SELECT 
@@ -408,10 +236,10 @@ Treatment: {treatment_plan}"""
     
     def get_low_performing_experiences(
         self, 
-        department: Optional[str] = None,
+        department: str | None = None,
         accuracy_threshold: float = 0.3,
         min_usage: int = 3
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Find low-performing experiences."""
         query = """
             SELECT 
@@ -440,35 +268,3 @@ Treatment: {treatment_plan}"""
             }
             for r in results
         ]
-    
-    def close(self):
-        if self._duckdb_conn:
-            self._duckdb_conn.close()
-            self._duckdb_conn = None
-    
-    # Session management
-    def start_new_session(self):
-        """Start new simulation session."""
-        self._current_session_experiences = []
-    
-    def get_session_experiences(self) -> List[str]:
-        """Get experience IDs from current session."""
-        return list(set(self._current_session_experiences))
-    
-    def track_session_outcome(self, was_correct: bool):
-        """Track outcome for all experiences in session."""
-        experience_ids = self.get_session_experiences()
-        if experience_ids:
-            self.track_experience_outcome(experience_ids, was_correct)
-            print(f"📊 Tracked {len(experience_ids)} experience(s): {'correct' if was_correct else 'incorrect'}")
-        self.start_new_session()
-
-
-# Singleton
-_db = None
-
-def get_db() -> AgentHospitalDB:
-    global _db
-    if _db is None:
-        _db = AgentHospitalDB()
-    return _db

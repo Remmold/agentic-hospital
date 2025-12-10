@@ -3,7 +3,7 @@ from typing import Literal, Optional
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent, RunContext
 from hs_pipeline.utils.constants import CHOSEN_LLM
-from hs_pipeline.agents.patient_generator import PatientData
+from hs_pipeline.simulation.agents.patient_generator import PatientData
 
 
 class NurseAssessment(BaseModel):

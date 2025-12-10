@@ -2,7 +2,6 @@
     Processes a directory of mixed filetypes (PDF, DOCX, TXT, XLSX, Images)
     and extracts text from each file.
 """
-from hs_pipeline.utils.constants import DATA_PATH
 from pathlib import Path
 from PIL import Image, ImageEnhance
 from docx import Document

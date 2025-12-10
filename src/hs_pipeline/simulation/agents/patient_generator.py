@@ -28,7 +28,6 @@ class PatientData:
 
 
 
-
 def get_department_for_disease(disease: str) -> str:
     """Get the department for a given disease."""
     disease_lower = disease.lower().replace(" ", "_")

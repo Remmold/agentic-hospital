@@ -2,7 +2,7 @@
 Test what doctor sees when searching
 Uses ONLY public database API methods
 """
-from hs_pipeline.database_management.db_manager import get_db
+from hs_pipeline.simulation.database import get_db
 
 db = get_db()
 
@@ -83,7 +83,7 @@ print("ANALYSIS")
 print("="*60)
 
 if not found_any:
-    print("\n❌ No experiences found for ANY scenario")
+    print("\nNo experiences found for ANY scenario")
     print("\nThis means:")
     print("  • Database is empty (no wrong diagnoses yet)")
     print("  • Need to run simulations to generate data")

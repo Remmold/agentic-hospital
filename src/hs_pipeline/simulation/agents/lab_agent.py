@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from hs_pipeline.agents.nurse_agent import PatientData
+from hs_pipeline.simulation.agents.patient_generator import PatientData
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent, RunContext
 from hs_pipeline.utils.constants import CHOSEN_LLM
