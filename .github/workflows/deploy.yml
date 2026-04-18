@@ -1,4 +1,4 @@
-name: Docker Deploy to Server
+name: Deploy to Azure VM
 
 on:
   push:
@@ -11,27 +11,21 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.0
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.PROD_HOST }}
-          username: ${{ secrets.PROD_USER }}
-          key: ${{ secrets.PROD_SSH_KEY }}
+          host: ${{ secrets.AZURE_SSH_HOST }}
+          username: ${{ secrets.AZURE_SSH_USER }}
+          key: ${{ secrets.AZURE_SSH_KEY }}
           script: |
-            echo "📦 Pulling latest code"
-            cd /home/danialraza/hospital-simulation-pipeline
-            git pull origin main
-
-            echo "🛑 Stopping previous containers"
-            docker compose down
-
-            echo "🔨 Rebuilding image"
-            docker compose build
-
-            echo "🚀 Starting new containers"
-            docker compose up -d
-
-            echo "🧼 Cleaning old dangling images"
+            set -e
+            cd /home/azureuser/hospital-simulation
+            echo "Pulling latest code"
+            git fetch --all
+            git reset --hard origin/main
+            echo "Restarting container"
+            docker-compose up -d --force-recreate
+            echo "Pruning dangling images"
             docker image prune -f
